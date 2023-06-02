@@ -1,0 +1,52 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\MR\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add @react-navigation/native @react-navigation/stack @react-navigation/native-stack @react-navigation/bottom-tabs @react-navigation/drawer
+
+PATH: 
+  C:\Program Files\Microsoft\jdk-11.0.18.10-hotspot\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python310\Scripts\;C:\Python310\;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\QuickTime\QTSystem\;C:\Program Files\dotnet\;C:\ProgramData\chocolatey\bin;C:\Program Files\Java\jdk-17.0.2\bin;C:\Program Files\nodejs\;C:\Program Files\OpenJDK\openjdk-11.0.14.1_1\bin;C:\Program Files\Git\cmd;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\MySQL\MySQL Server 8.0\bin;C:\xampp\php;C:\ProgramData\ComposerSetup\bin;C:\Users\MR\.cargo\bin;C:\Users\MR\anaconda3;C:\Users\MR\anaconda3\Library\mingw-w64\bin;C:\Users\MR\anaconda3\Library\usr\bin;C:\Users\MR\anaconda3\Library\bin;C:\Users\MR\anaconda3\Scripts;C:\Users\MR\AppData\Local\Microsoft\WindowsApps;C:\Users\MR\AppData\Local\Programs\Microsoft VS Code\bin;E:\Android\Sdk\platform-tools;C:\Users\MR\AppData\Local\GitHubDesktop\bin;C:\Users\MR\AppData\Roaming\npm;C:\Users\MR\Abdullah\flutter\bin;C:\Users\MR\.dotnet\tools;C:\Program Files\MySQL\MySQL Server 8.0\bin;C:\Users\MR\AppData\Roaming\Composer\vendor\bin;
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.14.2
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, copyfile 'C:\Users\MR\AppData\Local\Yarn\Cache\v6\npm-@expo-webpack-config-18.1.0-61f767531053afe14fd301bb6d88b3ca259665ff-integrity\node_modules\@expo\webpack-config\webpack.config.d.ts' -> 'E:\mobileApps\DocudashNew\node_modules\@expo\webpack-config\webpack.config.d.ts'
+
+npm manifest: 
+  {
+    "name": "docudashnew",
+    "version": "1.0.0",
+    "main": "node_modules/expo/AppEntry.js",
+    "scripts": {
+      "start": "expo start",
+      "android": "expo start --android",
+      "ios": "expo start --ios",
+      "web": "expo start --web"
+    },
+    "dependencies": {
+      "expo": "~48.0.18",
+      "expo-status-bar": "~1.4.4",
+      "react": "18.2.0",
+      "react-native": "0.71.8",
+      "react-dom": "18.2.0",
+      "react-native-web": "~0.18.10",
+      "@expo/webpack-config": "^18.0.1"
+    },
+    "devDependencies": {
+      "@babel/core": "^7.20.0",
+      "@types/react": "~18.0.14",
+      "@types/react-native": "^0.72.2",
+      "typescript": "^4.9.4"
+    },
+    "private": true
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
