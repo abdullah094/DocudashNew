@@ -5,7 +5,12 @@ module.exports = {
     "./<custom directory>/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        nunito: "nunito",
+        "nunito-SemiBold": "nunito-SemiBold",
+      },
+    },
   },
   plugins: [],
 };
