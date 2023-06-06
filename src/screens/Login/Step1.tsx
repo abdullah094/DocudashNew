@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 import Input from "../../components/Input";
@@ -54,6 +55,7 @@ const Step1 = () => {
   return (
     <ScrollView
       contentContainerStyle={tw`flex-1 items-center justify-center pb-20`}
+      keyboardShouldPersistTaps="handled"
     >
       <View style={tw`px-14`}>
         <Text
@@ -76,7 +78,10 @@ const Step1 = () => {
         />
         <View style={tw`flex-row mt-5 w-[${"100%"}] items-start`}>
           <View
-            style={tw`border-2 rounded-lg border-gray-400 mx-2 bg-[${"#F6F6F6"}]`}
+            style={[
+              tw`border-2 rounded-lg border-gray-400 mx-2 bg-[${"#F6F6F6"}]`,
+              Platform.OS === "android" ? tw`border-0` : null,
+            ]}
           >
             <Checkbox
               color={colors.green}

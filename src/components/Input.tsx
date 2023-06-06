@@ -1,5 +1,11 @@
-import { StyleSheet, Text, View, TextInput } from "react-native";
-import React, { SetStateAction, Dispatch } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TextInputProps,
+} from "react-native";
+import React, { SetStateAction, Dispatch, FC } from "react";
 import { colors } from "../Colors";
 import tw from "twrnc";
 interface props {
@@ -7,14 +13,21 @@ interface props {
   setState: Dispatch<React.SetStateAction<string | undefined>>;
   placeholder: string;
   style: object;
+  keyboardType:
+    | string
+    | undefined
+    | React.FC<TextInputProps>
+    | Readonly<TextInputProps>
+    | any;
 }
 const Input = (props: props) => {
-  const { state, setState, placeholder, style } = props;
+  const { state, setState, placeholder, style, keyboardType } = props;
 
   return (
     <TextInput
       value={String(state)}
-      onChangeText={(value: string) => setState(value)}
+      onChangeText={setState}
+      keyboardType={keyboardType}
       placeholder={placeholder}
       style={[
         {

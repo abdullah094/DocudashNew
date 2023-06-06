@@ -11,7 +11,7 @@ const LoginStack = createStackNavigator();
 
 const Index = () => {
   return (
-    <LoginStack.Navigator screenOptions={{ headerShown: false }}>
+    <LoginStack.Navigator screenOptions={{ headerShown: true }}>
       <LoginStack.Screen name="Step1" component={Step1} />
       <LoginStack.Screen name="Step2" component={Step2} />
       <LoginStack.Screen name="Step3" component={Step3} />
