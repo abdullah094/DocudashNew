@@ -4,12 +4,13 @@ import {
   View,
   TextInput,
   TextInputProps,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { SetStateAction, Dispatch, FC } from "react";
 import { colors } from "../Colors";
 import tw from "twrnc";
 interface props {
-  state: string | number | undefined;
+  state: string | number | undefined | SetStateAction<string | undefined>;
   setState: Dispatch<React.SetStateAction<string | undefined>>;
   placeholder: string;
   style: object;

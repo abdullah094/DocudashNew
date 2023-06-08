@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-native",
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
+    "esModuleInterop": true,
   }
 }

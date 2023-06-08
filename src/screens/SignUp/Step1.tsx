@@ -13,26 +13,18 @@ import { colors } from "../../Colors";
 import GreenButton from "../../components/GreenButton";
 import { Checkbox } from "react-native-paper";
 import tw from "twrnc";
-import { useNavigation } from "@react-navigation/native";
+import { ThemeProvider, useNavigation } from "@react-navigation/native";
 import { SIGNUP_0 } from "@env";
 import axios from "axios";
-import {
-  BallIndicator,
-  BarIndicator,
-  DotIndicator,
-  MaterialIndicator,
-  PacmanIndicator,
-  PulseIndicator,
-  SkypeIndicator,
-  UIActivityIndicator,
-  WaveIndicator,
-} from "react-native-indicators";
+import { BarIndicator } from "react-native-indicators";
+import { storeData, getData, storeToken } from "./AsynFunc";
 
 const Step1 = () => {
   const navigation = useNavigation();
   const [inputVal, setInputVal] = useState<string | undefined>("");
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(0);
   const [loader, setLoader] = useState<string | any>("Get Started");
+
   const fetchData = () => {
     setLoader(
       <View style={tw`pt-1`}>
@@ -41,12 +33,22 @@ const Step1 = () => {
     );
     axios
       .post(SIGNUP_0, {
-        email: inputVal,
+        email: inputVal?.toLowerCase(),
         checkAgree: checked,
       })
       .then((response) => {
-        setLoader("Get Started");
-        navigation.navigate("Index", { screen: "Step2" });
+        response.data.success
+          ? (setLoader("Get Started"),
+            navigation.replace("Index", {
+              screen: "Step2",
+              params: {
+                api: response.data.next,
+              },
+            }),
+            storeToken(response.data.next_access),
+            storeData("Step2"),
+            console.log(response.data))
+          : (setLoader("Get Started"), console.log(response.data));
       })
       .catch((err) => {
         setLoader("Get Started");
@@ -54,7 +56,7 @@ const Step1 = () => {
   };
   return (
     <ScrollView
-      contentContainerStyle={tw`flex-1 items-center justify-center pb-20`}
+      contentContainerStyle={tw`flex-1 items-center justify-center pb-20 bg-white`}
       keyboardShouldPersistTaps="handled"
     >
       <View style={tw`px-14`}>
@@ -84,10 +86,9 @@ const Step1 = () => {
             ]}
           >
             <Checkbox
-              color={colors.green}
               status={checked ? "checked" : "unchecked"}
               onPress={() => {
-                setChecked(!checked);
+                setChecked(checked ? 0 : 1);
               }}
             />
           </View>

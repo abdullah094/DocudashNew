@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import Index from "../screens/Login/Index";
+import Index from "../screens/SignUp/Index";
+import { RootStackParamList } from "../../types";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 const StackNavigator = () => {
   return (
     <Stack.Navigator>
