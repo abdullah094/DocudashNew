@@ -5,15 +5,17 @@ import {
   TextInput,
   TextInputProps,
   KeyboardAvoidingView,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
-import React, { SetStateAction, Dispatch, FC } from "react";
+import React, { SetStateAction, Dispatch, FC, FunctionComponent } from "react";
 import { colors } from "../Colors";
 import tw from "twrnc";
 interface props {
   state: string | number | undefined | SetStateAction<string | undefined>;
   setState: Dispatch<React.SetStateAction<string | undefined>>;
   placeholder: string;
-  style: object;
+  style: StyleProp<ViewStyle> | object;
   keyboardType:
     | string
     | undefined

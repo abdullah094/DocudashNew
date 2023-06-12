@@ -20,9 +20,7 @@ import { BarIndicator } from "react-native-indicators";
 import { getToken, storeData } from "./AsynFunc";
 import { SignupStackScreenProps } from "../../../types";
 
-const Step3 = () => {
-  const { navigation, route } =
-    useNavigation<SignupStackScreenProps<"Step3">>();
+const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
   const [otp, setOtp] = useState<string | undefined>("");
   const [loader, setLoader] = useState<string | any>("Next");
   const fetchData = async () => {

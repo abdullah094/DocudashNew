@@ -19,6 +19,7 @@ import { Industry } from './Step4';
     Step3: {api:string};
     Step4: {api:string};
     Step5: {industry :Industry[],signUpReasons:Industry[]};
+    
   };
   
   export type SignupStackScreenProps<T extends keyof SignupStackParamList> =

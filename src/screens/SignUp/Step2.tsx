@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useState, useEffect, SetStateAction } from "react";
+import React, { useState, useEffect, SetStateAction, FC } from "react";
 import { SIGNUP_1 } from "@env";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
@@ -30,13 +30,11 @@ interface form {
   last_Name: SetStateAction<string | undefined>;
   phone: SetStateAction<string | undefined>;
 }
-const Step2 = () => {
+const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
   const { count, increment, decrement, access_token } = useCounterStore();
   const [fontsLoaded] = useFonts({
     Signature: require("../../assets/Fonts/Creattion.otf"),
   });
-  const { navigation, route } =
-    useNavigation<SignupStackScreenProps<"Step2">>();
 
   const [form, setForm] = useState<form>({
     first_Name: "",
@@ -139,9 +137,9 @@ const Step2 = () => {
             keyboardType={"number-pad"}
             style={{}}
           />
-          <View style={tw`flex-row justify-between items-center`}>
+          <View style={tw`flex-row justify-between items-center `}>
             <Image
-              style={tw`w-30 self-center `}
+              style={tw`w-30 self-center top-3`}
               resizeMode="contain"
               source={require("../../assets/logo.png")}
             />

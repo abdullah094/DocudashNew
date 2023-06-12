@@ -13,7 +13,6 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import GreenButton from "../../components/GreenButton";
 import Input from "../../components/Input";
 import { colors } from "../../Colors";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
 import { SignupStackScreenProps, iStep4 } from "../../../types";
@@ -41,7 +40,7 @@ const Step4 = ({ navigation, route }: SignupStackScreenProps<"Step4">) => {
         const data: iStep4 = response.data;
         console.log(data.success);
         if (data.success) {
-          navigation.navigate("Index", {
+          navigation.push("Index", {
             screen: "Step5",
             params: {
               industry: data.industries,

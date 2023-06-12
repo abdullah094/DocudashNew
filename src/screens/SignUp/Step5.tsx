@@ -6,7 +6,7 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getToken, storeData } from "./AsynFunc";
 import tw from "twrnc";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -18,17 +18,82 @@ import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
 import DropDown from "react-native-paper-dropdown";
 import { SignupStackScreenProps } from "../../../types";
+import { number } from "mobx-state-tree/dist/internal";
+import { storeTokenGlobal } from "../../AsyncGlobal";
 
 interface route {
   email: string;
 }
-const Step5 = ({ navigation, route }: SignupStackScreenProps<"Step5">) => {
+interface Data {
+  id: number;
+  title: string;
+  slug: string;
+  order_at: number;
+  status: number;
+  created_by: number;
+  updated_by: number;
+  deleted: number;
+  created_at: Date;
+  updated_at: Date;
+}
+interface dropDown {
+  label: string;
+  value: number;
+}
+const Step5 = () => {
+  const navigation =
+    useNavigation<SignupStackScreenProps<"Step5">["navigation"]>();
   const [password, setPassword] = useState<string | undefined>("");
   const [loader, setLoader] = useState<string | any>("Next");
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const [gender, setGender] = useState<string>("");
-  const industry = route.params.industry;
-  const reasons = route.params.signUpReasons;
+
+  const [industry, setIndustry] = useState<dropDown[]>([]);
+  const [reasons, setReasons] = useState<dropDown[]>([]);
+  const [industryID, setIndustryID] = useState<string>("");
+  const [reasonID, setReasonID] = useState<string>("");
+  const [showDropDownIndustry, setShowDropDownIndustry] = useState(false);
+  const [showDropDownReason, setShowDropDownReason] = useState(false);
+  const fetchIndustry = () => {
+    axios
+      .get("https://docudash.net/api/set-ups/industries/")
+      .then((response) => {
+        const data: Data[] = response.data.data;
+        setIndustry(
+          data.map((x) => {
+            return {
+              label: x.title,
+              value: x.id,
+            };
+          }) as dropDown[]
+        );
+        // if (data.length > 0) {
+        //   setIndustryID(String(data[0].id));
+        // }
+      });
+  };
+
+  const fetchReasons = async () => {
+    let _industry: Array<object> = [];
+    axios
+      .get("https://docudash.net/api/set-ups/signUpReasons/")
+      .then((response) => {
+        const data: Data[] = response.data.data;
+        setReasons(
+          data.map((x) => {
+            return {
+              label: x.title,
+              value: x.id,
+            };
+          }) as dropDown[]
+        );
+        // if (data.length > 0) {
+        //   setReasonID(String(data[0].id));
+        // }
+      });
+  };
+  useEffect(() => {
+    fetchIndustry();
+    fetchReasons();
+  }, []);
   const fetchData = async () => {
     setLoader(
       <View style={tw`pt-1`}>
@@ -37,16 +102,16 @@ const Step5 = ({ navigation, route }: SignupStackScreenProps<"Step5">) => {
     );
     const token = await getToken();
     axios
-      .post("https://docudash.net/api/sign-up-3/" + token, {
-        password: password,
+      .post("https://docudash.net/api/sign-up-4/" + token, {
+        industry_id: industryID,
+        sign_up_reasons_id: reasonID,
       })
       .then((response) => {
-        console.log(response.data);
         response?.data.success
-          ? (navigation.navigate("Index", {
-              screen: "Step5",
+          ? (navigation.push("TabNavigator", {
+              screen: "Drawernavigator",
             }),
-            storeData("Step5"),
+            storeTokenGlobal(""),
             setLoader("Next"))
           : (alert("Failed"), setLoader("Next"));
       })
@@ -56,7 +121,7 @@ const Step5 = ({ navigation, route }: SignupStackScreenProps<"Step5">) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={tw`h-full  `}>
+    <ScrollView contentContainerStyle={tw`flex-1  `}>
       <View style={tw`flex-1 gap-2 justify-center px-10`}>
         <Image
           style={tw`w-75 h-35 self-center`}
@@ -82,20 +147,44 @@ const Step5 = ({ navigation, route }: SignupStackScreenProps<"Step5">) => {
           This helps personalize your account in the future
         </Text>
 
-        <DropDown
-          label={"Gender"}
-          mode={"outlined"}
-          showDropDown={() => setShowDropDown(true)}
-          onDismiss={() => setShowDropDown(false)}
-          value={gender}
-          setValue={setGender}
-          list={industry}
-        />
-        <Text style={tw`text-gray-400`}>
-          * Must be at least 6 characters long. Must not contain the characters
-          or spaces
-        </Text>
-        <GreenButton text={loader} onPress={fetchData} />
+        <View>
+          {industry && (
+            <View
+              style={tw`border-2 border-[${colors.green}] rounded-3xl overflow-hidden my-2`}
+            >
+              <DropDown
+                mode={"flat"}
+                placeholder="Your industry?"
+                visible={showDropDownIndustry}
+                inputProps={{ backgroundColor: "white", width: "100%" }}
+                showDropDown={() => setShowDropDownIndustry(true)}
+                onDismiss={() => setShowDropDownIndustry(false)}
+                value={industryID}
+                setValue={setIndustryID}
+                list={industry}
+              />
+            </View>
+          )}
+          {reasons && (
+            <View
+              style={tw`border-2 border-[${colors.green}] rounded-3xl overflow-hidden mb-0`}
+            >
+              <DropDown
+                mode={"flat"}
+                placeholder={"Why did you signup?"}
+                visible={showDropDownReason}
+                inputProps={{ backgroundColor: "white", width: "100%" }}
+                showDropDown={() => setShowDropDownReason(true)}
+                onDismiss={() => setShowDropDownReason(false)}
+                value={reasonID}
+                setValue={setReasonID}
+                list={reasons}
+              />
+            </View>
+          )}
+        </View>
+
+        <GreenButton text={loader} onPress={fetchData} styles={{}} />
       </View>
     </ScrollView>
   );
