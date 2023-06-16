@@ -62,7 +62,7 @@ const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
         console.log("top----", response.data);
         response?.data.success
           ? (setLoader("Next"),
-            navigation.replace("Index", {
+            navigation.replace("SignUpIndex", {
               screen: "Step3",
               params: {
                 api: response.data.next,

@@ -14,7 +14,7 @@ import { SignupStackParamList } from "../../../types";
 
 const LoginStack = createStackNavigator<SignupStackParamList>();
 
-const Index = observer(() => {
+const Index = () => {
   // clearAsync();
   const [step, setStep] = useState<keyof SignupStackParamList | undefined>(
     "Step1"
@@ -45,7 +45,7 @@ const Index = observer(() => {
   else {
     return <></>;
   }
-});
+};
 
 export default Index;
 

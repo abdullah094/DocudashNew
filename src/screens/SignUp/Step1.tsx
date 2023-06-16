@@ -13,14 +13,20 @@ import { colors } from "../../Colors";
 import GreenButton from "../../components/GreenButton";
 import { Checkbox } from "react-native-paper";
 import tw from "twrnc";
-import { ThemeProvider, useNavigation } from "@react-navigation/native";
+import {
+  NavigationProp,
+  ThemeProvider,
+  useNavigation,
+} from "@react-navigation/native";
 import { SIGNUP_0 } from "@env";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
 import { storeData, getData, storeToken } from "./AsynFunc";
+import { RootStackParamList, SignupStackScreenProps } from "../../../types";
 
 const Step1 = () => {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<SignupStackScreenProps<"Step1">["navigation"]>();
   const [inputVal, setInputVal] = useState<string | undefined>("");
   const [checked, setChecked] = useState(0);
   const [loader, setLoader] = useState<string | any>("Get Started");
@@ -39,7 +45,7 @@ const Step1 = () => {
       .then((response) => {
         response.data.success
           ? (setLoader("Get Started"),
-            navigation.replace("Index", {
+            navigation.replace("SignUpIndex", {
               screen: "Step2",
               params: {
                 api: response.data.next,

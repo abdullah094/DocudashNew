@@ -29,6 +29,7 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
         <BarIndicator color="white" size={20} />
       </View>
     );
+
     const token = await getToken();
     axios
       .post("https://docudash.net/api/sign-up-2/" + token, {
@@ -38,7 +39,7 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
         console.log("top----", response.data);
         response?.data.success
           ? (setLoader("Next"),
-            navigation.replace("Index", {
+            navigation.replace("SignUpIndex", {
               screen: "Step4",
               params: {
                 api: response.data.next,
@@ -81,7 +82,7 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
               tw`text-center text-[${colors.blue}] text-base`,
             ]}
           >
-            A temporary confirmation code was sent to shahzaibjaffri82@gmail.com
+            A temporary confirmation code was sent to your email
           </Text>
 
           <Input

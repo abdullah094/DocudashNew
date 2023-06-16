@@ -7,7 +7,9 @@ import type {
 import { Industry } from './Step4';
   
   export type RootStackParamList = {
-    Index: NavigatorScreenParams<SignupStackParamList>;
+    SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
+    TabNavigator: NavigatorScreenParams<SignupStackParamList>;
+    ManageDrawer:  NavigatorScreenParams<SignupStackParamList>;
   };
   
   export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -15,7 +17,7 @@ import { Industry } from './Step4';
   
   export type SignupStackParamList = {
     Step1: undefined;
-    Step2: undefined;
+    Step2:{api:string}
     Step3: {api:string};
     Step4: {api:string};
     Step5: {industry :Industry[],signUpReasons:Industry[]};
@@ -32,4 +34,11 @@ import { Industry } from './Step4';
     namespace ReactNavigation {
       interface RootParamList extends RootStackParamList {}
     }
+  }
+
+  interface Istep5Response{
+    token:   string;
+    success: boolean |null;
+    message: string;
+    data:    Data;
   }

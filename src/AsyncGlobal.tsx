@@ -16,9 +16,17 @@ export const getData = async () => {
 };
 
 export const storeTokenGlobal = async (value: string) => {
-  //store step data
+  //token for full app
   try {
     await AsyncStorage.setItem("@token_global", value);
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const clearToken = async () => {
+  //store step data
+  try {
+    await AsyncStorage.setItem("@token_global", "");
   } catch (e) {
     console.log(e);
   }

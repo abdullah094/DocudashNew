@@ -5,9 +5,10 @@ import {
   Image,
   ScrollView,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getToken, storeData } from "./AsynFunc";
+import { clearAsync, getToken, storeData, storeToken } from "./AsynFunc";
 import tw from "twrnc";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import GreenButton from "../../components/GreenButton";
@@ -17,9 +18,10 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
 import DropDown from "react-native-paper-dropdown";
-import { SignupStackScreenProps } from "../../../types";
+import { Istep5Response, SignupStackScreenProps } from "../../../types";
 import { number } from "mobx-state-tree/dist/internal";
 import { storeTokenGlobal } from "../../AsyncGlobal";
+import { useCounterStore } from "../../../MobX/TodoStore";
 
 interface route {
   email: string;
@@ -52,6 +54,8 @@ const Step5 = () => {
   const [reasonID, setReasonID] = useState<string>("");
   const [showDropDownIndustry, setShowDropDownIndustry] = useState(false);
   const [showDropDownReason, setShowDropDownReason] = useState(false);
+  const mobX = useCounterStore();
+
   const fetchIndustry = () => {
     axios
       .get("https://docudash.net/api/set-ups/industries/")
@@ -107,12 +111,17 @@ const Step5 = () => {
         sign_up_reasons_id: reasonID,
       })
       .then((response) => {
-        response?.data.success
-          ? (navigation.push("TabNavigator", {
-              screen: "Drawernavigator",
-            }),
-            storeTokenGlobal(""),
-            setLoader("Next"))
+        const {
+          success = true,
+          message,
+          token,
+        }: Istep5Response = response.data;
+        success
+          ? (mobX.addAccessToken(token),
+            setLoader("Next"),
+            Alert.alert(message),
+            storeTokenGlobal(token),
+            clearAsync())
           : (alert("Failed"), setLoader("Next"));
       })
       .catch((err) => {

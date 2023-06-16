@@ -1,32 +1,37 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import Index from "../screens/SignUp/Index";
+import SignUpIndex from "../screens/SignUp/Index";
 import { RootStackParamList } from "../../types";
 import TabNavigator from "./TabNavigator";
-import { storeTokenGlobal, getTokenGlobal } from "../AsyncGlobal";
+import { storeTokenGlobal, getTokenGlobal, clearToken } from "../AsyncGlobal";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { set } from "mobx";
+import Manage from "../screens/Manage/Manage";
+import ManageDrawer from "../screens/Manage/ManageDrawer";
+import { useCounterStore } from "../../MobX/TodoStore";
 const Stack = createStackNavigator<RootStackParamList>();
 const LoggedInStack = createStackNavigator<RootStackParamList>();
 
 const StackNavigator = () => {
-  const [t, setT] = useState<string>("");
+  // clearToken();
 
-  const fetchData = async () => {
-    const _token = await getTokenGlobal();
-    setT(_token);
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-  console.log(t);
+  const Mobx = useCounterStore();
+  console.log("StackNaviMobx", Mobx.access_token);
 
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Index" component={Index} />
-      <Stack.Screen name="TabNavigator" component={TabNavigator} />
-    </Stack.Navigator>
+    <>
+      {Mobx.access_token ? (
+        <LoggedInStack.Navigator>
+          <Stack.Screen name="TabNavigator" component={TabNavigator} />
+          <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
+        </LoggedInStack.Navigator>
+      ) : (
+        <Stack.Navigator>
+          <Stack.Screen name="SignUpIndex" component={SignUpIndex} />
+        </Stack.Navigator>
+      )}
+    </>
   );
 };
 

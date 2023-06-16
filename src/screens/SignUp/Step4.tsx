@@ -40,7 +40,7 @@ const Step4 = ({ navigation, route }: SignupStackScreenProps<"Step4">) => {
         const data: iStep4 = response.data;
         console.log(data.success);
         if (data.success) {
-          navigation.push("Index", {
+          navigation.push("SignUpIndex", {
             screen: "Step5",
             params: {
               industry: data.industries,
@@ -90,12 +90,13 @@ const Step4 = ({ navigation, route }: SignupStackScreenProps<"Step4">) => {
           setState={(val) => setPassword(val)}
           placeholder={"Enter your password"}
           style={{}}
+          keyboardType={undefined}
         />
         <Text style={tw`text-gray-400`}>
           * Must be at least 6 characters long. Must not contain the characters
           or spaces
         </Text>
-        <GreenButton text={loader} onPress={fetchData} />
+        <GreenButton text={loader} onPress={fetchData} styles={{}} />
       </View>
     </ScrollView>
   );
