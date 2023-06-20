@@ -12,8 +12,10 @@ import { getTokenGlobal } from "../../AsyncGlobal";
 import * as Progress from "react-native-progress";
 import tw from "twrnc";
 import { colors } from "../../Colors";
-
 import ProgressModal from "../DashBoard/ProgressModal";
+import ImageUploadModal from "../DashBoard/Components/ImageUploadModal";
+import axios from "axios";
+import { useCounterStore } from "../../../MobX/TodoStore";
 
 interface box {
   text: string;
@@ -29,9 +31,44 @@ const Box = ({ text, num }: box) => {
     </View>
   );
 };
-
 const Dashboard = () => {
-  const [progressBar, setProgressBar] = useState<number>(0.5);
+  const [progressBar, setProgressBar] = useState<number>(0);
+  const [completeNumber, setCompleteNumber] = useState<number>(0);
+  const [setshowMeObj, setSetshowMeObj] = useState<object | null | undefined>();
+  const Mobx = useCounterStore();
+  console.log(Mobx.access_token);
+
+  const fetchData = () => {
+    axios
+      .get("https://docudash.net/api/getStartedWithDocudash", {
+        headers: { Authorization: `Bearer ${Mobx.access_token}` },
+      })
+      .then((response) => {
+        let ones = 0;
+        let zeros = 0;
+
+        const obj = response.data.data;
+        setProgressBar(obj.percentage / 100);
+        delete obj.percentage;
+        setSetshowMeObj(obj);
+
+        const key_array = Object.values(obj);
+        key_array.forEach((element) => {
+          if (element) {
+            ones++;
+          } else {
+            zeros++;
+          }
+        });
+        setCompleteNumber(ones);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <ScrollView>
       <View style={tw` py-10 items-center px-5 justify-center`}>
@@ -43,7 +80,7 @@ const Dashboard = () => {
               Get Started with Docudash
             </Text>
             <Text style={tw`text-[${colors.black}] font-bold`}>
-              3/6 Completed
+              {` ${completeNumber}/6 Completed`}
             </Text>
           </View>
           <Progress.Bar
@@ -54,14 +91,15 @@ const Dashboard = () => {
             borderColor={"#D9D9D9"}
           />
         </View>
-        <ProgressModal />
+        <ProgressModal
+          progress={progressBar}
+          obj={setshowMeObj}
+          steps={completeNumber}
+        />
       </View>
       <View style={tw`items-center bg-[${colors.green}] py-10 gap-2`}>
         <View style={tw`flex-row items-center h-25`}>
-          <Image
-            style={tw`w-20 h-20 rounded-full mt-5 top--1 `}
-            source={require("../../assets/ProfielPic.png")}
-          />
+          <ImageUploadModal />
           <Image
             style={tw`w-2.1 h-24 rounded-full mt-5 top--2 mx-2`}
             source={require("../../assets/WhiteLine.png")}

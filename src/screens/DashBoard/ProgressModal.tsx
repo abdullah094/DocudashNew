@@ -41,10 +41,15 @@ const Rectangle = ({ heading, description, check }: IRectangle) => {
   );
 };
 
+interface IProgressModal {
+  progress: number;
+  obj: object | null | undefined;
+  steps: number | null;
+}
 const { width } = Dimensions.get("window");
-const ProgressModal = () => {
+const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [progressBar, setProgressBar] = useState<number>(0.5);
+  const [progressBar, setProgressBar] = useState<number>(0);
 
   return (
     <>
@@ -84,10 +89,12 @@ const ProgressModal = () => {
                     steps
                   </Text>
                 </View>
-                <Text style={tw`font-bold text-5 self-start `}>1/6</Text>
+                <Text
+                  style={tw`font-bold text-5 self-start `}
+                >{`${steps}/6`}</Text>
               </View>
               <Progress.Bar
-                progress={progressBar}
+                progress={progress}
                 color={"#6FAC46"}
                 unfilledColor={"#D9D9D9"}
                 width={null}
@@ -99,36 +106,36 @@ const ProgressModal = () => {
             <Rectangle
               heading={"Sign up now"}
               description={"All set. Now let's get started!"}
-              check={true}
+              check={obj?.sign_up}
             />
             <Rectangle
               heading={"Send Documents for Signature"}
               description={"Easily track your envelope with us"}
-              check={false}
+              check={obj?.Send_Documents_for_Signature}
             />
             <Rectangle
-              heading={"Upload your documents"}
+              heading={"Upload your photos"}
               description={"Personalize your envelopes with a photo."}
-              check={false}
+              check={obj?.Upload_Your_Photo}
             />
             <Rectangle
               heading={"Adopt Your Signature"}
               description={"Create your personal signature."}
-              check={false}
+              check={obj?.adopt_your_signature}
             />
             <Rectangle
               heading={"Create a Template"}
               description={
                 "Resending the same documents? Save time with templates."
               }
-              check={false}
+              check={obj?.template}
             />
             <Rectangle
               heading={"Brand Your Account"}
               description={
                 "Add your professional touch with your logo and colors."
               }
-              check={false}
+              check={obj?.brand}
             />
           </View>
         </ScrollView>

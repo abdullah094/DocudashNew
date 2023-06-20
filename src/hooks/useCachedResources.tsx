@@ -2,7 +2,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import { getTokenGlobal } from "../AsyncGlobal";
+import { getTokenGlobal, clearToken } from "../AsyncGlobal";
 import { useCounterStore } from "../../MobX/TodoStore";
 import { observer } from "mobx-react-lite";
 
@@ -16,6 +16,10 @@ export default function useCachedResources() {
       try {
         SplashScreen.preventAutoHideAsync();
         const token = await getTokenGlobal();
+
+        if (!token) {
+          context.deleteAccessToken();
+        }
         context.addAccessToken(token);
 
         // Load fonts
@@ -25,6 +29,7 @@ export default function useCachedResources() {
           "nunito-SemiBold": require("../assets/Fonts/Nunito-SemiBold.ttf"),
         });
       } catch (e) {
+        clearToken();
         // We might want to provide this error information to an error reporting service
         console.warn(e);
       } finally {
@@ -37,4 +42,7 @@ export default function useCachedResources() {
   }, []);
 
   return isLoadingComplete;
+}
+function deleteAccessToken() {
+  throw new Error("Function not implemented.");
 }

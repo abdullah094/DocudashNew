@@ -5,25 +5,26 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import tw from "twrnc";
 import { colors } from "../../Colors";
 import { useNavigation } from "@react-navigation/native";
-import { log } from "react-native-reanimated";
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import DrawerProfileModal from "./Components/DrawerProfileModal";
 
-interface box {
-  text: string;
-  num: number | null;
-}
-const Box = ({ text, num }: box) => {
-  return (
-    <View style={styles.box}>
-      <Text style={styles.box_num}>{num}</Text>
-      <Text style={styles.box_text}>{text}</Text>
-    </View>
-  );
-};
+const BellTrigger = () => (
+  <Image
+    style={[tw`h-5 w-5 `, { tintColor: colors.blue }]}
+    source={require("../../assets/bell.png")}
+  />
+);
 
 const CustomDrawer = () => {
   type Result = boolean extends true ? 1 : 0;
@@ -32,17 +33,44 @@ const CustomDrawer = () => {
   return (
     <ScrollView contentContainerStyle={tw`flex-1`}>
       <View style={tw`flex-1 bg-[${colors.white}] pb-50 gap-2 items-center`}>
-        <Image
-          style={tw`w-50 h-10 mt-5`}
-          source={require("../../assets/docudash_pow_logo.png")}
-        />
-        <View style={tw`w-full items-center py-5`}>
+        <View style={tw`flex-row items-center  w-full justify-between px-5`}>
           <Image
-            style={tw`w-20 h-20 rounded-full mt-5`}
-            source={require("../../assets/ProfielPic.png")}
+            style={tw`w-30 h-7 mt-5`}
+            source={require("../../assets/docudash_pow_logo.png")}
           />
-          <Text style={tw`text-black text-5 mt-2`}>Waqar Khan</Text>
+
+          <Menu>
+            <MenuTrigger text={<BellTrigger />} />
+            <MenuOptions>
+              <MenuOption
+                style={styles.menu_block}
+                onSelect={() => alert(`Save`)}
+                text="Get Started"
+              />
+              <MenuOption
+                style={styles.menu_block}
+                onSelect={() => alert(`Save`)}
+                text="Support"
+              />
+              <MenuOption
+                style={styles.menu_block}
+                onSelect={() => alert(`Save`)}
+                text="Community"
+              />
+              <MenuOption
+                style={styles.menu_block}
+                onSelect={() => alert(`Save`)}
+                text="Trust center"
+              />
+              <MenuOption
+                style={styles.menu_block}
+                onSelect={() => alert(`Save`)}
+                text="Contact Us"
+              />
+            </MenuOptions>
+          </Menu>
         </View>
+        <DrawerProfileModal />
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("Dashboard")}
@@ -94,4 +122,5 @@ const styles = StyleSheet.create({
   box_text: tw`text-white`,
   button: tw` py-3 justify-center  px-5 w-full`,
   button_text: tw`text-black text-4`,
+  menu_block: tw`p-5`,
 });

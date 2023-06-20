@@ -14,6 +14,7 @@ import {
   Surface,
   ThemeProvider,
 } from "react-native-paper";
+import { MenuProvider } from "react-native-popup-menu";
 export default function App() {
   const [nightMode, setNightmode] = useState(false);
   const isLoadingComplete = useCachedResources();
@@ -23,9 +24,11 @@ export default function App() {
   return (
     <Provider theme={nightMode ? DarkTheme : DefaultTheme}>
       <ThemeProvider theme={nightMode ? DarkTheme : DefaultTheme}>
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
+        <MenuProvider>
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </MenuProvider>
       </ThemeProvider>
     </Provider>
   );

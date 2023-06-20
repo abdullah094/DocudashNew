@@ -18,7 +18,6 @@ module.exports = function (api) {
           verbose: false,
         },
       ],
-      ["@babel/plugin-proposal-class-properties"],
     ],
     assumptions: {
       setPublicClassFields: true,
