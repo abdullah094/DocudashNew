@@ -6,6 +6,7 @@ import {
   ScrollView,
   TextInput,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
@@ -18,11 +19,13 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { SIGNUP_02 } from "@env";
 import { BarIndicator } from "react-native-indicators";
 import { getToken, storeData } from "./AsynFunc";
-import { SignupStackScreenProps } from "../../../types";
+import { SignupStackScreenProps, Istep3Response } from "../../../types";
+import { log } from "react-native-reanimated";
 
 const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
   const [otp, setOtp] = useState<string | undefined>("");
   const [loader, setLoader] = useState<string | any>("Next");
+
   const fetchData = async () => {
     setLoader(
       <View style={tw`pt-1`}>
@@ -36,8 +39,13 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
         verification_code: otp,
       })
       .then((response) => {
+        const {
+          success = true,
+          message,
+          token,
+        }: Istep3Response = response.data;
         console.log("top----", response.data);
-        response?.data.success
+        success
           ? (setLoader("Next"),
             navigation.replace("SignUpIndex", {
               screen: "Step4",
@@ -46,13 +54,31 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
               },
             }),
             storeData("Step4"))
-          : (alert("Failed"), setLoader("Next"));
+          : (Alert.alert(
+              "Failed",
+              "Wrong code Please try again or resend code"
+            ),
+            setOtp(""),
+            setLoader("Next"));
       })
       .catch((err) => {
         setLoader("Next");
       });
   };
-  const ResendCode = () => {};
+  const ResendCode = async () => {
+    const token = await getToken();
+    axios
+      .get("https://docudash.net/api/sendCodeAgain/" + token)
+      .then((response) => {
+        console.log(response.data);
+
+        if (response.data?.success) {
+          Alert.alert("Code sent to " + response.data?.data.email);
+        } else {
+          Alert.alert("Please try again");
+        }
+      });
+  };
 
   return (
     <ScrollView contentContainerStyle={tw`h-full bg-white`}>

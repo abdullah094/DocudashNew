@@ -19,8 +19,9 @@ export default function useCachedResources() {
 
         if (!token) {
           context.deleteAccessToken();
+        } else {
+          context.addAccessToken(token);
         }
-        context.addAccessToken(token);
 
         // Load fonts
         await Font.loadAsync({

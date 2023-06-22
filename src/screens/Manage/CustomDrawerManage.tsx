@@ -14,18 +14,20 @@ import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ion from "@expo/vector-icons/Ionicons";
 import { colors } from "../../Colors";
+import { SignedInpStackScreenProps } from "../../../types";
 
 interface tabProps {
   text: string;
   iconName: string;
-  route: string;
+  route: Screen;
+  heading: string;
 }
-const TabButton = ({ text, iconName, route }: tabProps) => {
+const TabButton = ({ text, iconName, route, heading }: tabProps) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
       style={styles.button}
-      onPress={() => navigation.navigate(route)}
+      onPress={() => navigation.navigate(route, { heading: heading })}
     >
       <Ion name={iconName} size={iconSize} color={iconColor} />
 
@@ -46,26 +48,39 @@ const CustomDrawerManage = () => {
         />
         {/* Buttons view */}
         <View style={tw`w-full gap-3 mt-7`}>
-          <TabButton text="Inbox" iconName={"mail-outline"} route={"Inbox"} />
+          <TabButton
+            text="Inbox"
+            iconName={"mail-outline"}
+            route={"Inbox"}
+            heading="Inbox"
+          />
 
-          <TabButton text="Sent" iconName={"send-outline"} route={"Sent"} />
+          <TabButton
+            text="Sent"
+            iconName={"send-outline"}
+            route={"Inbox"}
+            heading="Sent"
+          />
 
           <TabButton
             text="Draft"
             iconName={"newspaper-outline"}
-            route={"Draft"}
+            route={"Inbox"}
+            heading="Draft"
           />
 
           <TabButton
             text="Starred"
             iconName={"star-outline"}
-            route={"Starred"}
+            route={"Inbox"}
+            heading="Starred"
           />
 
           <TabButton
-            text="Deleted Messages"
+            text="Trash"
             iconName={"trash-bin-outline"}
-            route={"DeleteMessages"}
+            route={"Inbox"}
+            heading="Trash"
           />
         </View>
       </View>

@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import tw from "twrnc";
@@ -18,6 +19,9 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import DrawerProfileModal from "./Components/DrawerProfileModal";
+import { observer } from "mobx-react";
+import { useCounterStore } from "../../../MobX/TodoStore";
+import { clearToken } from "../../AsyncGlobal";
 
 const BellTrigger = () => (
   <Image
@@ -30,6 +34,7 @@ const CustomDrawer = () => {
   type Result = boolean extends true ? 1 : 0;
 
   const navigation = useNavigation();
+  const Mobx = useCounterStore();
   return (
     <ScrollView contentContainerStyle={tw`flex-1`}>
       <View style={tw`flex-1 bg-[${colors.white}] pb-50 gap-2 items-center`}>
@@ -96,7 +101,14 @@ const CustomDrawer = () => {
           <Text style={styles.button_text}>Templates</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            Alert.alert("Signout Successfull");
+            Mobx.deleteAccessToken();
+            clearToken();
+          }}
+        >
           <Text style={styles.button_text}>Signout</Text>
         </TouchableOpacity>
       </View>

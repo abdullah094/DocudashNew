@@ -16,9 +16,8 @@ const LoginStack = createStackNavigator<SignupStackParamList>();
 
 const Index = () => {
   // clearAsync();
-  const [step, setStep] = useState<keyof SignupStackParamList | undefined>(
-    "Step1"
-  );
+
+  const [step, setStep] = useState<keyof SignupStackParamList | undefined>("1");
   const [bool, setBool] = useState<boolean | null | string>(false);
 
   const result = getData();

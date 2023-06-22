@@ -10,6 +10,7 @@ import { Industry } from './Step4';
     SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
     TabNavigator: NavigatorScreenParams<SignupStackParamList>;
     ManageDrawer:  NavigatorScreenParams<SignupStackParamList>;
+    LoginIndex:  NavigatorScreenParams<SignupStackParamList>;
   };
   
   export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -23,10 +24,20 @@ import { Industry } from './Step4';
     Step5: {industry :Industry[],signUpReasons:Industry[]};
     
   };
+  export type SignedInStackParamList = {
+    Inbox: undefined;
+   
+    
+  };
   
   export type SignupStackScreenProps<T extends keyof SignupStackParamList> =
     CompositeScreenProps<
       StackScreenProps<SignupStackParamList, T>,
+      RootStackScreenProps<keyof RootStackParamList>
+    >;
+    export type SignedInpStackScreenProps<T extends keyof SignedInStackParamList> =
+    CompositeScreenProps<
+      StackScreenProps<SignedInStackParamList, T>,
       RootStackScreenProps<keyof RootStackParamList>
     >;
   
@@ -37,6 +48,13 @@ import { Industry } from './Step4';
   }
 
   interface Istep5Response{
+    token:   string;
+    success: boolean |null;
+    message: string;
+    data:    Data;
+  }
+
+  interface Istep3Response {
     token:   string;
     success: boolean |null;
     message: string;

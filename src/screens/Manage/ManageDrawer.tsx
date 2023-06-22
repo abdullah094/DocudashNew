@@ -16,10 +16,6 @@ const ManageDrawer = () => {
       drawerContent={(props) => <CustomDrawerManage />}
     >
       <Drawer.Screen name="Inbox" component={Inbox} />
-      <Drawer.Screen name="Sent" component={Sent} />
-      <Drawer.Screen name="Draft" component={Draft} />
-      <Drawer.Screen name="Starred" component={Starred} />
-      <Drawer.Screen name="DeleteMessages" component={DeleteMessages} />
     </Drawer.Navigator>
   );
 };
