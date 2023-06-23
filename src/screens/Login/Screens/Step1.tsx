@@ -16,9 +16,11 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
 import { err } from "react-native-svg/lib/typescript/xml";
+import { LoginStackScreenProps } from "../../../../types";
 
 const Step1 = () => {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<LoginStackScreenProps<"Step1">["navigation"]>();
   const [email, setEmail] = useState("");
   const [loader, setLoader] = useState<string | any>("Next");
   const Next = () => {
@@ -35,7 +37,10 @@ const Step1 = () => {
         console.log(repsonse.data);
         setLoader("Next");
         if (repsonse.data.success) {
-          navigation.navigate("Step2");
+          navigation.navigate("Step2", {
+            token: repsonse.data.next_access,
+            email: repsonse.data.data.email,
+          });
         } else {
           if (repsonse.data.message?.email) {
             Alert.alert("Email not valid");

@@ -10,7 +10,8 @@ import { Industry } from './Step4';
     SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
     TabNavigator: NavigatorScreenParams<SignupStackParamList>;
     ManageDrawer:  NavigatorScreenParams<SignupStackParamList>;
-    LoginIndex:  NavigatorScreenParams<SignupStackParamList>;
+    LoginIndex:  NavigatorScreenParams<LoginStackParamList>;
+    Details:  NavigatorScreenParams<SignedInStackParamList>
   };
   
   export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -24,8 +25,15 @@ import { Industry } from './Step4';
     Step5: {industry :Industry[],signUpReasons:Industry[]};
     
   };
+  export type LoginStackParamList = {
+    Step1: undefined;
+    Step2:{token:string,email:string}
+  
+    
+  };
   export type SignedInStackParamList = {
     Inbox: undefined;
+    Details: undefined
    
     
   };
@@ -33,6 +41,11 @@ import { Industry } from './Step4';
   export type SignupStackScreenProps<T extends keyof SignupStackParamList> =
     CompositeScreenProps<
       StackScreenProps<SignupStackParamList, T>,
+      RootStackScreenProps<keyof RootStackParamList>
+    >;
+  export type LoginStackScreenProps<T extends keyof LoginStackParamList> =
+    CompositeScreenProps<
+      StackScreenProps<LoginStackParamList, T>,
       RootStackScreenProps<keyof RootStackParamList>
     >;
     export type SignedInpStackScreenProps<T extends keyof SignedInStackParamList> =

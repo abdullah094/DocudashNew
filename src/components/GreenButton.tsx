@@ -3,7 +3,7 @@ import React from "react";
 import tw from "twrnc";
 import { colors } from "../Colors";
 interface props {
-  text: string;
+  text: string | JSX.Element;
   onPress: () => void;
   styles: object;
 }

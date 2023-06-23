@@ -12,11 +12,12 @@ import ManageDrawer from "../screens/Manage/ManageDrawer";
 import { useCounterStore } from "../../MobX/TodoStore";
 import { observer } from "mobx-react";
 import LoginIndex from "../screens/Login/Index";
+import Details from "../screens/Manage/ManageDrawerScreens/Details";
 const Stack = createStackNavigator<RootStackParamList>();
 const LoggedInStack = createStackNavigator<RootStackParamList>();
 
 const StackNavigator = observer(() => {
-  clearToken();
+  // clearToken();
 
   const Mobx = useCounterStore();
   console.log("StackNaviMobx", Mobx.access_token);
@@ -27,6 +28,7 @@ const StackNavigator = observer(() => {
         <LoggedInStack.Navigator>
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
           <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
+          <Stack.Screen name="Details" component={Details} />
         </LoggedInStack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="LoginIndex">

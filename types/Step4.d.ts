@@ -67,3 +67,33 @@ export interface Industry {
     created_at: Date;
     updated_at: Date;
 }
+
+export interface EmailBar {
+    id:                  number;
+    signature_id:        number;
+    uniqid:              string;
+    recName:             string;
+    recEmail:            string;
+    sign_type:           number;
+    emailSubject:        string;
+    emailMessage:        string;
+    access_code:         string;
+    private_message:     string;
+    hostName:            string;
+    hostEmail:           string;
+    recipient_id:        number;
+    trash:               number;
+    deleted_by:          number;
+    draft_status:        number;
+    complete_incomplete: string;
+    status:              number;
+    created_by:          string;
+    updated_by:          number;
+    deleted:             number;
+    created_at:          Date;
+    updated_at:          string;
+    download_btn:        string;
+    view_btn:            string;
+    action:              string;
+    DT_RowIndex:         number;
+}

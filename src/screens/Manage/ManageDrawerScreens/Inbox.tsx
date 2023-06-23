@@ -2,10 +2,12 @@ import { StyleSheet, Text, View, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import EmailBar from "../Components/EmailBar";
 import tw from "twrnc";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { observer } from "mobx-react";
 import { useCounterStore } from "../../../../MobX/TodoStore";
+import { LoginStackScreenProps } from "../../../../types/type";
+import { EmailBar as IEmailbar } from "../../../../types";
 const DATA = [
   {
     id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
@@ -26,8 +28,10 @@ interface IInbox {
   heading: string | null;
 }
 const Inbox = observer(() => {
-  const [data, setData] = useState<Array<object>>(new Array(5));
+  const [data, setData] = useState<Array<IEmailbar>>(new Array(5));
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const navigation =
+    useNavigation<LoginStackScreenProps<"Inbox">["navigation"]>();
   const route = useRoute();
   const heading = route.params?.heading || ("Inbox" as string);
   const Mobx = useCounterStore();
@@ -39,7 +43,7 @@ const Inbox = observer(() => {
     await axios
       .get(url + h, {
         headers: {
-          Authorization: `Bearer ${"3|ZbLCpMQxBKRFbfjAdDHtAwwhlMCEuSMiRKnF2FEU"}`,
+          Authorization: `Bearer ${Mobx.access_token}`,
         },
       })
       .then((response) => {
@@ -70,14 +74,14 @@ const Inbox = observer(() => {
         refreshing={isRefreshing}
         contentContainerStyle={[tw`pb-25 py-5`, { alignSelf: "stretch" }]}
         // keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: IEmailbar }) => (
           <EmailBar
             image={null}
             name={item?.emailSubject}
             description={""}
             selected={false}
             onPress={() => {
-              console.log("email pressed");
+              navigation.navigate("Details");
             }}
           />
         )}
