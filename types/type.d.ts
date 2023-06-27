@@ -27,8 +27,8 @@ import { Industry } from './Step4';
   };
   export type LoginStackParamList = {
     Step1: undefined;
-    Step2:{token:string,email:string}
-  
+    Step2:{token:string,email:string};
+    Inbox: {heading:string};
     
   };
   export type SignedInStackParamList = {

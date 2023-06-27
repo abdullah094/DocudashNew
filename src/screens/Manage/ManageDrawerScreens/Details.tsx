@@ -8,6 +8,14 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import tw from "twrnc";
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import SigningOrderModal from "../Components/SigningOrderModal";
 
 const NeedToSign = () => (
   <View style={tw`flex-row gap-2 items-center p-2`}>
@@ -50,6 +58,35 @@ const Details = () => {
         <Text style={styles.heading}>
           Complete with Docudash: Screenshot 2023-05-29 at 7.57.35 PM.png
         </Text>
+        <Menu>
+          <MenuTrigger
+            text={
+              <AntDesign name="exclamationcircle" size={24} color="black" />
+            }
+          />
+          <MenuOptions>
+            <MenuOption
+              style={styles.menu_block}
+              onSelect={() => alert(`Save`)}
+              text={<Text style={tw`font-bold text-black`}>Details</Text>}
+            />
+            <MenuOption
+              style={styles.menu_block}
+              onSelect={() => alert(`Save`)}
+              text={<Text style={tw`font-bold text-black`}>Last used</Text>}
+            />
+            <MenuOption
+              style={styles.menu_block}
+              onSelect={() => alert(`Save`)}
+              text={<Text style={tw`font-bold text-black`}>Last modified</Text>}
+            />
+            <MenuOption
+              style={styles.menu_block}
+              onSelect={() => alert(`Save`)}
+              text={<Text style={tw`font-bold text-black`}>Owner</Text>}
+            />
+          </MenuOptions>
+        </Menu>
         <View style={tw`mt-5 gap-1`}>
           <Text style={tw`text-[#6FAC46]`}>Envelope ID</Text>
           <Text>
@@ -67,14 +104,14 @@ const Details = () => {
               onPress={() => {
                 console.log("Sign");
               }}
-              pressed={false}
+              pressed={true}
             />
             <Button
               text="Connect"
               onPress={() => {
                 console.log("Connect");
               }}
-              pressed={true}
+              pressed={false}
             />
           </View>
           <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
@@ -92,6 +129,57 @@ const Details = () => {
               }}
               pressed={false}
             />
+          </View>
+          <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
+            <Menu>
+              <MenuTrigger
+                text={
+                  <View
+                    style={tw`border-2 justify-center items-center h-10 w-30 rounded-lg flex-row gap-1`}
+                  >
+                    <Text style={[tw`text-4 font-bold text-black`]}>More</Text>
+                    <AntDesign name="caretdown" size={15} color="black" />
+                  </View>
+                }
+              />
+              <MenuOptions>
+                <MenuOption
+                  style={styles.menu_block}
+                  onSelect={() => alert(`Save`)}
+                  text="Copy"
+                />
+                <MenuOption
+                  style={styles.menu_block}
+                  onSelect={() => alert(`Save`)}
+                  text="Save as Template"
+                />
+                <MenuOption
+                  style={styles.menu_block}
+                  onSelect={() => alert(`Save`)}
+                  text="Void"
+                />
+                <MenuOption
+                  style={styles.menu_block}
+                  onSelect={() => alert(`Save`)}
+                  text="History"
+                />
+                <MenuOption
+                  style={styles.menu_block}
+                  onSelect={() => alert(`Save`)}
+                  text="Transfer Ownership"
+                />
+                <MenuOption
+                  style={styles.menu_block}
+                  onSelect={() => alert(`Save`)}
+                  text="Export as CSV"
+                />
+                <MenuOption
+                  style={styles.menu_block}
+                  onSelect={() => alert(`Save`)}
+                  text="Delete"
+                />
+              </MenuOptions>
+            </Menu>
           </View>
         </View>
         <View style={tw`flex-row items-center py-2 gap-7 p-5 justify-end`}>
@@ -116,13 +204,7 @@ const Details = () => {
                 <Text style={styles.h2} numberOfLines={2}>
                   Waqar Ahmed
                 </Text>
-                <View style={tw`flex-row items-center gap-2`}>
-                  <Image
-                    style={tw`h-3 w-3 `}
-                    source={require("../../../assets/SigningOrder.png")}
-                  />
-                  <Text>SIGNING ORDER</Text>
-                </View>
+                <SigningOrderModal />
               </View>
               <Text style={tw`font-thin text-black`}>
                 urspeacial1one@gmail.com
@@ -158,4 +240,5 @@ export default Details;
 const styles = StyleSheet.create({
   heading: tw`font-bold text-5`,
   h2: tw`text-5 w-[50%]`,
+  menu_block: tw`p-3 font-bold`,
 });

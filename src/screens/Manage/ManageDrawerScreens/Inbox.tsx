@@ -8,20 +8,6 @@ import { observer } from "mobx-react";
 import { useCounterStore } from "../../../../MobX/TodoStore";
 import { LoginStackScreenProps } from "../../../../types/type";
 import { EmailBar as IEmailbar } from "../../../../types";
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First Item",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-  },
-];
 
 interface IInbox {
   data: object | null;
@@ -32,7 +18,7 @@ const Inbox = observer(() => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const navigation =
     useNavigation<LoginStackScreenProps<"Inbox">["navigation"]>();
-  const route = useRoute();
+  const route = useRoute<LoginStackScreenProps<"Inbox">["route"]>();
   const heading = route.params?.heading || ("Inbox" as string);
   const Mobx = useCounterStore();
   const fetchData = async () => {
