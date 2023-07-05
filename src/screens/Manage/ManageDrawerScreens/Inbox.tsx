@@ -44,6 +44,7 @@ const Inbox = observer(() => {
         },
       })
       .then((response) => {
+        console.log("data", response.data.data);
         setData(response.data.data);
         setIsRefreshing(false);
       })
@@ -84,17 +85,7 @@ const Inbox = observer(() => {
         refreshing={isRefreshing}
         contentContainerStyle={[tw`pb-25 py-5`, { alignSelf: "stretch" }]}
         // keyExtractor={(item) => item.id}
-        renderItem={({ item }: { item: IEmailbar }) => (
-          <EmailBar
-            image={null}
-            item={item}
-            description={""}
-            selected={false}
-            onPress={() => {
-              navigation.navigate("Details");
-            }}
-          />
-        )}
+        renderItem={({ item }) => <EmailBar item={item} />}
       />
     </View>
   );

@@ -5,6 +5,7 @@ import {
   ScrollView,
   Image,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { JSXElementConstructor, useState } from "react";
 import tw from "twrnc";
@@ -45,6 +46,7 @@ const Step2 = () => {
         }
       })
       .catch((error) => {
+        Alert.alert("Error", error.response.data.message);
         setLoader("Login");
         console.log(error);
       });

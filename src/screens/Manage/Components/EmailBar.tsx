@@ -3,21 +3,8 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import { colors } from "../../../Colors";
 import SkeletonLoader from "expo-skeleton-loader";
-
-interface IEmail {
-  image: File | null;
-  name: string;
-  description: string;
-  selected: boolean;
-  onPress: () => void;
-  length: number;
-  item: {
-    item: {
-      emailSubject: string;
-      message: string;
-    };
-  };
-}
+import { EmailBar as IEmailBar } from "../../../../types";
+import { useNavigation } from "@react-navigation/native";
 
 const Skeleton = () => {
   return (
@@ -38,19 +25,19 @@ const Skeleton = () => {
   );
 };
 
-const EmailBar = (item: IEmail) => {
-  const [setskelText, setSetskelText] = useState(false);
-  const { emailSubject, onPress, emailMessage, created_by } = item.item;
-  console.log(item.item?.emailSubject);
+const EmailBar = ({ item }: { item: IEmailBar }) => {
+  const navigation = useNavigation();
+  if (!item) return <Skeleton />;
+  // navigation.navigate("Inbox", { screen: "Details" })/
 
-  if (!emailSubject) return <Skeleton />;
+  const { emailSubject, emailMessage, created_by } = item;
   return (
     <>
       <TouchableOpacity
         delayPressIn={25}
         activeOpacity={0.5}
         style={tw`p-4 px-5 gap-3 bg-[${colors.white}]`}
-        onPress={onPress}
+        onPress={() => navigation.navigate("Details")}
       >
         <View style={tw`flex-row overflow-hidden gap-2 items-center flex-1`}>
           <Image
