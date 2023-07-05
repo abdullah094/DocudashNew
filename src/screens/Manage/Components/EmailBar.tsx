@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import { colors } from "../../../Colors";
 import SkeletonLoader from "expo-skeleton-loader";
-import { EmailBar as IEmailbar } from "../../../../types";
+import { EmailBar as IEmailBar } from "../../../../types";
+import { useNavigation } from "@react-navigation/native";
 
 const Skeleton = () => {
   return (
@@ -24,23 +25,19 @@ const Skeleton = () => {
   );
 };
 
-const EmailBar = ({
-  item,
-  onPress,
-}: {
-  item: IEmailbar;
-  onPress: () => void;
-}) => {
+const EmailBar = ({ item }: { item: IEmailBar }) => {
+  const navigation = useNavigation();
   if (!item) return <Skeleton />;
-  const { emailSubject, emailMessage, created_by } = item;
+  // navigation.navigate("Inbox", { screen: "Details" })/
 
+  const { emailSubject, emailMessage, created_by } = item;
   return (
     <>
       <TouchableOpacity
         delayPressIn={25}
         activeOpacity={0.5}
         style={tw`p-4 px-5 gap-3 bg-[${colors.white}]`}
-        onPress={onPress}
+        onPress={() => navigation.navigate("Details")}
       >
         <View style={tw`flex-row overflow-hidden gap-2 items-center flex-1`}>
           <Image

@@ -49,6 +49,7 @@ const Step2 = () => {
         }
       })
       .catch((error) => {
+        Alert.alert("Error", error.response.data.message);
         setLoader("Login");
         console.log(error);
         Alert.alert(error.message);
