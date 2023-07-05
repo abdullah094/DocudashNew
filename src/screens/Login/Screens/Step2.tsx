@@ -5,6 +5,7 @@ import {
   ScrollView,
   Image,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { JSXElementConstructor, useState } from "react";
 import tw from "twrnc";
@@ -38,15 +39,19 @@ const Step2 = () => {
         password: password,
       })
       .then((response) => {
+        const data = response.data;
         setLoader("Login");
-        if (response.data.success) {
-          storeTokenGlobal(response.data.token);
-          Mobx.addAccessToken(response.data.token);
+        if (data.success) {
+          storeTokenGlobal(data.token);
+          Mobx.addAccessToken(data.token);
+        } else {
+          Alert.alert(data.message);
         }
       })
       .catch((error) => {
         setLoader("Login");
         console.log(error);
+        Alert.alert(error.message);
       });
   };
   return (

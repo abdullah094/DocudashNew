@@ -96,4 +96,5 @@ export interface EmailBar {
     view_btn:            string;
     action:              string;
     DT_RowIndex:         number;
+    onPress:           ()=>void
 }

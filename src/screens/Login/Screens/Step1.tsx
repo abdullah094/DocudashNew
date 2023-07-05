@@ -42,11 +42,7 @@ const Step1 = () => {
             email: repsonse.data.data.email,
           });
         } else {
-          if (repsonse.data.message?.email) {
-            Alert.alert("Email not valid");
-          } else {
-            Alert.alert("Please try again");
-          }
+          Alert.alert(repsonse.data.message);
         }
       })
       .catch((error) => {

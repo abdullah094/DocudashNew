@@ -3,21 +3,7 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import { colors } from "../../../Colors";
 import SkeletonLoader from "expo-skeleton-loader";
-
-interface IEmail {
-  image: File | null;
-  name: string;
-  description: string;
-  selected: boolean;
-  onPress: () => void;
-  length: number;
-  item: {
-    item: {
-      emailSubject: string;
-      message: string;
-    };
-  };
-}
+import { EmailBar as IEmailbar } from "../../../../types";
 
 const Skeleton = () => {
   return (
@@ -38,12 +24,16 @@ const Skeleton = () => {
   );
 };
 
-const EmailBar = (item: IEmail) => {
-  const [setskelText, setSetskelText] = useState(false);
-  const { emailSubject, onPress, emailMessage, created_by } = item.item;
-  console.log(item.item?.emailSubject);
+const EmailBar = ({
+  item,
+  onPress,
+}: {
+  item: IEmailbar;
+  onPress: () => void;
+}) => {
+  if (!item) return <Skeleton />;
+  const { emailSubject, emailMessage, created_by } = item;
 
-  if (!emailSubject) return <Skeleton />;
   return (
     <>
       <TouchableOpacity
