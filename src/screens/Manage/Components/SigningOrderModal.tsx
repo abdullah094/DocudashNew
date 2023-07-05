@@ -32,6 +32,7 @@ const Row = ({ title, shortName }: IRow) => {
 
 const SigningOrderModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <>
       <Pressable
@@ -55,7 +56,7 @@ const SigningOrderModal = () => {
       >
         <View style={tw`flex-1 justify-center items-center`}>
           <View
-            style={tw`border-2 border-[${colors.gray}] w-75  bg-white py-10 rounded-lg gap-5`}
+            style={tw`border-2 border-[${colors.gray}] w-75 bg-white py-10 rounded-lg gap-5`}
           >
             <Pressable
               style={tw`absolute top-1 right-1 p-1`}

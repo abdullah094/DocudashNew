@@ -16,6 +16,9 @@ import {
 } from "react-native-popup-menu";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import SigningOrderModal from "../Components/SigningOrderModal";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackScreenProps } from "../../../../types";
+import { log } from "react-native-reanimated";
 
 const NeedToSign = () => (
   <View style={tw`flex-row gap-2 items-center p-2`}>
@@ -52,6 +55,30 @@ const Button = ({ text, onPress, pressed }: IButton) => {
 };
 
 const Details = () => {
+  const navigation =
+    useNavigation<RootStackScreenProps<"Details">["navigation"]>();
+
+  const airports = "PKR LMB IND SIN USA CAL AUS GER FAR".split(" ");
+  const routes = [
+    ["PKR", "LMB"],
+    ["PKR", "IND"],
+    ["SIN", "USA"],
+    ["SIN", "CAL"],
+    ["AUS", "GER"],
+    ["AUS", "FAR"],
+  ];
+  const adjacencyList = new Map<string, Array<string>>();
+  function addNode(airports: string) {
+    adjacencyList.set(airports, []);
+  }
+  function addEdge([origin, destination]: [string, string]) {
+    adjacencyList.get(origin)?.push(destination);
+    adjacencyList.get(destination)?.push(origin);
+  }
+  airports.forEach(addNode);
+  routes.forEach((route: any) => addEdge(route));
+  console.log(adjacencyList);
+
   return (
     <ScrollView>
       <View style={tw`p-4 gap-3 py-10`}>
@@ -160,7 +187,7 @@ const Details = () => {
                 />
                 <MenuOption
                   style={styles.menu_block}
-                  onSelect={() => alert(`Save`)}
+                  onSelect={() => navigation.navigate("TemplateHistory")}
                   text="History"
                 />
                 <MenuOption

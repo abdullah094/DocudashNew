@@ -12,6 +12,7 @@ import { Industry } from './Step4';
     ManageDrawer:  NavigatorScreenParams<SignupStackParamList>;
     LoginIndex:  NavigatorScreenParams<LoginStackParamList>;
     Details:  NavigatorScreenParams<SignedInStackParamList>
+    TemplateHistory: undefined
   };
   
   export type RootStackScreenProps<T extends keyof RootStackParamList> =

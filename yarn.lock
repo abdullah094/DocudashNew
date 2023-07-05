@@ -2159,6 +2159,13 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
+"@react-native-community/datetimepicker@6.7.3":
+  version "6.7.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/datetimepicker/-/datetimepicker-6.7.3.tgz#e6d75a42729265d8404d1d668c86926564abca2f"
+  integrity sha512-fXWbEdHMLW/e8cts3snEsbOTbnFXfUHeO2pkiDFX3fWpFoDtUrRWvn50xbY13IJUUKHDhoJ+mj24nMRVIXfX1A==
+  dependencies:
+    invariant "^2.2.4"
+
 "@react-native-masked-view/masked-view@0.2.8":
   version "0.2.8"
   resolved "https://registry.npmjs.org/@react-native-masked-view/masked-view/-/masked-view-0.2.8.tgz"
@@ -2291,6 +2298,11 @@
   integrity sha512-OPwQlEdg40HAj5KNF8WW6q2KG4Z+cBCZb3m4ninfTZKaBmbIJodviQsDBoYMPHkOyJJMHnOJo5j2+LKDOhOACg==
   dependencies:
     "@sinonjs/commons" "^3.0.0"
+
+"@telenko/react-native-paper-autocomplete@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@telenko/react-native-paper-autocomplete/-/react-native-paper-autocomplete-1.0.3.tgz#815418bf2eb8c0e486c3b62ded5b89a9d5ac1049"
+  integrity sha512-ZsDm1yTZulGtwIPJjAB48t7CJhSV40gkl7zmXH341dAzg50+Tzrw4rBNOjArd1nVEvSU90riucj6QlDwhO8uVw==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"

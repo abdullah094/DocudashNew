@@ -8,6 +8,8 @@ import { observer } from "mobx-react";
 import { useCounterStore } from "../../../../MobX/TodoStore";
 import { LoginStackScreenProps } from "../../../../types/type";
 import { EmailBar as IEmailbar } from "../../../../types";
+import { Button } from "react-native-paper";
+import FilterModal from "../Components/FilterModal";
 
 interface IInbox {
   data: object | null;
@@ -15,7 +17,16 @@ interface IInbox {
 }
 const Inbox = observer(() => {
   const [data, setData] = useState<Array<IEmailbar>>(new Array(5));
+  function filter(name: string | undefined) {
+    if (name) {
+      const filtered = data.filter((x) => x.emailSubject.includes(name));
+      return filtered;
+    }
+  }
+  console.log();
+
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [Name, setName] = useState<string | undefined>();
   const navigation =
     useNavigation<LoginStackScreenProps<"Inbox">["navigation"]>();
   const route = useRoute<LoginStackScreenProps<"Inbox">["route"]>();
@@ -48,13 +59,26 @@ const Inbox = observer(() => {
   const onRefresh = () => {
     setIsRefreshing(true);
   };
+  console.log(Name);
 
   return (
     <View style={tw`flex-1`}>
       <FlatList
-        data={data}
+        data={filter(Name) ? filter(Name) : data}
         ListHeaderComponent={
-          <Text style={tw`font-bold text-6 p-4 tracking-wider`}>{heading}</Text>
+          <View style={tw`flex-row items-center justify-between px-5 my-5 `}>
+            <Text
+              style={tw`font-bold text-6  tracking-wider`}
+              numberOfLines={1}
+            >
+              {heading}
+            </Text>
+            <FilterModal
+              onPress={(item) => {
+                setName(item);
+              }}
+            />
+          </View>
         }
         onRefresh={onRefresh}
         refreshing={isRefreshing}
@@ -63,7 +87,7 @@ const Inbox = observer(() => {
         renderItem={({ item }: { item: IEmailbar }) => (
           <EmailBar
             image={null}
-            name={item?.emailSubject}
+            item={item}
             description={""}
             selected={false}
             onPress={() => {

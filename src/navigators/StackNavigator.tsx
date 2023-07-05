@@ -13,6 +13,7 @@ import { useCounterStore } from "../../MobX/TodoStore";
 import { observer } from "mobx-react";
 import LoginIndex from "../screens/Login/Index";
 import Details from "../screens/Manage/ManageDrawerScreens/Details";
+import TemplateHistory from "../screens/Manage/ManageDrawerScreens/TemplateHistory";
 const Stack = createStackNavigator<RootStackParamList>();
 const LoggedInStack = createStackNavigator<RootStackParamList>();
 
@@ -29,6 +30,7 @@ const StackNavigator = observer(() => {
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
           <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
           <Stack.Screen name="Details" component={Details} />
+          <Stack.Screen name="TemplateHistory" component={TemplateHistory} />
         </LoggedInStack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="LoginIndex">

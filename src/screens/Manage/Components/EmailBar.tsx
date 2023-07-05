@@ -11,6 +11,12 @@ interface IEmail {
   selected: boolean;
   onPress: () => void;
   length: number;
+  item: {
+    item: {
+      emailSubject: string;
+      message: string;
+    };
+  };
 }
 
 const Skeleton = () => {
@@ -32,16 +38,18 @@ const Skeleton = () => {
   );
 };
 
-const EmailBar = ({ name, image, description, selected, onPress }: IEmail) => {
+const EmailBar = (item: IEmail) => {
   const [setskelText, setSetskelText] = useState(false);
+  const { emailSubject, onPress, emailMessage, created_by } = item.item;
+  console.log(item.item?.emailSubject);
 
-  if (!name) return <Skeleton />;
+  if (!emailSubject) return <Skeleton />;
   return (
     <>
       <TouchableOpacity
         delayPressIn={25}
         activeOpacity={0.5}
-        style={tw`p-4 gap-3 bg-[${colors.white}]`}
+        style={tw`p-4 px-5 gap-3 bg-[${colors.white}]`}
         onPress={onPress}
       >
         <View style={tw`flex-row overflow-hidden gap-2 items-center flex-1`}>
@@ -50,9 +58,9 @@ const EmailBar = ({ name, image, description, selected, onPress }: IEmail) => {
             source={require("../../../assets/ProfielPic.png")}
           />
           <View>
-            <Text style={tw`font-bold text-black`}>{name}</Text>
-            <Text style={tw`font-light text-3 w-[90%] text-gray-900`}>
-              Here is your signed document: Scan 23-May-2023 at 8:29:54 PM
+            <Text style={tw`font-bold text-black`}>{emailSubject}</Text>
+            <Text style={tw`font-light text-3 w-50 text-gray-900`}>
+              {emailMessage}
             </Text>
           </View>
         </View>
@@ -61,9 +69,7 @@ const EmailBar = ({ name, image, description, selected, onPress }: IEmail) => {
             style={[tw`h-4 w-3.5 `, { tintColor: colors.gray }]}
             source={require("../../../assets/PaperClip.png")}
           />
-          <Text style={tw`font-thin text-gray-900`}>
-            To: Waqar Ahmed Khan, Waqar Ahmed Khan
-          </Text>
+          <Text style={tw`font-thin text-gray-900`}>From: {created_by}</Text>
         </View>
       </TouchableOpacity>
     </>
