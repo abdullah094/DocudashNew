@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Platform,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import Input from "../../components/Input";
@@ -29,6 +30,7 @@ const Step1 = () => {
     useNavigation<SignupStackScreenProps<"Step1">["navigation"]>();
   const [inputVal, setInputVal] = useState<string | undefined>("");
   const [checked, setChecked] = useState(0);
+
   const [loader, setLoader] = useState<string | any>("Get Started");
 
   const fetchData = () => {
@@ -54,7 +56,11 @@ const Step1 = () => {
             storeToken(response.data.next_access),
             storeData("Step2"),
             console.log(response.data))
-          : (setLoader("Get Started"), console.log(response.data));
+          : response.data.message.email
+          ? Alert.alert(response.data.message.email[0])
+          : Alert.alert(response.data.message);
+
+        setLoader("Get Started");
       })
       .catch((err) => {
         setLoader("Get Started");

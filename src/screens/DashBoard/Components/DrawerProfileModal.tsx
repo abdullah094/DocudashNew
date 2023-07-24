@@ -15,6 +15,7 @@ import { colors } from "../../../Colors";
 
 const DrawerProfileModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <>
       <Pressable

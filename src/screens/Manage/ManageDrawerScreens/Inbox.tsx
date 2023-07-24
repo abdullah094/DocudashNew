@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, FlatList, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
 import EmailBar from "../Components/EmailBar";
 import tw from "twrnc";
@@ -6,11 +6,15 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { observer } from "mobx-react";
 import { useCounterStore } from "../../../../MobX/TodoStore";
-import { LoginStackScreenProps } from "../../../../types/type";
+import {
+  LoginStackScreenProps,
+  ManageDrawerScreenProps,
+} from "../../../../types/type";
 import { EmailBar as IEmailbar } from "../../../../types";
 import { Button } from "react-native-paper";
 import FilterModal from "../Components/FilterModal";
-
+import Entypo from "@expo/vector-icons/Entypo";
+import { colors } from "../../../Colors";
 interface IInbox {
   data: object | null;
   heading: string | null;
@@ -28,7 +32,7 @@ const Inbox = observer(() => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [Name, setName] = useState<string | undefined>();
   const navigation =
-    useNavigation<LoginStackScreenProps<"Inbox">["navigation"]>();
+    useNavigation<ManageDrawerScreenProps<"Inbox">["navigation"]>();
   const route = useRoute<LoginStackScreenProps<"Inbox">["route"]>();
   const heading = route.params?.heading || ("Inbox" as string);
   const Mobx = useCounterStore();
@@ -54,6 +58,12 @@ const Inbox = observer(() => {
         setIsRefreshing(false);
       });
   };
+
+  const Header = () => (
+    <Pressable onPress={() => navigation.toggleDrawer()} style={tw`p-5`}>
+      <Entypo name="menu" color={colors.black} size={30} />
+    </Pressable>
+  );
   useEffect(() => {
     fetchData();
   }, [heading, isRefreshing]);
@@ -64,10 +74,11 @@ const Inbox = observer(() => {
 
   return (
     <View style={tw`flex-1`}>
+      <Header />
       <FlatList
         data={filter(Name) ? filter(Name) : data}
         ListHeaderComponent={
-          <View style={tw`flex-row items-center justify-between px-5 my-5 `}>
+          <View style={tw`flex-row items-center justify-between px-5 mb-5 `}>
             <Text
               style={tw`font-bold text-6  tracking-wider`}
               numberOfLines={1}
@@ -75,9 +86,9 @@ const Inbox = observer(() => {
               {heading}
             </Text>
             <FilterModal
-              onPress={(item) => {
-                setName(item);
-              }}
+              onPress={(item: React.SetStateAction<string | undefined>) =>
+                setName(item)
+              }
             />
           </View>
         }

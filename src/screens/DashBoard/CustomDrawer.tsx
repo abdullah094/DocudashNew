@@ -100,6 +100,12 @@ const CustomDrawer = () => {
         >
           <Text style={styles.button_text}>Templates</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Signatures")}
+        >
+          <Text style={styles.button_text}>Signatures</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}

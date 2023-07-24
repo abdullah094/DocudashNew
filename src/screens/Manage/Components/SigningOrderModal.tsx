@@ -83,6 +83,12 @@ const SigningOrderModal = () => {
                   <AntDesign name="checkcircle" size={27} color="white" />
                 }
               />
+              <Row
+                title={"Completed"}
+                shortName={
+                  <AntDesign name="checkcircle" size={27} color="white" />
+                }
+              />
             </View>
             <Pressable
               onPress={() => setModalVisible(false)}

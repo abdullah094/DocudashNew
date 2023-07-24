@@ -116,13 +116,15 @@ const Step5 = () => {
           message,
           token,
         }: Istep5Response = response.data;
-        success
-          ? (mobX.addAccessToken(token),
+        if (success) {
+          mobX.addAccessToken(token),
             setLoader("Next"),
             Alert.alert(message),
             storeTokenGlobal(token),
-            clearAsync())
-          : (alert("Failed"), setLoader("Next"));
+            clearAsync();
+        }
+
+        alert("Select both options"), setLoader("Next");
       })
       .catch((err) => {
         setLoader("Next");

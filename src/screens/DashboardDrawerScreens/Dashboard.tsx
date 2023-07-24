@@ -17,11 +17,14 @@ import ImageUploadModal from "../DashBoard/Components/ImageUploadModal";
 import axios from "axios";
 import { useCounterStore } from "../../../MobX/TodoStore";
 import { Popup } from "../../components/Popup";
+import { IUserData } from "../../../types";
+import * as DocumentPicker from "expo-document-picker";
 
 interface box {
   text: string;
   num: number | null;
 }
+
 const Box = ({ text, num }: box) => {
   return (
     <View style={styles.box}>
@@ -33,14 +36,44 @@ const Box = ({ text, num }: box) => {
   );
 };
 const Dashboard = () => {
+  const [userData, setUserData] = useState<IUserData>();
+  const [signature, setSignature] = useState<any>();
+  const [documents, setdocuments] = useState([]);
   const [progressBar, setProgressBar] = useState<number>(0);
   const [completeNumber, setCompleteNumber] = useState<number>(0);
   const [setshowMeObj, setSetshowMeObj] = useState<object | null | undefined>();
+  const [imageRef, setImageRef] = useState<boolean>();
   const [alert, setAlert] = useState(false);
   const Mobx = useCounterStore();
   console.log(Mobx.access_token);
 
+  const fetchDashData = () => {
+    axios
+      .get("https://docudash.net/api/dashboard", {
+        headers: {
+          Authorization: `Bearer ${Mobx.access_token}`,
+        },
+      })
+      .then((response) => {
+        const data = response.data;
+        // console.log(data.user);
+
+        setUserData(data.user);
+        if (data.signature?.signature) {
+          setSignature(data.signature);
+        } else {
+          setSignature("");
+        }
+      });
+  };
+
+  useEffect(() => {
+    fetchDashData();
+  }, []);
+
   const fetchData = () => {
+    console.log("Fetch data");
+
     axios
       .get("https://docudash.net/api/getStartedWithDocudash", {
         headers: { Authorization: `Bearer ${Mobx.access_token}` },
@@ -68,9 +101,23 @@ const Dashboard = () => {
         console.log(error);
       });
   };
+
+  const imageRefFunc = (imageRef: boolean) => {
+    setImageRef(imageRef);
+  };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [imageRef]);
+  const uploadFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["*/*"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+      });
+      console.log(result);
+    } catch (err) {
+      console.log("err");
+    }
+  };
   return (
     <>
       <ScrollView>
@@ -102,7 +149,10 @@ const Dashboard = () => {
         </View>
         <View style={tw`items-center bg-[${colors.green}] py-10 gap-2`}>
           <View style={tw`flex-row items-center h-25`}>
-            <ImageUploadModal />
+            <ImageUploadModal
+              _imageRef={imageRefFunc}
+              image={userData?.profile_photo_url}
+            />
             <Image
               style={tw`w-2.1 h-24 rounded-full mt-5 top--2 mx-2`}
               source={require("../../assets/WhiteLine.png")}
@@ -111,8 +161,26 @@ const Dashboard = () => {
               <Text style={[styles.white_text, tw`font-semibold`]}>
                 Signed by:
               </Text>
-              <Text style={styles.white_text}>Abdullah</Text>
-              <Text style={styles.white_text}>248153153456231</Text>
+
+              {signature ? (
+                <>
+                  <Image
+                    style={[tw` h-8`, { tintColor: "white" }]}
+                    source={{ uri: signature?.signature }}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.white_text}>
+                    {signature.signature_code}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.white_text}>Needs to sign</Text>
+                  <Text style={styles.white_text}>
+                    Sign id will generate after signature
+                  </Text>
+                </>
+              )}
             </View>
           </View>
           <View style={tw`flex-row items-center mt-6`}>
@@ -129,12 +197,7 @@ const Dashboard = () => {
           <View
             style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
           >
-            <TouchableOpacity
-              style={tw`p-1`}
-              onPress={() => {
-                setAlert(true);
-              }}
-            >
+            <TouchableOpacity style={tw`p-1`} onPress={uploadFile}>
               <Image
                 style={tw`h-10 w-10 self-center`}
                 source={require("../../assets/Upload.png")}
@@ -159,7 +222,7 @@ const Dashboard = () => {
 export default Dashboard;
 
 const styles = StyleSheet.create({
-  white_text: tw`text-[${colors.white}]`,
+  white_text: tw`text-white text-4 w-50]`,
   box: tw`border-2 border-white p-2 mt-1 rounded-lg w-[40%] mx-2 h-22`,
   box_num: tw`text-10 text-white`,
   box_text: tw`text-white text-4`,

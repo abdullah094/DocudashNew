@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect, SetStateAction, FC } from "react";
 import { SIGNUP_1 } from "@env";
@@ -59,17 +60,28 @@ const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
         phone: form.phone,
       })
       .then((response) => {
-        console.log("top----", response.data);
-        response?.data.success
-          ? (setLoader("Next"),
+        const data = response.data;
+        console.log("top----", data);
+        if (data.success) {
+          setLoader("Next"),
             navigation.replace("SignUpIndex", {
               screen: "Step3",
               params: {
-                api: response.data.next,
+                api: data.next,
               },
             }),
-            storeData("Step3"))
-          : (alert("Failed"), setLoader("Next"));
+            storeData("Step3");
+        } else {
+          if (data.message.first_name) {
+            Alert.alert(data.message.first_name[0]);
+          } else if (data.message.last_name) {
+            Alert.alert(data.message.last_name[0]);
+          } else if (data.message.phone) {
+            Alert.alert(data.message.phone[0]);
+          }
+
+          setLoader("Next");
+        }
       })
       .catch((err) => {
         setLoader("Next");

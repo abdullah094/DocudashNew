@@ -88,7 +88,7 @@ const TemplateHistory = () => {
           icon="printer"
           mode="outlined"
           style={tw`w-30 mx-5`}
-          onPress={() => console.log("Pressed")}
+          onPress={() => console.log("Print")}
         >
           Print
         </Button>

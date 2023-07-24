@@ -4,6 +4,7 @@ import type {
   } from '@react-navigation/native';
   import type { StackScreenProps } from '@react-navigation/stack';
   import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+  import type { DrawerScreenProps } from '@react-navigation/drawer';
 import { Industry } from './Step4';
   
   export type RootStackParamList = {
@@ -13,6 +14,7 @@ import { Industry } from './Step4';
     LoginIndex:  NavigatorScreenParams<LoginStackParamList>;
     Details:  NavigatorScreenParams<SignedInStackParamList>
     TemplateHistory: undefined
+    Signatures: undefined
   };
   
   export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -38,6 +40,11 @@ import { Industry } from './Step4';
    
     
   };
+
+  export type ManageDrawerParamList = {
+    Inbox: {heading: string};
+
+  }
   
   export type SignupStackScreenProps<T extends keyof SignupStackParamList> =
     CompositeScreenProps<
@@ -52,6 +59,11 @@ import { Industry } from './Step4';
     export type SignedInpStackScreenProps<T extends keyof SignedInStackParamList> =
     CompositeScreenProps<
       StackScreenProps<SignedInStackParamList, T>,
+      RootStackScreenProps<keyof RootStackParamList>
+    >;
+    export type ManageDrawerScreenProps<T extends keyof ManageDrawerParamList> = 
+    CompositeScreenProps<
+    DrawerScreenProps<ManageDrawerParamList, T>,
       RootStackScreenProps<keyof RootStackParamList>
     >;
   

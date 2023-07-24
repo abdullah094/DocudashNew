@@ -45,21 +45,21 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
           token,
         }: Istep3Response = response.data;
         console.log("top----", response.data);
-        success
-          ? (setLoader("Next"),
+
+        if (success) {
+          setLoader("Next"),
             navigation.replace("SignUpIndex", {
               screen: "Step4",
               params: {
                 api: response.data.next,
               },
             }),
-            storeData("Step4"))
-          : (Alert.alert(
-              "Failed",
-              "Wrong code Please try again or resend code"
-            ),
+            storeData("Step4");
+        } else {
+          Alert.alert("Failed", "Wrong code Please try again or resend code"),
             setOtp(""),
-            setLoader("Next"));
+            setLoader("Next");
+        }
       })
       .catch((err) => {
         setLoader("Next");
@@ -70,10 +70,10 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
     axios
       .get("https://docudash.net/api/sendCodeAgain/" + token)
       .then((response) => {
-        console.log(response.data);
+        const data = response.data;
 
-        if (response.data?.success) {
-          Alert.alert("Code sent to " + response.data?.data.email);
+        if (data.success) {
+          Alert.alert("Code sent to " + data.data.email);
         } else {
           Alert.alert("Please try again");
         }

@@ -50,7 +50,7 @@ const Step4 = ({ navigation, route }: SignupStackScreenProps<"Step4">) => {
           storeData("Step5");
           setLoader("Next");
         } else {
-          alert("Failed"), setLoader("Next");
+          alert("Try again"), setLoader("Next");
         }
       })
       .catch((err) => {
