@@ -19,6 +19,7 @@ import { useCounterStore } from "../../../MobX/TodoStore";
 import { Popup } from "../../components/Popup";
 import { IUserData } from "../../../types";
 import * as DocumentPicker from "expo-document-picker";
+import { Button } from "react-native-ui-lib";
 
 interface box {
   text: string;
@@ -197,7 +198,7 @@ const Dashboard = () => {
           <View
             style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
           >
-            <TouchableOpacity style={tw`p-1`} onPress={uploadFile}>
+            <TouchableOpacity style={tw`p-1`} onPress={() => uploadFile()}>
               <Image
                 style={tw`h-10 w-10 self-center`}
                 source={require("../../assets/Upload.png")}
@@ -208,6 +209,7 @@ const Dashboard = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <Button onPress={() => uploadFile()}></Button>
       </ScrollView>
       <Popup
         heading={"Alert"}

@@ -49,6 +49,12 @@ const CustomDrawerManage = () => {
         {/* Buttons view */}
         <View style={tw`w-full gap-3 mt-7`}>
           <TabButton
+            text="Add New"
+            iconName={"add-outline"}
+            route={"Edit"}
+            heading="Inbox"
+          />
+          <TabButton
             text="Inbox"
             iconName={"mail-outline"}
             route={"Inbox"}

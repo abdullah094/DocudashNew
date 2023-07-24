@@ -14,6 +14,7 @@ import { observer } from "mobx-react";
 import LoginIndex from "../screens/Login/Index";
 import Details from "../screens/Manage/ManageDrawerScreens/Details";
 import TemplateHistory from "../screens/Manage/ManageDrawerScreens/TemplateHistory";
+import Edit from "../screens/Manage/ManageDrawerScreens/Edit";
 const Stack = createStackNavigator<RootStackParamList>();
 const LoggedInStack = createStackNavigator<RootStackParamList>();
 
@@ -30,6 +31,7 @@ const StackNavigator = observer(() => {
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
           <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
           <Stack.Screen name="Details" component={Details} />
+          <Stack.Screen name="Edit" component={Edit} />
           <Stack.Screen name="TemplateHistory" component={TemplateHistory} />
         </LoggedInStack.Navigator>
       ) : (

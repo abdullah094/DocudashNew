@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import tw from "twrnc";
 import {
   Menu,
@@ -16,9 +16,15 @@ import {
 } from "react-native-popup-menu";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import SigningOrderModal from "../Components/SigningOrderModal";
-import { useNavigation } from "@react-navigation/native";
-import { RootStackScreenProps } from "../../../../types";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  RootStackScreenProps,
+  EmailBar,
+  ViewDocument,
+} from "../../../../types";
 import { log } from "react-native-reanimated";
+import axios from "axios";
+import { useCounterStore } from "../../../../MobX/TodoStore";
 
 const NeedToSign = () => (
   <View style={tw`flex-row gap-2 items-center p-2`}>
@@ -55,35 +61,41 @@ const Button = ({ text, onPress, pressed }: IButton) => {
 };
 
 const Details = () => {
+  const Mobx = useCounterStore();
   const navigation =
     useNavigation<RootStackScreenProps<"Details">["navigation"]>();
+  const route = useRoute<RootStackScreenProps<"Details">["route"]>();
+  const inbox: EmailBar = route.params;
+  const [data, setData] = useState<ViewDocument>();
 
-  const airports = "PKR LMB IND SIN USA CAL AUS GER FAR".split(" ");
-  const routes = [
-    ["PKR", "LMB"],
-    ["PKR", "IND"],
-    ["SIN", "USA"],
-    ["SIN", "CAL"],
-    ["AUS", "GER"],
-    ["AUS", "FAR"],
-  ];
-  const adjacencyList = new Map<string, Array<string>>();
-  function addNode(airports: string) {
-    adjacencyList.set(airports, []);
-  }
-  function addEdge([origin, destination]: [string, string]) {
-    adjacencyList.get(origin)?.push(destination);
-    adjacencyList.get(destination)?.push(origin);
-  }
-  airports.forEach(addNode);
-  routes.forEach((route: any) => addEdge(route));
-  console.log(adjacencyList);
+  console.log(inbox.uniqid, inbox.signature_id);
+
+  useEffect(() => {
+    const url = "https://docudash.net/api/generate-signature/manage-doc-view/";
+
+    console.log(url + inbox.uniqid + "/" + inbox.signature_id);
+    console.log(`Bearer ${Mobx.access_token}`);
+    axios
+      .get(url + inbox.uniqid + "/" + inbox.signature_id, {
+        headers: {
+          Authorization: `Bearer ${Mobx.access_token}`,
+        },
+      })
+      .then((response) => {
+        const data: ViewDocument = response.data;
+        console.log("Data----", data);
+        setData(data);
+      })
+      .catch((error) => {
+        console.log("Error----", error);
+      });
+  }, []);
 
   return (
     <ScrollView>
       <View style={tw`p-4 gap-3 py-10`}>
         <Text style={styles.heading}>
-          Complete with Docudash: Screenshot 2023-05-29 at 7.57.35 PM.png
+          {data?.generateSignatureDetails[0].emailSubject}
         </Text>
         <Menu>
           <MenuTrigger
@@ -100,7 +112,7 @@ const Details = () => {
             <MenuOption
               style={styles.menu_block}
               onSelect={() => alert(`Save`)}
-              text={<Text style={tw`font-bold text-black`}>Last used</Text>}
+              text={<Text style={tw`font-bold text-black`}>Last used:{}</Text>}
             />
             <MenuOption
               style={styles.menu_block}
@@ -115,12 +127,24 @@ const Details = () => {
           </MenuOptions>
         </Menu>
         <View style={tw`mt-5 gap-1`}>
-          <Text style={tw`text-[#6FAC46]`}>Envelope ID</Text>
-          <Text>
-            From: <Text style={tw`text-[#6FAC46]`}>Waqar Ahmed Khan</Text>
+          <Text style={tw`text-[#6FAC46]`}>
+            Envelope ID: {data?.generateSignatureDetails[0].uniqid}
           </Text>
-          <Text>Last change on 5/29/2023 | 08:39:43 pm</Text>
-          <Text>Sent on 5/29/2023 | 08:38:43 pm</Text>
+          <Text>
+            From:{" "}
+            <Text style={tw`text-[#6FAC46]`}>
+              {" "}
+              {data?.generateSignatureDetails[0].user.first_name}{" "}
+              {data?.generateSignatureDetails[0].user.last_name}
+            </Text>
+          </Text>
+          <Text>
+            Last change on
+            {new Date(data?.generateSignature.created_at).toUTCString()}
+          </Text>
+          <Text>
+            Sent on {new Date(data?.generateSignature.created_at).toUTCString()}
+          </Text>
         </View>
         <NeedToSign />
         {/* Buttons */}
@@ -224,32 +248,33 @@ const Details = () => {
           </TouchableOpacity>
         </View>
         <View style={tw`py-2`}>
-          <Text style={styles.heading}>Recipients</Text>
-          <View style={tw` mt-5 py-3`}>
-            <View>
-              <View style={tw`flex-row items-center justify-between`}>
-                <Text style={styles.h2} numberOfLines={2}>
-                  Waqar Ahmed
-                </Text>
-                <SigningOrderModal />
-              </View>
-              <Text style={tw`font-thin text-black`}>
-                urspeacial1one@gmail.com
-              </Text>
-            </View>
-            <View style={tw`flex-row items-center gap-2 py-4`}>
-              <Image
-                style={tw`w-5 h-5`}
-                source={require("../../../assets/NeedToSign.png")}
-              />
-              <View>
-                <Text style={tw`text-4 font-bold`}>Needs to Sign</Text>
-                <Text style={tw`font-thin text-3`}>
-                  Viewed on 5/29/2023 | 08:39:43 pm
-                </Text>
-              </View>
-            </View>
+          <View style={tw`flex-row items-center justify-between`}>
+            <Text style={styles.heading}>Recipients</Text>
+            <SigningOrderModal />
           </View>
+          {data?.generateSignatureDetails.map((item) => (
+            <View style={tw` mt-5 py-3 flex-row items-center`}>
+              <View style={tw`flex-1`}>
+                <View style={tw`flex-row items-center justify-between`}>
+                  <Text style={styles.h2} numberOfLines={2}>
+                    {item.recName}
+                  </Text>
+                </View>
+                <Text style={tw`font-thin text-black`}>{item.recEmail}</Text>
+              </View>
+              <View style={tw`flex-row items-center`}>
+                <Image
+                  style={tw`w-5 h-5 mx-2`}
+                  source={require("../../../assets/NeedToSign.png")}
+                />
+                <View>
+                  <Text style={tw`text-3 font-bold`}>
+                    {item.sign_type == 1 ? "Need to Sign" : "Sign"}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))}
         </View>
         <View style={tw`py-2`}>
           <Text style={styles.heading}>Message</Text>
@@ -266,6 +291,6 @@ export default Details;
 
 const styles = StyleSheet.create({
   heading: tw`font-bold text-5`,
-  h2: tw`text-5 w-[50%]`,
+  h2: tw`text-3 w-[50%]`,
   menu_block: tw`p-3 font-bold`,
 });
