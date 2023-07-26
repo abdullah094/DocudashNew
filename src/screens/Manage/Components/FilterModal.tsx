@@ -10,7 +10,6 @@ import {
 import React, { useState } from "react";
 import { Button, Searchbar } from "react-native-paper";
 import tw from "twrnc";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   Menu,
   MenuOption,
