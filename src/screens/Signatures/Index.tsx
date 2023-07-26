@@ -12,15 +12,24 @@ import {
 import React from "react";
 import tw from "twrnc";
 import { colors } from "../../Colors";
-import { Button, DataTable, Switch } from "react-native-paper";
+import { Button, Chip, DataTable, Switch } from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import axios from "axios";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useCounterStore } from "../../../MobX/TodoStore";
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../types";
 
 const Index = () => {
   const [list, setList] = React.useState();
   const Mobx = useCounterStore();
+  const navigation = useNavigation();
 
   const fetchList = () => {
     axios
@@ -38,12 +47,6 @@ const Index = () => {
     fetchList();
   }, []);
 
-  const SwitchComp = () => {
-    const [isSwitchOn, setIsSwitchOn] = React.useState(false);
-
-    const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
-    return <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />;
-  };
   const DropdownComp = () => {
     const [action, setAction] = React.useState("");
     const [showDropDown, setShowDropDown] = React.useState(false);
@@ -129,41 +132,107 @@ const Index = () => {
       </>
     );
   };
+  const Delete = (id: number) => {
+    axios
+      .post(
+        "https://docudash.net/api/signatures/delete",
+        {
+          deleteId: id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Mobx.access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        fetchList();
+        const data = response.data;
+        console.log(data);
+      });
+  };
+  const StatusUpdate = (id: number, status: number | boolean) => {
+    axios
+      .post(
+        "https://docudash.net/api/signatures/statusUpdate",
+        {
+          id: id,
+          status: status,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${Mobx.access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const data = response.data;
+        console.log(data);
+      });
+  };
 
-  const RenderItem = ({ signature, initial, signature_code }) => {
+  const RenderItem = ({ signature, initial, signature_code, id, status }) => {
     const [more, setMore] = React.useState(false);
+    const [isSwitchOn, setIsSwitchOn] = React.useState(
+      status === 1 ? true : false
+    );
+
+    const onToggleSwitch = () => {
+      setIsSwitchOn(!isSwitchOn);
+      StatusUpdate(id, isSwitchOn ? 1 : 0);
+    };
     return (
-      <View style={tw` bg-white p-2 my-1`}>
-        <View style={tw`flex-row gap-2`}>
-          <View>
-            <Text style={tw`font-medium`}>Signed by</Text>
-            <Image
-              style={tw`w-15 h-15`}
-              resizeMode="contain"
-              source={{ uri: signature }}
-            />
+      <View style={tw` bg-white p-2 my-1 gap-2`}>
+        <View style={tw`flex-row gap-2 overflow-hidden`}>
+          <View style={tw`flex-1`}>
+            <View>
+              <Text style={tw`font-medium`}>Signed by</Text>
+              <Image
+                style={tw`w-15 h-15`}
+                resizeMode="contain"
+                source={{ uri: signature }}
+              />
+            </View>
+            <View>
+              <Text style={tw`font-medium`}>Initials</Text>
+              <Image
+                style={tw`w-15 h-15 `}
+                resizeMode="contain"
+                source={{ uri: initial }}
+              />
+            </View>
+            <View style={tw`gap-4  `}>
+              <Text style={tw`font-medium overflow-hidden`}>
+                Signature Code
+              </Text>
+              <Text>{signature_code}</Text>
+            </View>
           </View>
-          <View>
-            <Text style={tw`font-medium`}>Initials</Text>
-            <Image
-              style={tw`w-15 h-15 `}
-              resizeMode="contain"
-              source={{ uri: initial }}
-            />
-          </View>
-          <View style={tw`gap-4`}>
-            <Text style={tw`font-medium overflow-hidden`}>Signature Code</Text>
-            <Text>{signature_code}</Text>
-          </View>
-          <View style={tw`gap-4 justify-center p-2 items-center`}>
-            <Button
-              onPress={() => setMore(!more)}
-              icon="dots-horizontal"
-              children={undefined}
-            ></Button>
+          <View style={tw` p-2 justify-between`}>
+            <View style={tw`gap-2`}>
+              <Text style={tw`font-medium`}>Status:</Text>
+              <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+            </View>
+            <View>
+              <View style={tw`flex-row items-center gap-1`}>
+                <Chip
+                  mode="outlined"
+                  selectedColor={colors.blue}
+                  onPress={() => {
+                    console.log("Edit");
+                  }}
+                >
+                  Edit
+                </Chip>
+                <Chip mode="outlined" onPress={() => Delete(id)}>
+                  Delete
+                </Chip>
+              </View>
+            </View>
           </View>
         </View>
-        {more ? (
+
+        {/* {more ? (
           <View style={tw`gap-2`}>
             <View style={tw`flex-row items-center gap-4`}>
               <Text>Status:</Text>
@@ -174,37 +243,39 @@ const Index = () => {
               <DropdownComp />
             </View>
           </View>
-        ) : null}
+        ) : null} */}
       </View>
     );
   };
 
   return (
-    <View style={tw`pb-100 `}>
-      <View style={tw`m-5 gap-1 `}>
+    <View>
+      <View style={tw`m-4 gap-1 `}>
         <Text style={tw`text-black text-5 font-bold `}>Signautres</Text>
         <Text style={tw`text-[${colors.gray}] text-3`}>
           Add or update your name and signature styles.
         </Text>
         <TouchableOpacity
+          onPress={() => navigation.navigate("AddSignature")}
           style={tw`bg-[${colors.green}] justify-center items-center w-35 h-10 rounded-md self-end m-4`}
         >
           <Text style={tw`text-white`}>Add Signature</Text>
         </TouchableOpacity>
       </View>
-      <View>
-        <FlatList
-          data={list}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <RenderItem
-              signature={item.signature}
-              initial={item.initial}
-              signature_code={item.signature_code}
-            />
-          )}
-        />
-      </View>
+
+      <FlatList
+        data={list}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <RenderItem
+            signature={item.signature}
+            initial={item.initial}
+            signature_code={item.signature_code}
+            id={item.id}
+            status={item.status}
+          />
+        )}
+      />
     </View>
   );
 };

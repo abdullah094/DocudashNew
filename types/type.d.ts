@@ -15,6 +15,7 @@ import { Industry } from './Step4';
     Details:  NavigatorScreenParams<SignedInStackParamList>
     TemplateHistory: undefined
     Signatures: undefined
+    AddSignature: undefined
   };
   
   export type RootStackScreenProps<T extends keyof RootStackParamList> =
