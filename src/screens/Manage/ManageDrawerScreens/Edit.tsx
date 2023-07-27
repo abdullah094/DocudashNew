@@ -5,7 +5,7 @@ import {
   View,
   Image,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Appbar,
   Button,
@@ -19,182 +19,391 @@ import {
 import DropDown from "react-native-paper-dropdown";
 import tw from "twrnc";
 import { colors } from "../../../Colors";
+import axios from "axios";
+import FormData from "form-data";
+import { useCounterStore } from "../../../../MobX/TodoStore";
+import {
+  EmailBar,
+  Envelope,
+  GenerateSignature,
+  RootStackScreenProps,
+} from "../../../../types";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const Edit = () => {
-  const [text, setText] = React.useState("");
-  const [privateMessage, setPrivateMessage] = React.useState("");
+  const Mobx = useCounterStore();
+  const [data, setData] = useState([
+    {
+      recName: "",
+      recEmail: "",
+      sign_type: 1,
+      hostName: "",
+      hostEmail: "",
+      access_code: "",
+      private_message: "",
+      recipients_update_id: "",
+      showDropDown: false,
+      visible: false,
+      showAccessCode: false,
+      showPrivateMessage: false,
+    },
+  ]);
   const [emailSubject, setEmailSubject] = React.useState("");
   const [emailMessage, setEmailMessage] = React.useState("");
-  const [showDropDown, setShowDropDown] = useState(false);
-  const [action, setAction] = useState<string>("");
-  const [showAccessCode, setShowAccessCode] = useState<boolean>(false);
-  const [showPrivateMessage, setShowPrivateMessage] = useState<boolean>(false);
-  const [totalRecipient, setTotalRecipient] = useState<number>(1);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [generateSignature, setGenerateSignature] =
+    useState<GenerateSignature>();
+
+  const addNewRecipient = () => {
+    setData([
+      ...data,
+      {
+        recName: "",
+        recEmail: "",
+        sign_type: 1,
+        hostName: "",
+        hostEmail: "",
+        access_code: "",
+        private_message: "",
+        recipients_update_id: "",
+        showDropDown: false,
+        visible: false,
+        showAccessCode: false,
+        showPrivateMessage: false,
+      },
+    ]);
+  };
 
   const actionList = [
     {
       label: "Needs to Sign",
-      value: "Needs to Sign",
+      value: "1",
     },
     {
       label: "In Person Signer",
-      value: "In Person Signer",
+      value: "2",
     },
     {
       label: "Receives a Copy",
-      value: "Receives a Copy",
+      value: "3",
     },
     {
       label: "Needs to View",
-      value: "Needs to View",
+      value: "4",
     },
   ];
-  const [visible, setVisible] = React.useState(false);
+  useEffect(() => {
+    const url = "https://docudash.net/api/generate-signature/create";
+    axios
+      .post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${Mobx.access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const data: GenerateSignature = response.data;
+        setGenerateSignature(data);
+        console.log("Data----", data);
+      })
+      .catch((error) => {
+        console.log("Error----", error);
+      });
 
-  const openMenu = () => setVisible(true);
+    ("https://docudash.net/api/generate-signature/upload-document/99f8c0a8b4dc1e3987d575bb5052dab8/20");
+  }, []);
+  const save = () => {
+    if (!generateSignature) return;
+    setLoading(true);
+    let formData = new FormData();
+    formData.append("uniqid", generateSignature.uniqid);
+    formData.append("signature_id", generateSignature.signature_id);
+    data.forEach((item, index) => {
+      {
+        formData.append("recipients_update_id[" + index + "]", "0");
+        formData.append("recName[" + index + "]", item.recName);
+        formData.append("recEmail[" + index + "]", item.recEmail);
+        formData.append("sign_type[" + index + "]", String(item.sign_type));
+        formData.append("hostName[" + index + "]", item.hostName);
+        formData.append("hostEmail[" + index + "]", item.hostEmail);
+        formData.append("access_code[" + index + "]", item.access_code);
+        formData.append("private_message[" + index + "]", item.private_message);
+      }
+    });
+    formData.append("emailSubject", emailSubject);
+    formData.append("emailMessage", emailMessage);
 
-  const closeMenu = () => setVisible(false);
-  console.log(action);
+    images.forEach((image, index) => {
+      formData.append("photosID[" + index + "]", "0");
+      formData.append("image[]", image, `image${index + 1}.png`);
+    });
+    let headers = {
+      Authorization: `Bearer ${Mobx.access_token}`,
+      "Content-Type": "multipart/form-data",
+    };
+    console.log(JSON.stringify(formData));
+    axios
+      .post(
+        "https://docudash.net/api/generate-signature/upload-document",
+        formData,
+        { headers }
+      )
+      .then((response) => {
+        setLoading(false);
+        if (response.data.status === 200) {
+          // navigation.navigate('Home');
+          console.log(JSON.stringify(response.data));
+        } else {
+          console.log(JSON.stringify(response.data));
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log("error", error);
+      });
+  };
+
+  console.log(emailMessage);
   return (
     <ScrollView>
       <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
         <Text variant="headlineSmall">Add Recipient</Text>
 
-        {Array(totalRecipient)
-          .fill(0)
-          .map((_, index) => (
-            <View
-              style={tw`flex-1 gap-2 p-2 border border-gray-500 my-2 rounded-lg`}
-            >
-              <View style={tw`flex-row justify-between items-center`}>
-                <Text variant="headlineSmall">Recipient {index + 1}</Text>
+        {data.map((recipient, index) => (
+          <View
+            style={tw`flex-1 gap-2 p-2 border border-gray-500 my-2 rounded-lg`}
+          >
+            <View style={tw`flex-row justify-between items-center`}>
+              <Text variant="headlineSmall">Recipient {index + 1}</Text>
+              {index !== 0 && (
                 <IconButton
                   icon="close"
                   size={20}
-                  onPress={() => console.log("Pressed")}
+                  onPress={() => setData(data.filter((_, i) => i !== index))}
                 />
-              </View>
+              )}
+            </View>
 
-              <DropDown
-                label={"Actions"}
-                mode={"outlined"}
-                visible={showDropDown}
-                showDropDown={() => setShowDropDown(true)}
-                onDismiss={() => setShowDropDown(false)}
-                value={action}
-                setValue={setAction}
-                list={actionList}
-              />
-              {action === "In Person Signer" ? (
-                <>
-                  <TextInput
-                    mode="outlined"
-                    label="Host Name"
-                    value={text}
-                    onChangeText={(text) => setText(text)}
-                  />
-                  <TextInput
-                    mode="outlined"
-                    label="Host Email Address"
-                    value={text}
-                    onChangeText={(text) => setText(text)}
-                  />
-                </>
-              ) : (
+            <DropDown
+              label={"Actions"}
+              mode={"outlined"}
+              visible={recipient.showDropDown}
+              showDropDown={() =>
+                setData((prev) =>
+                  prev.map((item, i) =>
+                    i === index ? { ...item, showDropDown: true } : item
+                  )
+                )
+              }
+              onDismiss={() =>
+                setData((prev) =>
+                  prev.map((item, i) =>
+                    i === index ? { ...item, showDropDown: false } : item
+                  )
+                )
+              }
+              value={recipient.sign_type}
+              setValue={(value) => {
+                setData((prev) =>
+                  prev.map((item, i) =>
+                    i === index ? { ...item, sign_type: value } : item
+                  )
+                );
+              }}
+              list={actionList}
+            />
+            {recipient.sign_type == 2 ? (
+              <>
+                <TextInput
+                  mode="outlined"
+                  label="Host Name"
+                  value={recipient.hostName}
+                  onChangeText={(text) => {
+                    setData((prev) =>
+                      prev.map((item, i) =>
+                        i === index ? { ...item, hostName: text } : item
+                      )
+                    );
+                  }}
+                />
+                <TextInput
+                  mode="outlined"
+                  label="Host Email Address"
+                  value={recipient.hostEmail}
+                  onChangeText={(text) => {
+                    setData((prev) =>
+                      prev.map((item, i) =>
+                        i === index ? { ...item, hostEmail: text } : item
+                      )
+                    );
+                  }}
+                />
+              </>
+            ) : (
+              <>
                 <TextInput
                   mode="outlined"
                   label="Recipient Name"
-                  value={text}
-                  onChangeText={(text) => setText(text)}
+                  value={recipient.recName}
+                  onChangeText={(text) => {
+                    setData((prev) =>
+                      prev.map((item, i) =>
+                        i === index ? { ...item, recName: text } : item
+                      )
+                    );
+                  }}
                 />
-              )}
+                <TextInput
+                  mode="outlined"
+                  label="Recipient Email Address"
+                  value={recipient.recEmail}
+                  onChangeText={(text) => {
+                    setData((prev) =>
+                      prev.map((item, i) =>
+                        i === index ? { ...item, recEmail: text } : item
+                      )
+                    );
+                  }}
+                />
+              </>
+            )}
 
-              <TextInput
-                mode="outlined"
-                label="Recipient Email Address"
-                value={text}
-                onChangeText={(text) => setText(text)}
+            <Menu
+              visible={recipient.visible}
+              onDismiss={() => {
+                setData((prev) =>
+                  prev.map((item, i) =>
+                    i === index ? { ...item, visible: false } : item
+                  )
+                );
+              }}
+              anchor={
+                <Button
+                  onPress={() => {
+                    setData((prev) =>
+                      prev.map((item, i) =>
+                        i === index ? { ...item, visible: true } : item
+                      )
+                    );
+                  }}
+                >
+                  Customize
+                </Button>
+              }
+            >
+              <Menu.Item
+                onPress={() => {
+                  setData((prev) =>
+                    prev.map((item, i) =>
+                      i === index
+                        ? {
+                            ...item,
+                            visible: false,
+                            showAccessCode: !item.showAccessCode,
+                          }
+                        : item
+                    )
+                  );
+                }}
+                style={tw`h-16`}
+                title={
+                  <View>
+                    <Text variant="titleSmall">Enter Access Code</Text>
+                    <Text variant="bodySmall">
+                      Enter a code that only you and this recipient know.
+                    </Text>
+                  </View>
+                }
+              ></Menu.Item>
+              <Divider />
+              <Menu.Item
+                onPress={() => {
+                  setData((prev) =>
+                    prev.map((item, i) =>
+                      i === index
+                        ? {
+                            ...item,
+                            visible: false,
+                            showPrivateMessage: !item.showPrivateMessage,
+                          }
+                        : item
+                    )
+                  );
+                }}
+                style={tw`h-16`}
+                title={
+                  <View>
+                    <Text variant="titleSmall">Add private message</Text>
+                    <Text variant="bodySmall">
+                      Include a personal note with this recipient.
+                    </Text>
+                  </View>
+                }
               />
+            </Menu>
+            {recipient.showAccessCode && (
+              // style={tw`flex-1 p-2 border border-gray-500 my-2 rounded-lg`}
+              <View>
+                {/* <Text variant="headlineSmall">Enter Access Code</Text> */}
 
-              <Menu
-                visible={visible}
-                onDismiss={closeMenu}
-                anchor={<Button onPress={openMenu}>Customize</Button>}
-              >
-                <Menu.Item
-                  onPress={() => {
-                    setShowAccessCode(!showAccessCode);
-                    closeMenu();
+                <TextInput
+                  mode="outlined"
+                  label="Access Code"
+                  value={recipient.access_code}
+                  onChangeText={(text) => {
+                    setData((prev) =>
+                      prev.map((item, i) =>
+                        i === index ? { ...item, access_code: text } : item
+                      )
+                    );
                   }}
-                  style={tw`h-16`}
-                  title={
-                    <View>
-                      <Text variant="titleSmall">Enter Access Code</Text>
-                      <Text variant="bodySmall">
-                        Enter a code that only you and this recipient know.
-                      </Text>
-                    </View>
-                  }
-                ></Menu.Item>
-                <Divider />
-                <Menu.Item
-                  onPress={() => {
-                    setShowPrivateMessage(!showPrivateMessage);
-                    closeMenu();
-                  }}
-                  style={tw`h-16`}
-                  title={
-                    <View>
-                      <Text variant="titleSmall">Add private message</Text>
-                      <Text variant="bodySmall">
-                        Include a personal note with this recipient.
-                      </Text>
-                    </View>
-                  }
                 />
-              </Menu>
-              {showAccessCode && (
-                // style={tw`flex-1 p-2 border border-gray-500 my-2 rounded-lg`}
-                <View>
-                  {/* <Text variant="headlineSmall">Enter Access Code</Text> */}
-
-                  <TextInput
-                    mode="outlined"
-                    label="Access Code"
-                    value={text}
-                    onChangeText={(text) => setText(text)}
-                  />
-                  <HelperText type="info">
-                    Codes are not case-sensitive. You must provide this code to
-                    the signer. This code is available for you to review on the
-                    Envelope Details page.
-                  </HelperText>
-                </View>
-              )}
-              {showPrivateMessage && (
-                <View>
-                  <TextInput
-                    mode="outlined"
-                    label="Private Message"
-                    value={privateMessage}
-                    multiline
-                    numberOfLines={4}
-                    onChangeText={(text) => setPrivateMessage(text)}
-                  />
-                  <HelperText
-                    type={1000 - privateMessage.length >= 0 ? "info" : "error"}
-                  >
-                    Characters remaining: {1000 - privateMessage.length}
-                  </HelperText>
-                </View>
-              )}
-            </View>
-          ))}
+                <HelperText type="info">
+                  Codes are not case-sensitive. You must provide this code to
+                  the signer. This code is available for you to review on the
+                  Envelope Details page.
+                </HelperText>
+              </View>
+            )}
+            {recipient.showPrivateMessage && (
+              <View>
+                <TextInput
+                  mode="outlined"
+                  label="Private Message"
+                  value={recipient.private_message}
+                  multiline
+                  numberOfLines={4}
+                  onChangeText={(text) => {
+                    setData((prev) =>
+                      prev.map((item, i) =>
+                        i === index ? { ...item, private_message: text } : item
+                      )
+                    );
+                  }}
+                />
+                <HelperText
+                  type={
+                    1000 - recipient.private_message.length >= 0
+                      ? "info"
+                      : "error"
+                  }
+                >
+                  Characters remaining:{" "}
+                  {1000 - recipient.private_message.length}
+                </HelperText>
+              </View>
+            )}
+          </View>
+        ))}
 
         <Button
           icon="plus"
           onPress={() => {
-            setTotalRecipient(totalRecipient + 1);
+            addNewRecipient();
           }}
         >
           Add Recipient
@@ -244,6 +453,18 @@ const Edit = () => {
             </TouchableOpacity>
           </View>
         </View>
+      </View>
+      <View style={tw`flex-1  mb-10  justify-end flex-row mx-4`}>
+        <Button
+          loading={loading}
+          style={tw`w-30`}
+          contentStyle={tw`flex-row-reverse`}
+          mode="outlined"
+          icon="arrow-right"
+          onPress={save}
+        >
+          Next
+        </Button>
       </View>
     </ScrollView>
   );

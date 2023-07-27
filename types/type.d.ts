@@ -79,7 +79,7 @@ export type LoginStackParamList = {
 };
 export type SignedInStackParamList = {
   Inbox: undefined;
-  Details: undefined;
+  Details: Envelope;
 };
 
 export type ManageDrawerParamList = {
@@ -243,4 +243,46 @@ export interface GenerateSignatureDetailsFinalise {
   deleted: number;
   created_at: string;
   updated_at: string;
+}
+export interface GenerateSignature {
+  message: string;
+  route: string;
+  signature_id: string;
+  status: boolean;
+  uniqid: string;
+}
+
+export interface InboxApiResponse {
+  draw: number;
+  recordsTotal: number;
+  recordsFiltered: number;
+  data: Envelope[];
+  input: Input;
+}
+
+export interface Envelope {
+  id: number;
+  signature_id: number;
+  signature: string;
+  uniqid: string;
+  emailSubject: string;
+  emailMessage: string;
+  trash: number;
+  draft_status: number;
+  complete_incomplete: string;
+  status: number;
+  created_by: number;
+  updated_by: number;
+  deleted: number;
+  created_at: string;
+  updated_at: string;
+  view_btn: string;
+  download_btn: string;
+  action: string;
+  DT_RowIndex: number;
+}
+
+export interface Input {
+  quick_search: null;
+  draft_daterange: null;
 }
