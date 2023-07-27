@@ -19,6 +19,8 @@ import {
 } from "react-native-paper";
 import { light, dark } from "./src/assets/styles/LightTheme";
 import { MenuProvider } from "react-native-popup-menu";
+import { Provider as ReduxProvider } from "react-redux";
+import Store from "./src/Redux/Store";
 export default function App() {
   const [nightMode, setNightmode] = useState(false);
   const isLoadingComplete = useCachedResources();
@@ -31,13 +33,15 @@ export default function App() {
     return null;
   }
   return (
-    <PaperProvider theme={theme}>
-      <MenuProvider>
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
-      </MenuProvider>
-    </PaperProvider>
+    <ReduxProvider store={Store}>
+      <PaperProvider theme={theme}>
+        <MenuProvider>
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </MenuProvider>
+      </PaperProvider>
+    </ReduxProvider>
   );
 }
 

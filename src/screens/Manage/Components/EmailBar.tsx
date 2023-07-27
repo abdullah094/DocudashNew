@@ -37,7 +37,7 @@ const EmailBar = ({ item }: { item: IEmailBar }) => {
         delayPressIn={25}
         activeOpacity={0.5}
         style={tw`p-4 px-5 gap-3 bg-[${colors.white}]`}
-        onPress={() => navigation.navigate("Details")}
+        onPress={() => navigation.navigate("Details", item)}
       >
         <View style={tw`flex-row overflow-hidden gap-2 items-center flex-1`}>
           <Image

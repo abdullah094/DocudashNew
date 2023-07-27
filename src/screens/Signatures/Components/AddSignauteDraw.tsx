@@ -1,4 +1,11 @@
-import { Dimensions, Platform, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useRef, useState } from "react";
 import SignatureScreen, {
   SignatureViewRef,
@@ -120,38 +127,40 @@ const Signature = () => {
     width: ${windowWidth}px; height: ${windowHeight}px;
       .m-signature-pad--footer {display: none; margin: 0px;}`;
   return (
-    <View style={[{ flex: 1 }, tw`gap-3`]}>
-      <Appbar mode="small">
-        <Appbar.Content title="Signature" />
-        <Appbar.Action icon="content-save" onPress={saveSign} />
-        <Appbar.Action icon="delete-outline" onPress={resetSign} />
-      </Appbar>
-      <View style={{ height: 200, width: windowWidth, marginTop: 6 }}>
-        <SignatureScreen
-          ref={signatureView}
-          onBegin={() => setScrollEnabled(false)}
-          onEnd={() => setScrollEnabled(true)}
-          onOK={onSave}
-          // dataURL={route.params?.image}
-          webStyle={style}
-        />
+    <ScrollView>
+      <View style={[{ flex: 1 }, tw`gap-3`]}>
+        <Appbar mode="small">
+          <Appbar.Content title="Signature" />
+          <Appbar.Action icon="content-save" onPress={saveSign} />
+          <Appbar.Action icon="delete-outline" onPress={resetSign} />
+        </Appbar>
+        <View style={{ height: 200, width: windowWidth, marginTop: 6 }}>
+          <SignatureScreen
+            ref={signatureView}
+            onBegin={() => setScrollEnabled(false)}
+            onEnd={() => setScrollEnabled(true)}
+            onOK={onSave}
+            // dataURL={route.params?.image}
+            webStyle={style}
+          />
+        </View>
+        <Appbar mode="small">
+          <Appbar.Content title="Initial" />
+          <Appbar.Action icon="content-save" onPress={saveSign} />
+          <Appbar.Action icon="delete-outline" onPress={resetSign} />
+        </Appbar>
+        <View style={{ height: 200, width: windowWidth, marginTop: 6 }}>
+          <SignatureScreen
+            ref={signatureView}
+            onBegin={() => setScrollEnabled(false)}
+            onEnd={() => setScrollEnabled(true)}
+            onOK={onSave}
+            // dataURL={route.params?.image}
+            webStyle={style}
+          />
+        </View>
       </View>
-      <Appbar mode="small">
-        <Appbar.Content title="Initial" />
-        <Appbar.Action icon="content-save" onPress={saveSign} />
-        <Appbar.Action icon="delete-outline" onPress={resetSign} />
-      </Appbar>
-      <View style={{ height: 200, width: windowWidth, marginTop: 6 }}>
-        <SignatureScreen
-          ref={signatureView}
-          onBegin={() => setScrollEnabled(false)}
-          onEnd={() => setScrollEnabled(true)}
-          onOK={onSave}
-          // dataURL={route.params?.image}
-          webStyle={style}
-        />
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 

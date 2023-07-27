@@ -30,7 +30,7 @@ const Row = ({ title, shortName }: IRow) => {
   );
 };
 
-const SigningOrderModal = () => {
+const SigningOrderModal = ({ senderName, details }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -72,17 +72,29 @@ const SigningOrderModal = () => {
                 style={tw`border-2 h-[93%] top-5 right-11.5 border-[${colors.green}] w-1 absolute self-end overflow-hidden`}
               ></View>
               {/* Sender */}
-              <Row title={"Sender"} shortName={"Wk"} />
+              <Row
+                title={"Sender: " + senderName}
+                shortName={senderName
+                  .replace(/\b(\w)\w+/g, "$1.")
+                  .replace(/\s/g, "")
+                  .replace(/\.$/, "")
+                  .toUpperCase()}
+              />
               {/* 1 */}
-              <Row title={"1"} shortName={"WK"} />
+              {details.map((element: any) => {
+                return (
+                  <Row
+                    title={element.recName}
+                    shortName={element.recName
+                      .replace(/\b(\w)\w+/g, "$1.")
+                      .replace(/\s/g, "")
+                      .replace(/\.$/, "")
+                      .toUpperCase()}
+                  />
+                );
+              })}
 
               {/* reciever */}
-              <Row
-                title={"Completed"}
-                shortName={
-                  <AntDesign name="checkcircle" size={27} color="white" />
-                }
-              />
               <Row
                 title={"Completed"}
                 shortName={

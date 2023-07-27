@@ -266,6 +266,7 @@ const Index = () => {
       <FlatList
         data={list}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={tw`pb-50`}
         renderItem={({ item }) => (
           <RenderItem
             signature={item.signature}

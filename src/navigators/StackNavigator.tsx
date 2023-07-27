@@ -12,9 +12,10 @@ import ManageDrawer from "../screens/Manage/ManageDrawer";
 import { useCounterStore } from "../../MobX/TodoStore";
 import { observer } from "mobx-react";
 import LoginIndex from "../screens/Login/Index";
+import Edit from "../screens/Manage/ManageDrawerScreens/Edit";
+import AddSignature from "../screens/Signatures/Screens/AddSignature";
 import Details from "../screens/Manage/ManageDrawerScreens/Details";
 import TemplateHistory from "../screens/Manage/ManageDrawerScreens/TemplateHistory";
-import AddSignature from "../screens/Signatures/Screens/AddSignature";
 const Stack = createStackNavigator<RootStackParamList>();
 const LoggedInStack = createStackNavigator<RootStackParamList>();
 
@@ -31,6 +32,7 @@ const StackNavigator = observer(() => {
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
           <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
           <Stack.Screen name="Details" component={Details} />
+          <Stack.Screen name="Edit" component={Edit} />
           <Stack.Screen name="TemplateHistory" component={TemplateHistory} />
           <Stack.Screen name="AddSignature" component={AddSignature} />
         </LoggedInStack.Navigator>
