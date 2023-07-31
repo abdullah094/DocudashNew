@@ -44,6 +44,7 @@ const Index = () => {
       })
       .then((response) => {
         const data: SignaturesListAPI = response.data;
+        console.log(data);
         setList(data.data);
       });
   };

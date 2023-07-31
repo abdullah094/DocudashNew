@@ -55,6 +55,10 @@ const Edit = () => {
   const [generateSignature, setGenerateSignature] =
     useState<GenerateSignature>();
 
+  const route = useRoute();
+  const envelope: Envelope = route.params;
+  // console.log("data", envelope.id, envelope.signature_id);
+
   const addNewRecipient = () => {
     setData([
       ...data,
@@ -94,27 +98,46 @@ const Edit = () => {
     },
   ];
   useEffect(() => {
-    const url = "https://docudash.net/api/generate-signature/create";
-    axios
-      .post(
-        url,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${Mobx.access_token}`,
-          },
-        }
-      )
-      .then((response) => {
-        const data: GenerateSignature = response.data;
-        setGenerateSignature(data);
-        console.log("Data----", data);
-      })
-      .catch((error) => {
-        console.log("Error----", error);
-      });
+    if (envelope) {
+      axios
+        .get(
+          "https://docudash.net/api/generate-signature/manage-doc-view/" +
+            envelope.uniqid +
+            "/" +
+            envelope.id,
+          {
+            headers: {
+              Authorization: `Bearer ${Mobx.access_token}`,
+            },
+          }
+        )
+        .then((response) => {
+          const data = response.data;
+          console.log("data", data);
+        });
+    } else {
+      const url = "https://docudash.net/api/generate-signature/create";
+      axios
+        .post(
+          url,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${Mobx.access_token}`,
+            },
+          }
+        )
+        .then((response) => {
+          const data: GenerateSignature = response.data;
+          setGenerateSignature(data);
+          console.log("Data----", data);
+        })
+        .catch((error) => {
+          console.log("Error----", error);
+        });
 
-    ("https://docudash.net/api/generate-signature/upload-document/99f8c0a8b4dc1e3987d575bb5052dab8/20");
+      ("https://docudash.net/api/generate-signature/upload-document/99f8c0a8b4dc1e3987d575bb5052dab8/20");
+    }
   }, []);
   const save = () => {
     if (!generateSignature) return;
