@@ -16,6 +16,7 @@ interface props {
   setState: Dispatch<React.SetStateAction<string | undefined>>;
   placeholder: string;
   style: StyleProp<ViewStyle> | object;
+  secureTextEntry: boolean;
   keyboardType:
     | string
     | undefined
@@ -24,7 +25,14 @@ interface props {
     | any;
 }
 const Input = (props: props) => {
-  const { state, setState, placeholder, style, keyboardType } = props;
+  const {
+    state,
+    setState,
+    placeholder,
+    style,
+    keyboardType,
+    secureTextEntry = false,
+  } = props;
 
   return (
     <TextInput
@@ -32,6 +40,7 @@ const Input = (props: props) => {
       onChangeText={setState}
       keyboardType={keyboardType}
       placeholder={placeholder}
+      secureTextEntry
       style={[
         {
           borderWidth: 2,

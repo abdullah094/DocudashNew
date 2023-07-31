@@ -72,16 +72,19 @@ const SigningOrderModal = ({ senderName, details }) => {
                 style={tw`border-2 h-[93%] top-5 right-11.5 border-[${colors.green}] w-1 absolute self-end overflow-hidden`}
               ></View>
               {/* Sender */}
-              <Row
-                title={"Sender: " + senderName}
-                shortName={senderName
-                  .replace(/\b(\w)\w+/g, "$1.")
-                  .replace(/\s/g, "")
-                  .replace(/\.$/, "")
-                  .toUpperCase()}
-              />
+              {senderName && (
+                <Row
+                  title={"Sender: " + senderName}
+                  shortName={senderName
+                    .replace(/\b(\w)\w+/g, "$1.")
+                    .replace(/\s/g, "")
+                    .replace(/\.$/, "")
+                    .toUpperCase()}
+                />
+              )}
+
               {/* 1 */}
-              {details.map((element: any) => {
+              {details?.map((element: any) => {
                 return (
                   <Row
                     title={element.recName}

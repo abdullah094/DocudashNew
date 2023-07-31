@@ -33,16 +33,15 @@ const Step1 = () => {
       .post("https://docudash.net/api/log-in", {
         email: email,
       })
-      .then((repsonse) => {
-        console.log(repsonse.data);
+      .then((response) => {
         setLoader("Next");
-        if (repsonse.data.success) {
+        if (response.data.success) {
           navigation.navigate("Step2", {
-            token: repsonse.data.next_access,
-            email: repsonse.data.data.email,
+            token: response.data.next_access,
+            email: response.data.data.email,
           });
         } else {
-          Alert.alert(repsonse.data.message);
+          Alert.alert(response.data.message.email[0]);
         }
       })
       .catch((error) => {

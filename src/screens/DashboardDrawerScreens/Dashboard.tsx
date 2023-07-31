@@ -17,7 +17,7 @@ import ImageUploadModal from "../DashBoard/Components/ImageUploadModal";
 import axios from "axios";
 import { useCounterStore } from "../../../MobX/TodoStore";
 import { Popup } from "../../components/Popup";
-import { IUserData } from "../../../types";
+import { DashboardAPI, IUserData } from "../../../types";
 import * as DocumentPicker from "expo-document-picker";
 import { Button } from "react-native-ui-lib";
 
@@ -56,12 +56,13 @@ const Dashboard = () => {
         },
       })
       .then((response) => {
-        const data = response.data;
-        // console.log(data.user);
+        const data: DashboardAPI = response.data;
+        console.log(data);
 
         setUserData(data.user);
         if (data.signature?.signature) {
           setSignature(data.signature);
+          Mobx.AddUser(data.user);
         } else {
           setSignature("");
         }

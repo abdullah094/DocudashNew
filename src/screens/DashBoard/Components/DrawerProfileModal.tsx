@@ -12,22 +12,33 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { colors } from "../../../Colors";
+import { useCounterStore } from "../../../../MobX/TodoStore";
+import { User } from "../../../../types";
 
 const DrawerProfileModal = () => {
+  const Mobx = useCounterStore();
+  const user: User = Mobx.user;
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <>
-      <Pressable
-        style={tw`w-full items-center py-5`}
-        onPress={() => setModalVisible(true)}
-      >
-        <Image
-          style={tw`w-20 h-20 rounded-full mt-5`}
-          source={require("../../../assets/ProfielPic.png")}
-        />
-        <Text style={tw`text-black text-5 mt-2`}>Syed Shahzaib</Text>
-      </Pressable>
+      {user && (
+        <Pressable
+          style={tw`w-full items-center py-5`}
+          onPress={() => setModalVisible(true)}
+        >
+          <Image
+            style={tw`w-20 h-20 rounded-full mt-5`}
+            resizeMode="cover"
+            source={{ uri: user.profile_photo }}
+            // source={require("../../../assets/ProfielPic.png")}
+          />
+          <Text style={tw`text-black text-5 mt-2`}>
+            {user.first_name} {user.last_name}
+          </Text>
+        </Pressable>
+      )}
+
       <Modal
         animationType="fade"
         transparent={true}
@@ -54,12 +65,17 @@ const DrawerProfileModal = () => {
             </Pressable>
             {/* content */}
             <View style={tw`gap-2 w-[80%] overflow-hidden`}>
-              <Text style={tw`font-bold text-4`}>Syed Shahzaib</Text>
-              <Text style={styles.profile_small_text}>
-                shahzaibjaffri512@gmail.com
+              <Text style={tw`font-bold text-4`}>
+                {user.first_name} {user.last_name}
               </Text>
-              <Text style={styles.profile_small_text}>Account #78268922</Text>
-              <Text style={styles.profile_small_text}>Syed Shahzaib</Text>
+              <Text style={styles.profile_small_text}>{user.email}</Text>
+              <Text style={styles.profile_small_text}>
+                {" "}
+                Account #00000{user.id}
+              </Text>
+              <Text style={styles.profile_small_text}>
+                {user.first_name} {user.last_name}
+              </Text>
               <TouchableOpacity
                 style={tw`bg-[${colors.green}] justify-center items-center h-8 rounded-lg`}
               >

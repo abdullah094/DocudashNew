@@ -24,10 +24,14 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../types";
+import {
+  RootStackParamList,
+  SignaturePreview,
+  SignaturesListAPI,
+} from "../../../types";
 
 const Index = () => {
-  const [list, setList] = React.useState();
+  const [list, setList] = React.useState<SignaturePreview[]>();
   const Mobx = useCounterStore();
   const navigation = useNavigation();
 
@@ -39,7 +43,7 @@ const Index = () => {
         },
       })
       .then((response) => {
-        const data = response.data;
+        const data: SignaturesListAPI = response.data;
         setList(data.data);
       });
   };
@@ -171,15 +175,15 @@ const Index = () => {
       });
   };
 
-  const RenderItem = ({ signature, initial, signature_code, id, status }) => {
+  const RenderItem = ({ item }) => {
     const [more, setMore] = React.useState(false);
     const [isSwitchOn, setIsSwitchOn] = React.useState(
-      status === 1 ? true : false
+      item.status === 1 ? true : false
     );
 
     const onToggleSwitch = () => {
       setIsSwitchOn(!isSwitchOn);
-      StatusUpdate(id, isSwitchOn ? 1 : 0);
+      StatusUpdate(item.id, isSwitchOn ? 1 : 0);
     };
     return (
       <View style={tw` bg-white p-2 my-1 gap-2`}>
@@ -190,7 +194,7 @@ const Index = () => {
               <Image
                 style={tw`w-15 h-15`}
                 resizeMode="contain"
-                source={{ uri: signature }}
+                source={{ uri: item.signature }}
               />
             </View>
             <View>
@@ -198,14 +202,14 @@ const Index = () => {
               <Image
                 style={tw`w-15 h-15 `}
                 resizeMode="contain"
-                source={{ uri: initial }}
+                source={{ uri: item.initial }}
               />
             </View>
             <View style={tw`gap-4  `}>
               <Text style={tw`font-medium overflow-hidden`}>
                 Signature Code
               </Text>
-              <Text>{signature_code}</Text>
+              <Text>{item.signature_code}</Text>
             </View>
           </View>
           <View style={tw` p-2 justify-between`}>
@@ -219,12 +223,12 @@ const Index = () => {
                   mode="outlined"
                   selectedColor={colors.blue}
                   onPress={() => {
-                    console.log("Edit");
+                    navigation.navigate("AddSignature", item);
                   }}
                 >
                   Edit
                 </Chip>
-                <Chip mode="outlined" onPress={() => Delete(id)}>
+                <Chip mode="outlined" onPress={() => Delete(item.id)}>
                   Delete
                 </Chip>
               </View>
@@ -267,15 +271,7 @@ const Index = () => {
         data={list}
         keyExtractor={(item) => item.id}
         contentContainerStyle={tw`pb-50`}
-        renderItem={({ item }) => (
-          <RenderItem
-            signature={item.signature}
-            initial={item.initial}
-            signature_code={item.signature_code}
-            id={item.id}
-            status={item.status}
-          />
-        )}
+        renderItem={({ item }) => <RenderItem item={item} />}
       />
     </View>
   );

@@ -64,6 +64,7 @@ const Step2 = () => {
         />
         <Input
           state={password}
+          secureTextEntry
           setState={setPassword}
           placeholder={"Enter password"}
           style={{}}

@@ -16,6 +16,7 @@ import Edit from "../screens/Manage/ManageDrawerScreens/Edit";
 import AddSignature from "../screens/Signatures/Screens/AddSignature";
 import Details from "../screens/Manage/ManageDrawerScreens/Details";
 import TemplateHistory from "../screens/Manage/ManageDrawerScreens/TemplateHistory";
+import Drawernavigator from "./Drawernavigator";
 const Stack = createStackNavigator<RootStackParamList>();
 const LoggedInStack = createStackNavigator<RootStackParamList>();
 
@@ -29,7 +30,11 @@ const StackNavigator = observer(() => {
     <>
       {Mobx.access_token ? (
         <LoggedInStack.Navigator>
-          <Stack.Screen name="TabNavigator" component={TabNavigator} />
+          <Stack.Screen
+            name="DashboardDrawernavigator"
+            component={Drawernavigator}
+          />
+          {/* <Stack.Screen name="TabNavigator" component={TabNavigator} /> */}
           <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
           <Stack.Screen name="Details" component={Details} />
           <Stack.Screen name="Edit" component={Edit} />

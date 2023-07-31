@@ -108,7 +108,9 @@ const Details = () => {
                   <View style={tw`gap-1`}>
                     <Text style={tw`font-bold text-black`}>Created At:{}</Text>
                     <Text style={tw`text-black`}>
-                      {data?.generateSignature.created_at}
+                      {new Date(
+                        data?.generateSignature.created_at
+                      ).toUTCString()}
                     </Text>
                   </View>
                 }
@@ -120,7 +122,9 @@ const Details = () => {
                   <View style={tw`gap-1`}>
                     <Text style={tw`font-bold text-black`}>Modified At</Text>
                     <Text style={tw`text-black`}>
-                      {data?.generateSignature.updated_at}
+                      {new Date(
+                        data?.generateSignature.updated_at
+                      ).toUTCString()}
                     </Text>
                   </View>
                 }
