@@ -1,11 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
+import accessToken from "./Slices";
 // ...
 
 const store = configureStore({
   reducer: {
-    posts: postsReducer,
-    comments: commentsReducer,
-    users: usersReducer,
+    accessToken: accessToken,
   },
 });
 

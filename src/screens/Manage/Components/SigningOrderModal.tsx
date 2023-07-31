@@ -74,25 +74,29 @@ const SigningOrderModal = ({ senderName, details }) => {
               {/* Sender */}
               <Row
                 title={"Sender: " + senderName}
-                shortName={senderName
-                  .replace(/\b(\w)\w+/g, "$1.")
-                  .replace(/\s/g, "")
-                  .replace(/\.$/, "")
-                  .toUpperCase()}
+                shortName={
+                  senderName &&
+                  senderName
+                    .replace(/\b(\w)\w+/g, "$1.")
+                    .replace(/\s/g, "")
+                    .replace(/\.$/, "")
+                    .toUpperCase()
+                }
               />
               {/* 1 */}
-              {details.map((element: any) => {
-                return (
-                  <Row
-                    title={element.recName}
-                    shortName={element.recName
-                      .replace(/\b(\w)\w+/g, "$1.")
-                      .replace(/\s/g, "")
-                      .replace(/\.$/, "")
-                      .toUpperCase()}
-                  />
-                );
-              })}
+              {details &&
+                details.map((element: any) => {
+                  return (
+                    <Row
+                      title={element.recName}
+                      shortName={element.recName
+                        .replace(/\b(\w)\w+/g, "$1.")
+                        .replace(/\s/g, "")
+                        .replace(/\.$/, "")
+                        .toUpperCase()}
+                    />
+                  );
+                })}
 
               {/* reciever */}
               <Row

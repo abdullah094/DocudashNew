@@ -1,5 +1,4 @@
 import type {
-<<<<<<< HEAD
     CompositeScreenProps,
     NavigatorScreenParams,
   } from '@react-navigation/native';
@@ -17,6 +16,7 @@ import { Industry } from './Step4';
     TemplateHistory: undefined
     Signatures: undefined
     AddSignature: undefined
+    Edit: undefined
   };
   
   export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -42,15 +42,6 @@ import { Industry } from './Step4';
    
     
   };
-=======
-  CompositeScreenProps,
-  NavigatorScreenParams,
-} from "@react-navigation/native";
-import type { StackScreenProps } from "@react-navigation/stack";
-import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import type { DrawerScreenProps } from "@react-navigation/drawer";
-import { Industry } from "./Step4";
->>>>>>> bbcbb4d4ecdc22a5915ca3718f4dac78cd84faa8
 
 export type RootStackParamList = {
   SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
