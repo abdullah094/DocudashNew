@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import { colors } from "../../../Colors";
 import SkeletonLoader from "expo-skeleton-loader";
-import { EmailBar as IEmailBar } from "../../../../types";
+import { Envelope, EmailBar as IEmailBar } from "../../../../types";
 import { useNavigation } from "@react-navigation/native";
 
 const Skeleton = () => {
@@ -25,29 +25,40 @@ const Skeleton = () => {
   );
 };
 
-const EmailBar = ({ item }: { item: IEmailBar }) => {
+const EmailBar = ({
+  item,
+  loading,
+  heading,
+}: {
+  item: Envelope;
+  loading: boolean;
+  heading: string;
+}) => {
   const navigation = useNavigation();
-  if (!item) return <Skeleton />;
-  // navigation.navigate("Inbox", { screen: "Details" })/
+  console.log(heading);
+  if (loading) return <Skeleton />;
 
-  const { emailSubject, emailMessage, created_by } = item;
   return (
     <>
       <TouchableOpacity
         delayPressIn={25}
         activeOpacity={0.5}
         style={tw`p-4 px-5 gap-3 bg-[${colors.white}]`}
-        onPress={() => navigation.navigate("Details", item)}
+        onPress={() =>
+          heading == "Inbox"
+            ? navigation.navigate("Details", item)
+            : navigation.navigate("Edit", item)
+        }
       >
-        <View style={tw`flex-row overflow-hidden gap-2 items-center flex-1`}>
+        <View style={tw`flex-row overflow-hidden gap-2 items-center h-16`}>
           <Image
             style={tw`w-10 h-10 rounded-full`}
             source={require("../../../assets/ProfielPic.png")}
           />
           <View>
-            <Text style={tw`font-bold text-black`}>{emailSubject}</Text>
+            <Text style={tw`font-bold text-black`}>{item?.emailSubject}</Text>
             <Text style={tw`font-light text-3 w-50 text-gray-900`}>
-              {emailMessage}
+              {item?.emailMessage}
             </Text>
           </View>
         </View>
@@ -56,12 +67,13 @@ const EmailBar = ({ item }: { item: IEmailBar }) => {
             style={[tw`h-4 w-3.5 `, { tintColor: colors.gray }]}
             source={require("../../../assets/PaperClip.png")}
           />
-          <Text style={tw`font-thin text-gray-900`}>From: {created_by}</Text>
+          <Text style={tw`font-thin text-gray-900`}>
+            From: {item?.created_by}
+          </Text>
         </View>
       </TouchableOpacity>
     </>
   );
-  return <Skeleton />;
 };
 
 export default EmailBar;

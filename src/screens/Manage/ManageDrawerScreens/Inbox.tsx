@@ -7,29 +7,27 @@ import axios from "axios";
 import { observer } from "mobx-react";
 import { useCounterStore } from "../../../../MobX/TodoStore";
 import {
+  Envelope,
+  InboxApiResponse,
   LoginStackScreenProps,
   ManageDrawerScreenProps,
 } from "../../../../types/type";
 import { EmailBar as IEmailbar } from "../../../../types";
-import { Button } from "react-native-paper";
+import { Button, Divider } from "react-native-paper";
 import FilterModal from "../Components/FilterModal";
 import Entypo from "@expo/vector-icons/Entypo";
 import { colors } from "../../../Colors";
-interface IInbox {
-  data: object | null;
-  heading: string | null;
-}
+
 const Inbox = observer(() => {
-  const [data, setData] = useState<Array<IEmailbar>>(new Array(5));
+  const [data, setData] = useState<Array<Envelope>>(new Array(5));
+  const [loading, setLoading] = useState(false);
   function filter(name: string | undefined) {
     if (name) {
       const filtered = data.filter((x) => x.emailSubject.includes(name));
       return filtered;
     }
   }
-  console.log();
 
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [Name, setName] = useState<string | undefined>();
   const navigation =
     useNavigation<ManageDrawerScreenProps<"Inbox">["navigation"]>();
@@ -37,10 +35,10 @@ const Inbox = observer(() => {
   const heading = route.params?.heading || ("Inbox" as string);
   const Mobx = useCounterStore();
   const fetchData = async () => {
+    setLoading(true);
     const h = heading.toLowerCase();
     const url = "https://docudash.net/api/generate-signature/";
     console.log(url + h);
-    setData(new Array(10));
     await axios
       .get(url + h, {
         headers: {
@@ -48,14 +46,14 @@ const Inbox = observer(() => {
         },
       })
       .then((response) => {
-        console.log("data", response.data.data);
-        setData(response.data.data);
-        setIsRefreshing(false);
+        setLoading(false);
+        const data: InboxApiResponse = response.data;
+        setData(data.data);
       })
       .catch((error) => {
+        setLoading(false);
         console.log("Error----", error);
         setData([]);
-        setIsRefreshing(false);
       });
   };
 
@@ -66,11 +64,10 @@ const Inbox = observer(() => {
   );
   useEffect(() => {
     fetchData();
-  }, [heading, isRefreshing]);
+  }, [heading]);
   const onRefresh = () => {
-    setIsRefreshing(true);
+    fetchData();
   };
-  console.log(Name);
 
   return (
     <View style={tw`flex-1`}>
@@ -93,10 +90,13 @@ const Inbox = observer(() => {
           </View>
         }
         onRefresh={onRefresh}
-        refreshing={isRefreshing}
+        refreshing={loading}
+        ItemSeparatorComponent={<Divider />}
         contentContainerStyle={[tw`pb-25 py-5`, { alignSelf: "stretch" }]}
         // keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <EmailBar item={item} />}
+        renderItem={({ item }) => (
+          <EmailBar item={item} loading={loading} heading={heading} />
+        )}
       />
     </View>
   );
