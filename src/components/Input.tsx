@@ -40,7 +40,7 @@ const Input = (props: props) => {
       onChangeText={setState}
       keyboardType={keyboardType}
       placeholder={placeholder}
-      secureTextEntry
+      secureTextEntry={secureTextEntry}
       style={[
         {
           borderWidth: 2,

@@ -196,7 +196,7 @@ export interface GenerateSignatureDetail {
   uniqid: string;
   recName: string;
   recEmail: string;
-  sign_type: number;
+  sign_type: string;
   emailSubject: string;
   emailMessage: string;
   access_code: string;
@@ -366,4 +366,26 @@ export interface SignaturePreview {
   status: number;
   updated_at: string;
   updated_by: number;
+}
+
+///upload data api
+export interface UploadDocumentAPI {
+  status: boolean;
+  message: string;
+  generateSignatureDetails: GenerateSignatureDetail[];
+  generateSignatureDetailsImages: GenerateSignatureDetailsImage[];
+}
+
+export interface GenerateSignatureDetailsImage {
+  id: number;
+  signature_id: number;
+  uniqid: string;
+  image: string;
+  base64_encode_image: null;
+  status: number;
+  created_by: number;
+  updated_by: number;
+  deleted: number;
+  created_at: string;
+  updated_at: string;
 }
