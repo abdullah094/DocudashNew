@@ -26,7 +26,10 @@ import {
   EmailBar,
   Envelope,
   GenerateSignature,
+  GenerateSignatureDetailsImage,
   RootStackScreenProps,
+  UploadDocumentAPI,
+  ViewDocument,
 } from "../../../../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
@@ -36,7 +39,7 @@ const Edit = () => {
     {
       recName: "",
       recEmail: "",
-      sign_type: 1,
+      sign_type: "1",
       hostName: "",
       hostEmail: "",
       access_code: "",
@@ -54,6 +57,11 @@ const Edit = () => {
   const [loading, setLoading] = useState(false);
   const [generateSignature, setGenerateSignature] =
     useState<GenerateSignature>();
+  const [generateSignatureDetailsImages, setGenerateSignatureDetailsImages] =
+    useState<GenerateSignatureDetailsImage[]>([]);
+  const route = useRoute();
+  const envelope: Envelope = route.params;
+  // console.log("data", envelope.id, envelope.signature_id);
 
   const addNewRecipient = () => {
     setData([
@@ -61,7 +69,7 @@ const Edit = () => {
       {
         recName: "",
         recEmail: "",
-        sign_type: 1,
+        sign_type: "1",
         hostName: "",
         hostEmail: "",
         access_code: "",
@@ -94,27 +102,75 @@ const Edit = () => {
     },
   ];
   useEffect(() => {
-    const url = "https://docudash.net/api/generate-signature/create";
-    axios
-      .post(
-        url,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${Mobx.access_token}`,
-          },
-        }
-      )
-      .then((response) => {
-        const data: GenerateSignature = response.data;
-        setGenerateSignature(data);
-        console.log("Data----", data);
-      })
-      .catch((error) => {
-        console.log("Error----", error);
-      });
+    if (envelope) {
+      axios
+        .get(
+          "https://docudash.net/api/generate-signature/upload-document/" +
+            envelope.uniqid +
+            "/" +
+            envelope.id,
+          {
+            headers: {
+              Authorization: `Bearer ${Mobx.access_token}`,
+            },
+          }
+        )
+        .then((response) => {
+          const data: UploadDocumentAPI = response.data;
+          if (data.generateSignatureDetails.length > 0) {
+            const fixData = data.generateSignatureDetails.map((x) => {
+              return {
+                ...x,
+                recipients_update_id: x.id,
+                showDropDown: false,
+                visible: false,
+                showAccessCode: false,
+                showPrivateMessage: false,
+              };
+            });
+            setEmailMessage(fixData[0].emailMessage);
+            setEmailSubject(fixData[0].emailSubject);
 
-    ("https://docudash.net/api/generate-signature/upload-document/99f8c0a8b4dc1e3987d575bb5052dab8/20");
+            const generate: GenerateSignature = {
+              signature_id: fixData[0].signature_id,
+              uniqid: fixData[0].uniqid,
+            };
+
+            setGenerateSignature(generate);
+            setData(fixData);
+          }
+
+          if (data.generateSignatureDetailsImages.length > 0) {
+            setGenerateSignatureDetailsImages(
+              data.generateSignatureDetailsImages
+            );
+          }
+
+          console.log("data", data);
+        });
+    } else {
+      const url = "https://docudash.net/api/generate-signature/create";
+      axios
+        .post(
+          url,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${Mobx.access_token}`,
+            },
+          }
+        )
+        .then((response) => {
+          const data: GenerateSignature = response.data;
+          setGenerateSignature(data);
+          console.log("Data----", data);
+        })
+        .catch((error) => {
+          console.log("Error----", error);
+        });
+
+      ("https://docudash.net/api/generate-signature/upload-document/99f8c0a8b4dc1e3987d575bb5052dab8/20");
+    }
   }, []);
   const save = () => {
     if (!generateSignature) return;
@@ -124,7 +180,10 @@ const Edit = () => {
     formData.append("signature_id", generateSignature.signature_id);
     data.forEach((item, index) => {
       {
-        formData.append("recipients_update_id[" + index + "]", "0");
+        formData.append(
+          "recipients_update_id[" + index + "]",
+          item.recipients_update_id
+        );
         formData.append("recName[" + index + "]", item.recName);
         formData.append("recEmail[" + index + "]", item.recEmail);
         formData.append("sign_type[" + index + "]", String(item.sign_type));
@@ -145,7 +204,7 @@ const Edit = () => {
       Authorization: `Bearer ${Mobx.access_token}`,
       "Content-Type": "multipart/form-data",
     };
-    console.log(JSON.stringify(formData));
+    console.log("formData", JSON.stringify(formData));
     axios
       .post(
         "https://docudash.net/api/generate-signature/upload-document",
@@ -216,7 +275,7 @@ const Edit = () => {
               }}
               list={actionList}
             />
-            {recipient.sign_type == 2 ? (
+            {recipient.sign_type == "2" ? (
               <>
                 <TextInput
                   mode="outlined"
