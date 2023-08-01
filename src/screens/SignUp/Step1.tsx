@@ -45,20 +45,22 @@ const Step1 = () => {
         checkAgree: checked,
       })
       .then((response) => {
-        response.data.success
+        const data = response.data;
+        console.log(data);
+        data.success
           ? (setLoader("Get Started"),
             navigation.replace("SignUpIndex", {
               screen: "Step2",
               params: {
-                api: response.data.next,
+                api: data.next,
               },
             }),
-            storeToken(response.data.next_access),
+            storeToken(data.next_access),
             storeData("Step2"),
-            console.log(response.data))
-          : response.data.message.email
-          ? Alert.alert(response.data.message.email[0])
-          : Alert.alert(response.data.message);
+            console.log(data))
+          : data.message.email
+          ? Alert.alert(data.message.email[0])
+          : Alert.alert(JSON.stringify(data.message));
 
         setLoader("Get Started");
       })

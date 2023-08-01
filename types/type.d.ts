@@ -1,4 +1,43 @@
 import type {
+  CompositeScreenProps,
+  NavigatorScreenParams,
+} from "@react-navigation/native";
+import type { StackScreenProps } from "@react-navigation/stack";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import type { DrawerScreenProps } from "@react-navigation/drawer";
+import { Industry } from "./Step4";
+
+export type RootStackParamList = {
+  SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
+  TabNavigator: NavigatorScreenParams<SignupStackParamList>;
+  ManageDrawer: NavigatorScreenParams<SignupStackParamList>;
+  LoginIndex: NavigatorScreenParams<LoginStackParamList>;
+  Details: NavigatorScreenParams<SignedInStackParamList>;
+  TemplateHistory: undefined;
+  Signatures: undefined;
+  AddSignature: undefined;
+  Edit: undefined
+};
+
+export type RootStackScreenProps<T extends keyof RootStackParamList> =
+  StackScreenProps<RootStackParamList, T>;
+
+export type SignupStackParamList = {
+  Step1: undefined;
+  Step2: { api: string };
+  Step3: { api: string };
+  Step4: { api: string };
+  Step5: { industry: Industry[]; signUpReasons: Industry[] };
+};
+export type LoginStackParamList = {
+  Step1: undefined;
+  Step2: { token: string; email: string };
+  Inbox: { heading: string };
+};
+export type SignedInStackParamList = {
+  Inbox: undefined;
+  Details: undefined;
+};
     CompositeScreenProps,
     NavigatorScreenParams,
   } from '@react-navigation/native';
@@ -140,8 +179,8 @@ export interface GenerateSignature {
   created_by: number;
   updated_by: number;
   deleted: number;
-  created_at: string;
-  updated_at: string;
+  created_at: date;
+  updated_at: date;
   user: User;
 }
 
@@ -276,4 +315,99 @@ export interface Envelope {
 export interface Input {
   quick_search: null;
   draft_daterange: null;
+}
+
+export interface DashboardAPI {
+  message: string;
+  signature: Signature;
+  status: boolean;
+  user: User;
+}
+
+export interface Signature {
+  created_at: string;
+  created_by: number;
+  deleted: number;
+  id: number;
+  initial: string;
+  signature: string;
+  signature_code: string;
+  status: number;
+  updated_at: string;
+  updated_by: number;
+}
+
+export interface User {
+  about_notary: null;
+  account_type: number;
+  address1: null;
+  address2: null;
+  bussiness_start_up_date: null;
+  city: null;
+  company: null;
+  country: null;
+  created_at: string;
+  created_by: number;
+  deleted: number;
+  email: string;
+  email_verified_at: null;
+  first_name: string;
+  hired_time: null;
+  id: number;
+  image: string;
+  industry_id: number;
+  ip_sign_in: string;
+  ip_sign_up: string;
+  last_name: string;
+  lat: null;
+  licence_number: null;
+  location_sign_in: string;
+  location_sign_up: string;
+  logged_in: number;
+  logged_in_at: string;
+  logged_out_at: string;
+  long: null;
+  mobile: null;
+  name: string;
+  phone: string;
+  profile_photo: string;
+  profile_photo_url: string;
+  remains_days: number;
+  sign_up_reasons_id: number;
+  state: null;
+  status: number;
+  steps: number;
+  trial_account: number;
+  trial_account_expired: number;
+  updated_at: string;
+  updated_by: number;
+  user_type: number;
+  verification_code: string;
+  verification_date: string;
+  verification_status: number;
+  video_call: null;
+  zip_code: number;
+}
+
+export interface SignaturesListAPI {
+  data: SignaturePreview[];
+  draw: number;
+  input: any[];
+  recordsFiltered: number;
+  recordsTotal: number;
+}
+
+export interface SignaturePreview {
+  DT_RowIndex: number;
+  action: string;
+  created_at: string;
+  created_by: number;
+  deleted: number;
+  id: number;
+  initial: string;
+  signature: string;
+  signature_code: string;
+  status: number;
+  updated_at: string;
+  updated_by: number;
 }

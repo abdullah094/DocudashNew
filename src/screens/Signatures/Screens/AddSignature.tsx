@@ -7,8 +7,15 @@ import {
   ScrollView,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
-import React, { useRef, useCallback } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
 import {
   Button,
   Checkbox,
@@ -22,25 +29,51 @@ import AddSignatureDraw from "../Components/AddSignauteDraw";
 import * as DocumentPicker from "expo-document-picker";
 import axios from "axios";
 import { useCounterStore } from "../../../../MobX/TodoStore";
-import ViewShot, { captureRef } from "react-native-view-shot";
-const AddSignature = () => {
-  const [fullName, setFullName] = React.useState("");
-  const [initals, setInitials] = React.useState("");
-  const [value, setValue] = React.useState("choose");
 
+import { Signature, SignaturePreview, User } from "../../../../types";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import ChooseSignatureItem from "../Components/ChooseSignatureItem";
+
+const AddSignature = () => {
   const Mobx = useCounterStore();
-  const data = [
-    {
-      id: 0,
-      sign: "Abduulajh",
-      initials: "Ab",
-    },
-    {
-      id: 1,
-      sign: "Abduulajh",
-      initials: "Ab",
-    },
-  ];
+  const user: User = Mobx.user;
+  const [fullName, setFullName] = React.useState(
+    user.first_name + " " + user.last_name
+  );
+
+  const [initials, setInitials] = React.useState(
+    fullName
+      .replace(/\b(\w)\w+/g, "$1")
+      .replace(/\s/g, "")
+      .replace(/\.$/, "")
+      .toUpperCase()
+  );
+  const [value, setValue] = React.useState("choose");
+  const [list, setList] = React.useState(
+    new Array(6).fill({ selected: false })
+  );
+  const [selectedUri, setSetselectedUri] = useState<string | undefined>();
+  const [selectedInitialUri, setSetselectedInitialUri] = useState<
+    string | undefined
+  >();
+  const navigation = useNavigation();
+  const route = useRoute();
+  const signaturePreview = route.params as SignaturePreview;
+  console.log("signaturePreview", signaturePreview);
+  console.log("selectedUri", selectedInitialUri);
+
+  useEffect(() => {
+    if (signaturePreview) {
+      setList((prev) =>
+        prev.map((sign, i) =>
+          i === signaturePreview.DT_RowIndex - 1
+            ? { ...sign, selected: true }
+            : { ...sign, selected: false }
+        )
+      );
+    }
+  }, []);
+
   const uploadFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -51,65 +84,15 @@ const AddSignature = () => {
       console.log("err");
     }
   };
-  const RenderItem = ({ initials, ischecked }: any) => {
-    const [setselected, setSetselected] = React.useState();
-    const ref = useRef();
-    const onCapture = () => {
-      ref.current.capture().then((uri) => {
-        console.log("do something with ", uri);
-      });
-    };
-    return (
-      <View style={tw` p-2 py-4 flex-row items-center gap-2 mt-3`}>
-        <Pressable
-          onPress={onCapture}
-          style={[
-            tw`border-2 h-5 w-5 rounded-full border-gray-400 justify-center items-center`,
-            ischecked ? tw`bg-[${colors.green}]` : tw`bg-white`,
-          ]}
-        ></Pressable>
-        <View style={tw`flex-row items-center gap-2  h-25 ml-2`}>
-          <Image
-            style={[tw`h-25 w-3`, { tintColor: colors.green }]}
-            resizeMode="contain"
-            source={require("../../../assets/WhiteLine.png")}
-          />
-          <View style={tw`h-full justify-around w-[50%]`}>
-            <Text style={styles.h2}>Sign by</Text>
-            <ViewShot
-              ref={ref}
-              options={{
-                fileName: "Your-File-Name",
-                format: "png",
-                quality: 0.9,
-                result: "base64",
-              }}
-            >
-              <Text>Abdullah</Text>
-            </ViewShot>
-          </View>
-        </View>
-        <View style={tw`flex-row items-center gap-2  h-25 w-[50%]`}>
-          <Image
-            style={[tw`h-25 w-3`, { tintColor: colors.green }]}
-            resizeMode="contain"
-            source={require("../../../assets/WhiteLine.png")}
-          />
-          <View style={tw`h-full justify-around`}>
-            <Text style={styles.h2}>Sign by</Text>
-            <Text>AB</Text>
-          </View>
-        </View>
-      </View>
-    );
-  };
+  console.log(selectedUri);
+
   const create = () => {
     axios
       .post(
         "https://docudash.net/api/signatures/create",
         {
-          signature: 1,
-          initial: 2,
+          signature: "data:image/png;base64," + selectedUri,
+          initial: "data:image/png;base64," + selectedInitialUri,
         },
         {
           headers: {
@@ -119,6 +102,7 @@ const AddSignature = () => {
       )
       .then((response) => {
         const data = response.data;
+        Alert.alert("Signature added");
         console.log(data);
       })
       .catch((err) => {
@@ -126,17 +110,19 @@ const AddSignature = () => {
       });
   };
   return (
-    <View style={tw`p-3 gap-2`}>
+    <View style={tw`p-3 gap-2 flex-1`}>
       <TextInput
         mode="outlined"
         label="Full Name"
+        disabled
         value={fullName}
         onChangeText={(text) => setFullName(text)}
       />
       <TextInput
         label="Initials"
         mode="outlined"
-        value={initals}
+        disabled
+        value={initials}
         onChangeText={(text) => setInitials(text)}
       />
       <SegmentedButtons
@@ -156,9 +142,18 @@ const AddSignature = () => {
       />
       {value === "choose" ? (
         <FlatList
-          data={data}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <RenderItem initials={item.initials} />}
+          data={list}
+          renderItem={({ item, index }) => (
+            <ChooseSignatureItem
+              item={item}
+              id={index}
+              setList={setList}
+              fullName={fullName}
+              initials={initials}
+              setSetselectedUri={setSetselectedUri}
+              setSetselectedInitialUri={setSetselectedInitialUri}
+            />
+          )}
         />
       ) : null}
       {value === "draw" ? <AddSignatureDraw /> : null}

@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SignatureScreen, {
   SignatureViewRef,
 } from "react-native-signature-canvas";
@@ -22,12 +22,13 @@ import {
   StandardFonts,
 } from "pdf-lib";
 import tailwind from "twrnc";
+import { SignaturePreview } from "../../../../types";
 // import { DocumentNavigationProps, DocumentRouteProps } from "../types";
 
 const Signature = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
+  const signaturePreview = route.params as SignaturePreview;
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const [scrollEnabled, setScrollEnabled] = useState(true);
@@ -140,7 +141,7 @@ const Signature = () => {
             onBegin={() => setScrollEnabled(false)}
             onEnd={() => setScrollEnabled(true)}
             onOK={onSave}
-            // dataURL={route.params?.image}
+            dataURL={signaturePreview?.signature}
             webStyle={style}
           />
         </View>
@@ -155,7 +156,7 @@ const Signature = () => {
             onBegin={() => setScrollEnabled(false)}
             onEnd={() => setScrollEnabled(true)}
             onOK={onSave}
-            // dataURL={route.params?.image}
+            dataURL={signaturePreview?.initial}
             webStyle={style}
           />
         </View>

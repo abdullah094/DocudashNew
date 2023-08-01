@@ -5,6 +5,7 @@ import { makeObservable, action, observable } from "mobx";
 class CounterStore {
   count = 0; // count is now persistent.
   access_token = "";
+  user = {};
   step = 0;
   constructor() {
     makeObservable(this, {
@@ -12,6 +13,7 @@ class CounterStore {
       increment: action.bound,
       decrement: action.bound,
       access_token: observable,
+      user: observable,
       step: observable,
       addAccessToken: action.bound,
       deleteAccessToken: action.bound,
@@ -30,6 +32,9 @@ class CounterStore {
 
   decrement() {
     this.count -= 1;
+  }
+  AddUser(user) {
+    this.user = user;
   }
 }
 

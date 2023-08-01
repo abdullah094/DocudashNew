@@ -24,14 +24,21 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../types";
+import {
+  RootStackParamList,
+  SignaturePreview,
+  SignaturesListAPI,
+} from "../../../types";
 
 const Index = () => {
-  const [list, setList] = React.useState();
+  const [list, setList] = React.useState<SignaturePreview[]>();
+  const [isFetching, setIsFetching] = React.useState(false);
   const Mobx = useCounterStore();
   const navigation = useNavigation();
+  console.log(Mobx.access_token);
 
   const fetchList = () => {
+    setIsFetching(true);
     axios
       .get("https://docudash.net/api/signatures/list", {
         headers: {
@@ -39,8 +46,21 @@ const Index = () => {
         },
       })
       .then((response) => {
-        const data = response.data;
-        setList(data.data);
+        const data: SignaturesListAPI = response.data;
+        const changedata = data.data.map((x) => {
+          return {
+            ...x,
+            signature: x.signature.replace(/(\r\n|\n|\r)/gm, ""),
+            initial: x.initial.replace(/(\r\n|\n|\r)/gm, ""),
+          };
+        });
+
+        setList(changedata);
+        // setList(data.data);
+        setIsFetching(false);
+      })
+      .catch((err) => {
+        setIsFetching(false);
       });
   };
   React.useEffect(() => {
@@ -171,41 +191,44 @@ const Index = () => {
       });
   };
 
-  const RenderItem = ({ signature, initial, signature_code, id, status }) => {
+  const RenderItem = ({ item }) => {
     const [more, setMore] = React.useState(false);
     const [isSwitchOn, setIsSwitchOn] = React.useState(
-      status === 1 ? true : false
+      item.status === 1 ? true : false
     );
 
     const onToggleSwitch = () => {
       setIsSwitchOn(!isSwitchOn);
-      StatusUpdate(id, isSwitchOn ? 1 : 0);
+      StatusUpdate(item.id, isSwitchOn ? 1 : 0);
     };
+
     return (
-      <View style={tw` bg-white p-2 my-1 gap-2`}>
+      <View style={tw` bg-white p-2 my-1 gap-2 px-3`}>
         <View style={tw`flex-row gap-2 overflow-hidden`}>
           <View style={tw`flex-1`}>
             <View>
               <Text style={tw`font-medium`}>Signed by</Text>
               <Image
-                style={tw`w-15 h-15`}
+                style={tw`w-full h-20 `}
                 resizeMode="contain"
-                source={{ uri: signature }}
+                source={{
+                  uri: item.signature,
+                }}
               />
             </View>
             <View>
               <Text style={tw`font-medium`}>Initials</Text>
               <Image
-                style={tw`w-15 h-15 `}
+                style={tw`w-full h-20`}
                 resizeMode="contain"
-                source={{ uri: initial }}
+                source={{ uri: item.initial }}
               />
             </View>
             <View style={tw`gap-4  `}>
               <Text style={tw`font-medium overflow-hidden`}>
                 Signature Code
               </Text>
-              <Text>{signature_code}</Text>
+              <Text>{item.signature_code}</Text>
             </View>
           </View>
           <View style={tw` p-2 justify-between`}>
@@ -219,12 +242,13 @@ const Index = () => {
                   mode="outlined"
                   selectedColor={colors.blue}
                   onPress={() => {
-                    console.log("Edit");
+                    navigation.navigate("AddSignature", item);
+                    // console.log(item);
                   }}
                 >
                   Edit
                 </Chip>
-                <Chip mode="outlined" onPress={() => Delete(id)}>
+                <Chip mode="outlined" onPress={() => Delete(item.id)}>
                   Delete
                 </Chip>
               </View>
@@ -266,16 +290,10 @@ const Index = () => {
       <FlatList
         data={list}
         keyExtractor={(item) => item.id}
+        onRefresh={fetchList}
+        refreshing={isFetching}
         contentContainerStyle={tw`pb-50`}
-        renderItem={({ item }) => (
-          <RenderItem
-            signature={item.signature}
-            initial={item.initial}
-            signature_code={item.signature_code}
-            id={item.id}
-            status={item.status}
-          />
-        )}
+        renderItem={({ item }) => <RenderItem item={item} />}
       />
     </View>
   );
