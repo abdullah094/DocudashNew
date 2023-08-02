@@ -89,7 +89,7 @@ const CustomDrawer = () => {
             />
 
             <List.Item
-              title="ManageDrawer"
+              title="Manage"
               onPress={() => {
                 navigation.navigate("ManageDrawer");
               }}
