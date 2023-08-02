@@ -22,6 +22,7 @@ import DrawerProfileModal from "./Components/DrawerProfileModal";
 import { observer } from "mobx-react";
 import { useCounterStore } from "../../../MobX/TodoStore";
 import { clearToken } from "../../AsyncGlobal";
+import { Button, List } from "react-native-paper";
 
 const BellTrigger = () => (
   <Image
@@ -36,14 +37,15 @@ const CustomDrawer = () => {
   const navigation = useNavigation();
   const Mobx = useCounterStore();
   return (
-    <ScrollView contentContainerStyle={tw`flex-1`}>
-      <View style={tw`flex-1 bg-[${colors.white}] pb-50 gap-2 items-center`}>
-        <View style={tw`flex-row items-center  w-full justify-between px-5`}>
+    <View style={tw`h-full my-4 bg-red-200`}>
+      <View style={tw`flex-1 bg-[${colors.white}]`}>
+        <View
+          style={tw`flex-row items-center  mt-5 w-full justify-between px-5`}
+        >
           <Image
-            style={tw`w-30 h-7 mt-5`}
+            style={tw`w-30 h-7 `}
             source={require("../../assets/docudash_pow_logo.png")}
           />
-
           <Menu>
             <MenuTrigger text={<BellTrigger />} />
             <MenuOptions>
@@ -76,59 +78,59 @@ const CustomDrawer = () => {
           </Menu>
         </View>
         <DrawerProfileModal />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Dashboard")}
-        >
-          <Text style={styles.button_text}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Text style={styles.button_text}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("ManageDrawer")}
-        >
-          <Text style={styles.button_text}>Manage</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Template")}
-        >
-          <Text style={styles.button_text}>Templates</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Signatures")}
-        >
-          <Text style={styles.button_text}>Signatures</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            Alert.alert("Signout Successfull");
-            Mobx.deleteAccessToken();
-            clearToken();
-          }}
-        >
-          <Text style={styles.button_text}>Signout</Text>
-        </TouchableOpacity>
+        <ScrollView contentContainerStyle={tw`w-[280px]`}>
+          <View style={{}}>
+            <List.Item
+              title="Dashboard"
+              onPress={() => {
+                navigation.navigate("Dashboard");
+              }}
+            />
+
+            <List.Item
+              title="ManageDrawer"
+              onPress={() => {
+                navigation.navigate("ManageDrawer");
+              }}
+            />
+            <List.Item
+              title="Template"
+              onPress={() => {
+                navigation.navigate("Template");
+              }}
+            />
+            <List.Item
+              title="Signatures"
+              onPress={() => {
+                navigation.navigate("Signatures");
+              }}
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                Alert.alert("Signout Successfull");
+                Mobx.deleteAccessToken();
+                clearToken();
+              }}
+            >
+              <Text style={styles.button_text}>Signout</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
-      <TouchableOpacity
-        style={[
-          styles.button,
-          tw`self-end bg-[${colors.green}] items-center w-40 my-10 self-center rounded-lg`,
-        ]}
-      >
-        <Text style={[styles.button_text, tw`text-white font-bold`]}>
+      <View style={tw`absolute bottom-5 left-0 right-0 bg-white`}>
+        <Button
+          mode="contained"
+          style={[tw`items-center w-40 rounded-lg  self-center`]}
+        >
           View Plans
+        </Button>
+        <Text style={tw`text-black text-3 text-center mt-3 font-semibold`}>
+          © 2023 DocuDash
         </Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </View>
+    </View>
   );
 };
 

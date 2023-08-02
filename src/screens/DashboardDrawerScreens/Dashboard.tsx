@@ -59,12 +59,11 @@ const Dashboard = () => {
       })
       .then((response) => {
         const data: DashboardAPI = response.data;
-        console.log(data);
-
+        console.log("DashboardAPI", data);
+        Mobx.AddUser(data.user);
         setUserData(data.user);
         if (data.signature?.signature) {
           setSignature(data.signature);
-          Mobx.AddUser(data.user);
         } else {
           setSignature("");
         }
