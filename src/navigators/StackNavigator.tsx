@@ -4,21 +4,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 import SignUpIndex from "../screens/SignUp/Index";
 import { RootStackParamList } from "../../types";
 import TabNavigator from "./TabNavigator";
-import { storeTokenGlobal, getTokenGlobal, clearToken } from "../AsyncGlobal";
-import { useSafeAreaFrame } from "react-native-safe-area-context";
-import { set } from "mobx";
-import Manage from "../screens/Manage/Manage";
 import ManageDrawer from "../screens/Manage/ManageDrawer";
 import { useCounterStore } from "../../MobX/TodoStore";
 import { observer } from "mobx-react";
-import LoginIndex from "../screens/Login/Index";
 import Edit from "../screens/Manage/ManageDrawerScreens/Edit";
 import AddSignature from "../screens/Signatures/Screens/AddSignature";
 import Details from "../screens/Manage/ManageDrawerScreens/Details";
 import TemplateHistory from "../screens/Manage/ManageDrawerScreens/TemplateHistory";
 import Drawernavigator from "./Drawernavigator";
 const Stack = createStackNavigator<RootStackParamList>();
-const LoggedInStack = createStackNavigator<RootStackParamList>();
 
 const StackNavigator = observer(() => {
   // clearToken();
@@ -27,27 +21,25 @@ const StackNavigator = observer(() => {
   console.log("StackNaviMobx", Mobx.access_token);
 
   return (
-    <>
+    <Stack.Navigator>
       {Mobx.access_token ? (
-        <LoggedInStack.Navigator>
+        <Stack.Group>
           <Stack.Screen
             name="DashboardDrawernavigator"
             component={Drawernavigator}
           />
-          {/* <Stack.Screen name="TabNavigator" component={TabNavigator} /> */}
           <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
           <Stack.Screen name="Details" component={Details} />
           <Stack.Screen name="Edit" component={Edit} />
           <Stack.Screen name="TemplateHistory" component={TemplateHistory} />
           <Stack.Screen name="AddSignature" component={AddSignature} />
-        </LoggedInStack.Navigator>
+        </Stack.Group>
       ) : (
-        <Stack.Navigator initialRouteName="LoginIndex">
-          <Stack.Screen name="LoginIndex" component={LoginIndex} />
+        <Stack.Group>
           <Stack.Screen name="SignUpIndex" component={SignUpIndex} />
-        </Stack.Navigator>
+        </Stack.Group>
       )}
-    </>
+    </Stack.Navigator>
   );
 });
 

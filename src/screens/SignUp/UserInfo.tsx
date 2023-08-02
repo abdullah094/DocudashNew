@@ -24,14 +24,21 @@ import { storeData, getToken } from "./AsynFunc";
 import { observer } from "mobx-react-lite";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { SignupStackScreenProps } from "../../../types";
+import {
+  LoginStackScreenProps,
+  SignUpAPI,
+  SignUpStackScreenProps,
+} from "../../../types";
 
 interface form {
   first_Name: SetStateAction<string | undefined>;
   last_Name: SetStateAction<string | undefined>;
   phone: SetStateAction<string | undefined>;
 }
-const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
+const UserInfoScreen = () => {
+  const navigation =
+    useNavigation<LoginStackScreenProps<"Step2">["navigation"]>();
+  const route = useRoute<LoginStackScreenProps<"Step2">["route"]>();
   const { count, increment, decrement, access_token } = useCounterStore();
   const [fontsLoaded] = useFonts({
     Signature: require("../../assets/Fonts/Creattion.otf"),
@@ -43,16 +50,10 @@ const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
     phone: "",
   });
 
-  const [loader, setLoader] = useState<string | any>("Next");
+  const [loading, setLoading] = useState<boolean>(false);
   const fetchData = async () => {
-    setLoader(
-      <View style={tw`pt-1`}>
-        <BarIndicator color="white" size={20} />
-      </View>
-    );
-
+    setLoading(true);
     const token = await getToken();
-
     axios
       .post("https://docudash.net/api/sign-up-1/" + token, {
         first_name: form.first_Name,
@@ -60,31 +61,32 @@ const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
         phone: form.phone,
       })
       .then((response) => {
-        const data = response.data;
-        console.log("top----", data);
-        if (data.success) {
-          setLoader("Next"),
+        const { data, success, next_access, message, next }: SignUpAPI =
+          response.data;
+
+        console.log("NameScreen", data);
+        if (success) {
+          setLoading(false),
             navigation.replace("SignUpIndex", {
-              screen: "Step3",
+              screen: "Step" + data.steps,
               params: {
-                api: data.next,
+                api: next,
               },
             }),
-            storeData("Step3");
+            storeData("Step" + data.steps);
         } else {
-          if (data.message.first_name) {
-            Alert.alert(data.message.first_name[0]);
-          } else if (data.message.last_name) {
-            Alert.alert(data.message.last_name[0]);
-          } else if (data.message.phone) {
-            Alert.alert(data.message.phone[0]);
+          if (message.first_name) {
+            Alert.alert(message.first_name[0]);
+          } else if (message.last_name) {
+            Alert.alert(message.last_name[0]);
+          } else if (message.phone) {
+            Alert.alert(message.phone[0]);
           }
-
-          setLoader("Next");
+          setLoading(false);
         }
       })
       .catch((err) => {
-        setLoader("Next");
+        setLoading(false);
       });
   };
   if (!fontsLoaded) {
@@ -167,7 +169,8 @@ const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
             </View>
           </View>
           <GreenButton
-            text={loader}
+            loading={loading}
+            text={"Next"}
             onPress={fetchData}
             styles={tw`px-8 mt-8`}
           />
@@ -176,6 +179,6 @@ const Step2 = ({ navigation, route }: SignupStackScreenProps<"Step2">) => {
     </ScrollView>
   );
 };
-export default Step2;
+export default UserInfoScreen;
 
 const styles = StyleSheet.create({});

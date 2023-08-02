@@ -130,16 +130,13 @@ const Edit = () => {
             });
             setEmailMessage(fixData[0].emailMessage);
             setEmailSubject(fixData[0].emailSubject);
-
-            const generate: GenerateSignature = {
-              signature_id: fixData[0].signature_id,
-              uniqid: fixData[0].uniqid,
-            };
-
-            setGenerateSignature(generate);
             setData(fixData);
           }
-
+          const generate: GenerateSignature = {
+            signature_id: data.signature_id,
+            uniqid: data.uniqid,
+          };
+          setGenerateSignature(generate);
           if (data.generateSignatureDetailsImages.length > 0) {
             setGenerateSignatureDetailsImages(
               data.generateSignatureDetailsImages
@@ -168,8 +165,6 @@ const Edit = () => {
         .catch((error) => {
           console.log("Error----", error);
         });
-
-      ("https://docudash.net/api/generate-signature/upload-document/99f8c0a8b4dc1e3987d575bb5052dab8/20");
     }
   }, []);
   const save = () => {
@@ -226,7 +221,40 @@ const Edit = () => {
       });
   };
 
-  console.log(emailMessage);
+  const deleteRecipient = (index: number) => {
+    const item = data[index];
+    if (item.recipients_update_id == "0") {
+      setData(data.filter((_, i) => i !== index));
+      return;
+    }
+    axios
+      .post(
+        "https://docudash.net/api/generate-signature/deleteReceipent",
+        { deleteId: item.recipients_update_id },
+        {
+          headers: {
+            Authorization: `Bearer ${Mobx.access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const apiData: {
+          status: boolean;
+          message: string;
+          returnAffected: number;
+        } = response.data;
+        if (apiData.status) {
+          setData(data.filter((_, i) => i !== index));
+          alert(apiData.message);
+        } else {
+          alert(apiData.message);
+        }
+        console.log("data", response.data);
+      })
+      .catch((error) => {
+        console.log("Error----", error);
+      });
+  };
   return (
     <ScrollView>
       <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
@@ -242,7 +270,7 @@ const Edit = () => {
                 <IconButton
                   icon="close"
                   size={20}
-                  onPress={() => setData(data.filter((_, i) => i !== index))}
+                  onPress={() => deleteRecipient(index)}
                 />
               )}
             </View>

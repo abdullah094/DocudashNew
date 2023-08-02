@@ -23,49 +23,59 @@ import { SIGNUP_0 } from "@env";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
 import { storeData, getData, storeToken } from "./AsynFunc";
-import { RootStackParamList, SignupStackScreenProps } from "../../../types";
+import {
+  RootStackParamList,
+  SignUpAPI,
+  SignUpStackScreenProps,
+} from "../../../types";
 
-const Step1 = () => {
+const EmailScreen = () => {
   const navigation =
-    useNavigation<SignupStackScreenProps<"Step1">["navigation"]>();
-  const [inputVal, setInputVal] = useState<string | undefined>("");
+    useNavigation<SignUpStackScreenProps<"Index">["navigation"]>();
+  const route = useNavigation<SignUpStackScreenProps<"Index">["route"]>();
+  const [inputVal, setInputVal] = useState<string>("");
   const [checked, setChecked] = useState(0);
-
-  const [loader, setLoader] = useState<string | any>("Get Started");
-
+  const [loading, setLoading] = useState<boolean>(false);
   const fetchData = () => {
-    setLoader(
-      <View style={tw`pt-1`}>
-        <BarIndicator color="white" size={20} />
-      </View>
-    );
+    setLoading(true);
     axios
       .post(SIGNUP_0, {
         email: inputVal?.toLowerCase(),
         checkAgree: checked,
       })
       .then((response) => {
-        const data = response.data;
-        console.log(data);
-        data.success
-          ? (setLoader("Get Started"),
-            navigation.replace("SignUpIndex", {
-              screen: "Step2",
+        const { data, success, next_access, message, next }: SignUpAPI =
+          response.data;
+        console.log("emailScreen", response.data);
+        if (success) {
+          if (data.steps === 5) {
+            navigation.navigate("SignUpIndex", {
+              screen: "Step" + data.steps,
               params: {
-                api: data.next,
+                api: next,
+                email: data.email,
               },
-            }),
-            storeToken(data.next_access),
-            storeData("Step2"),
-            console.log(data))
-          : data.message.email
-          ? Alert.alert(data.message.email[0])
-          : Alert.alert(JSON.stringify(data.message));
-
-        setLoader("Get Started");
+            });
+          } else {
+            navigation.replace("SignUpIndex", {
+              screen: "Step" + data.steps,
+              params: {
+                api: next,
+                email: data.email,
+              },
+            });
+          }
+          storeToken(next_access);
+          storeData("Step" + data.steps);
+        } else {
+          message.email
+            ? Alert.alert(message.email[0])
+            : Alert.alert(JSON.stringify(message));
+        }
+        setLoading(false);
       })
       .catch((err) => {
-        setLoader("Get Started");
+        setLoading(false);
       });
   };
   return (
@@ -116,13 +126,17 @@ const Step1 = () => {
           By clicking the Get Started button below, you agree to the Terms &
           Conditions and Privacy Policy.
         </Text>
-        <GreenButton text={loader} onPress={fetchData} />
+        <GreenButton
+          loading={loading}
+          text={"Get Started"}
+          onPress={fetchData}
+        />
       </View>
     </ScrollView>
   );
 };
 
-export default Step1;
+export default EmailScreen;
 
 const styles = StyleSheet.create({
   soft_text: tw` text-gray-500 `,
