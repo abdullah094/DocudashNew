@@ -159,7 +159,7 @@ const Dashboard = () => {
               style={tw`w-2.1 h-24 rounded-full mt-5 top--2 mx-2`}
               source={require("../../assets/WhiteLine.png")}
             />
-            <View style={tw`h-[100%] justify-between  px-1 `}>
+            <View style={tw`h-full justify-between  px-1  items-start `}>
               <Text style={[styles.white_text, tw`font-semibold`]}>
                 Signed by:
               </Text>
@@ -167,10 +167,13 @@ const Dashboard = () => {
               {signature ? (
                 <>
                   <Image
-                    style={[tw` h-8`, { tintColor: "white" }]}
-                    source={{ uri: signature?.signature }}
+                    style={[tw` h-10 w-40 `, { tintColor: "black" }]}
+                    source={{
+                      uri: signature?.signature.replace(/(\r\n|\n|\r)/gm, ""),
+                    }}
                     resizeMode="contain"
                   />
+
                   <Text style={styles.white_text}>
                     {signature.signature_code}
                   </Text>

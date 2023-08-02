@@ -47,6 +47,7 @@ const Index = () => {
       })
       .then((response) => {
         const data: SignaturesListAPI = response.data;
+
         const changedata = data.data.map((x) => {
           return {
             ...x,
@@ -209,7 +210,7 @@ const Index = () => {
             <View>
               <Text style={tw`font-medium`}>Signed by</Text>
               <Image
-                style={tw`w-full h-20 `}
+                style={tw`w-full h-20  `}
                 resizeMode="contain"
                 source={{
                   uri: item.signature,

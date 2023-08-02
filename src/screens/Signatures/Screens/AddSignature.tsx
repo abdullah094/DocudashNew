@@ -52,15 +52,15 @@ const AddSignature = () => {
   const [list, setList] = React.useState(
     new Array(6).fill({ selected: false })
   );
-  const [selectedUri, setSetselectedUri] = useState<string | undefined>();
-  const [selectedInitialUri, setSetselectedInitialUri] = useState<
-    string | undefined
-  >();
+  const [selectedUri, setSetselectedUri] = useState<string>("");
+  const [selectedInitialUri, setSetselectedInitialUri] = useState<string>("");
+  const [sign, setSign] = useState<Array<{}> | undefined>();
+  const [initial, setInitial] = useState<Array<{}> | undefined>();
   const navigation = useNavigation();
   const route = useRoute();
   const signaturePreview = route.params as SignaturePreview;
-  console.log("signaturePreview", signaturePreview);
-  console.log("selectedUri", selectedInitialUri);
+  console.log("sign", sign);
+  console.log("initials", initial);
 
   useEffect(() => {
     if (signaturePreview) {
@@ -74,17 +74,30 @@ const AddSignature = () => {
     }
   }, []);
 
-  const uploadFile = async () => {
+  const uploadSignature = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["*/*"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+        type: ["image/*"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
-      console.log(result);
+      if (result?.type !== "cancel") {
+        setSign(result);
+      }
     } catch (err) {
-      console.log("err");
+      console.log("err", err);
     }
   };
-  console.log(selectedUri);
+  const uploadInitial = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["image/*"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+      });
+      if (result?.type !== "cancel") {
+        setInitial(result);
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
 
   const create = () => {
     axios
@@ -156,24 +169,58 @@ const AddSignature = () => {
           )}
         />
       ) : null}
-      {value === "draw" ? <AddSignatureDraw /> : null}
+      {value === "draw" ? (
+        <AddSignatureDraw
+          setSetselectedUri={setSetselectedUri}
+          setSetselectedInitialUri={setSetselectedInitialUri}
+        />
+      ) : null}
       {value === "upload" ? (
-        <View style={tw`bg-white px-8 py-8 rounded-md`}>
+        <ScrollView
+          contentContainerStyle={tw`bg-white px-8 py-8 rounded-md gap-5`}
+        >
           <View
-            style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
+            style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
           >
-            <TouchableOpacity style={tw`p-1`} onPress={uploadFile}>
+            {sign && (
+              <Image
+                style={tw`h-20 w-20 bg-red-300`}
+                source={{ uri: sign.uri }}
+              />
+            )}
+            <TouchableOpacity style={tw`p-1 `} onPress={uploadSignature}>
               <Image
                 style={tw`h-10 w-10 self-center`}
                 source={require("../../../assets/Upload.png")}
               />
               <Text style={tw`text-[${colors.blue}] mt-2`}>
-                Drop documents here to get started
+                Upload your signature
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+          <View
+            style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
+          >
+            {initial && (
+              <Image
+                style={tw`h-20 w-20 bg-red-300`}
+                source={{ uri: initial.uri }}
+              />
+            )}
+            <TouchableOpacity style={tw`p-1 `} onPress={uploadInitial}>
+              <Image
+                style={tw`h-10 w-10 self-center`}
+                source={require("../../../assets/Upload.png")}
+              />
+              <Text style={tw`text-[${colors.blue}] mt-2`}>
+                Upload your signature
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       ) : null}
+
+      {/* Create sign button */}
       <Button onPress={create} mode="contained" style={tw`mt-4`}>
         Create
       </Button>
