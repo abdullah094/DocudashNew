@@ -53,7 +53,7 @@ const PasswordScreen = () => {
   };
   return (
     <ScrollView contentContainerStyle={tw`h-full`}>
-      <View style={tw`flex-1  bg-white gap-3 px-10 justify-center`}>
+      <View style={tw`flex-1 bg-white gap-3 px-10 justify-center`}>
         <Image
           style={tw`w-50 h-10 rounded-sm self-center`}
           source={require("../../assets/docudash_pow_logo.png")}

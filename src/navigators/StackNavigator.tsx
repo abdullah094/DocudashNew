@@ -21,7 +21,7 @@ const StackNavigator = observer(() => {
   console.log("StackNaviMobx", Mobx.access_token);
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       {Mobx.access_token ? (
         <Stack.Group>
           <Stack.Screen

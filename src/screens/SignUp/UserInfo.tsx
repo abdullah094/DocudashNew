@@ -95,13 +95,13 @@ const UserInfoScreen = () => {
 
   return (
     <ScrollView
-      contentContainerStyle={tw`h-full `}
+      contentContainerStyle={tw`h-full`}
       keyboardShouldPersistTaps="handled"
     >
       <View style={tw`flex-1 gap-3 justify-center px-10 bg-white `}>
         <KeyboardAvoidingView
           keyboardVerticalOffset={150}
-          behavior={"position"}
+          // behavior={"position"}
         >
           <Image
             style={tw`w-65 self-center`}

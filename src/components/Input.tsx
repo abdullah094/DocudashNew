@@ -16,7 +16,7 @@ interface props {
   state: string | number | undefined | SetStateAction<string | undefined>;
   setState: Dispatch<React.SetStateAction<string>>;
   placeholder: string;
-  style: StyleProp<ViewStyle> | object;
+  style?: StyleProp<ViewStyle> | object;
   secureTextEntry?: boolean;
   keyboardType?: KeyboardTypeOptions;
 }
@@ -25,7 +25,7 @@ const Input = (props: props) => {
     state,
     setState,
     placeholder,
-    style,
+    style = {},
     keyboardType = "default",
     secureTextEntry = false,
   } = props;

@@ -58,8 +58,8 @@ const SetPasswordScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={tw`h-full  `}>
-      <View style={tw`flex-1 gap-2 justify-center px-10`}>
+    <ScrollView contentContainerStyle={tw`h-full `}>
+      <View style={tw`flex-1 bg-white gap-2 justify-center px-10`}>
         <Image
           style={tw`w-75 h-35 self-center`}
           resizeMode="contain"

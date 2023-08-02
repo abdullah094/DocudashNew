@@ -80,10 +80,10 @@ const EmailScreen = () => {
   };
   return (
     <ScrollView
-      contentContainerStyle={tw`flex-1 items-center justify-center pb-20 bg-white`}
+      contentContainerStyle={tw`flex-1 items-center justify-center  bg-white`}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={tw`px-14`}>
+      <View style={tw` px-14 `}>
         <Text
           style={{
             fontFamily: "nunito-SemiBold",
@@ -96,12 +96,7 @@ const EmailScreen = () => {
         <Text style={{ fontFamily: "nunito-SemiBold", fontSize: 15 }}>
           No credit card required
         </Text>
-        <Input
-          state={inputVal}
-          setState={setInputVal}
-          placeholder="Email"
-          style={{}}
-        />
+        <Input state={inputVal} setState={setInputVal} placeholder="Email" />
         <View style={tw`flex-row mt-5 w-[${"100%"}] items-start`}>
           <View
             style={[
