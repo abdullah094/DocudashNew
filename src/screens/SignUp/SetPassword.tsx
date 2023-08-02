@@ -15,52 +15,51 @@ import Input from "../../components/Input";
 import { colors } from "../../Colors";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
-import { SignupStackScreenProps, iStep4 } from "../../../types";
+import { SignUpStackScreenProps, iStep4 } from "../../../types";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 interface route {
   email: string;
 }
-const Step4 = ({ navigation, route }: SignupStackScreenProps<"Step4">) => {
-  // const navigation = useNavigation<SignupStackScreenProps<"Step4">>();
+const SetPasswordScreen = () => {
+  const navigation =
+    useNavigation<SignUpStackScreenProps<"Step3">["navigation"]>();
+  const route = useRoute<SignUpStackScreenProps<"Step3">["route"]>();
 
-  const [password, setPassword] = useState<string | undefined>("");
-  const [loader, setLoader] = useState<string | any>("Next");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const fetchData = async () => {
-    setLoader(
-      <View style={tw`pt-1`}>
-        <BarIndicator color="white" size={20} />
-      </View>
-    );
+    setLoading(true);
     const token = await getToken();
     axios
       .post("https://docudash.net/api/sign-up-3/" + token, {
         password: password,
       })
       .then((response) => {
-        const data: iStep4 = response.data;
-        console.log(data.success);
-        if (data.success) {
-          navigation.push("SignUpIndex", {
-            screen: "Step5",
+        const { data, success, message }: iStep4 = response.data;
+        console.log("PasswordScreen", data);
+        if (success) {
+          navigation.replace("SignUpIndex", {
+            screen: "Step" + data.steps,
             params: {
               industry: data.industries,
               signUpReasons: data.signUpReasons,
             },
           });
-          storeData("Step5");
-          setLoader("Next");
+          storeData("Step" + data.steps);
+          setLoading(false);
         } else {
-          alert("Try again"), setLoader("Next");
+          alert(message.password[0]), setLoading(false);
         }
       })
       .catch((err) => {
-        setLoader("Next");
+        setLoading(false);
       });
   };
 
   return (
-    <ScrollView contentContainerStyle={tw`h-full  `}>
-      <View style={tw`flex-1 gap-2 justify-center px-10`}>
+    <ScrollView contentContainerStyle={tw`h-full `}>
+      <View style={tw`flex-1 bg-white gap-2 justify-center px-10`}>
         <Image
           style={tw`w-75 h-35 self-center`}
           resizeMode="contain"
@@ -96,12 +95,17 @@ const Step4 = ({ navigation, route }: SignupStackScreenProps<"Step4">) => {
           * Must be at least 6 characters long. Must not contain the characters
           or spaces
         </Text>
-        <GreenButton text={loader} onPress={fetchData} styles={{}} />
+        <GreenButton
+          loading={loading}
+          text={"Next"}
+          onPress={fetchData}
+          styles={{}}
+        />
       </View>
     </ScrollView>
   );
 };
 
-export default Step4;
+export default SetPasswordScreen;
 
 const styles = StyleSheet.create({});

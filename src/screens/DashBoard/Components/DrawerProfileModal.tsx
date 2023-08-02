@@ -18,6 +18,8 @@ import { User } from "../../../../types";
 const DrawerProfileModal = () => {
   const Mobx = useCounterStore();
   const user: User = Mobx.user;
+  console.log(user);
+
   const [modalVisible, setModalVisible] = useState(false);
 
   return (

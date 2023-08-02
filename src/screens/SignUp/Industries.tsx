@@ -18,7 +18,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { BarIndicator } from "react-native-indicators";
 import DropDown from "react-native-paper-dropdown";
-import { Istep5Response, SignupStackScreenProps } from "../../../types";
+import { Istep5Response, SignUpStackScreenProps } from "../../../types";
 import { number } from "mobx-state-tree/dist/internal";
 import { storeTokenGlobal } from "../../AsyncGlobal";
 import { useCounterStore } from "../../../MobX/TodoStore";
@@ -42,11 +42,12 @@ interface dropDown {
   label: string;
   value: number;
 }
-const Step5 = () => {
+const IndustriesScreen = () => {
   const navigation =
-    useNavigation<SignupStackScreenProps<"Step5">["navigation"]>();
+    useNavigation<SignUpStackScreenProps<"Step4">["navigation"]>();
+  const route = useRoute<SignUpStackScreenProps<"Step4">["route"]>();
   const [password, setPassword] = useState<string | undefined>("");
-  const [loader, setLoader] = useState<string | any>("Next");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [industry, setIndustry] = useState<dropDown[]>([]);
   const [reasons, setReasons] = useState<dropDown[]>([]);
@@ -98,12 +99,8 @@ const Step5 = () => {
     fetchIndustry();
     fetchReasons();
   }, []);
-  const fetchData = async () => {
-    setLoader(
-      <View style={tw`pt-1`}>
-        <BarIndicator color="white" size={20} />
-      </View>
-    );
+  const sendData = async () => {
+    setLoading(true);
     const token = await getToken();
     axios
       .post("https://docudash.net/api/sign-up-4/" + token, {
@@ -118,16 +115,22 @@ const Step5 = () => {
         }: Istep5Response = response.data;
         if (success) {
           mobX.addAccessToken(token),
-            setLoader("Next"),
+            setLoading(false),
             Alert.alert(message),
             storeTokenGlobal(token),
             clearAsync();
+        } else {
+          setLoading(false);
+          if (message.industry_id) {
+            Alert.alert(message.industry_id[0]);
+          }
+          if (message.sign_up_reasons_id) {
+            Alert.alert(message.sign_up_reasons_id[0]);
+          }
         }
-
-        alert("Select both options"), setLoader("Next");
       })
       .catch((err) => {
-        setLoader("Next");
+        setLoading(false);
       });
   };
 
@@ -195,12 +198,17 @@ const Step5 = () => {
           )}
         </View>
 
-        <GreenButton text={loader} onPress={fetchData} styles={{}} />
+        <GreenButton
+          loading={loading}
+          text={"Next"}
+          onPress={sendData}
+          styles={{}}
+        />
       </View>
     </ScrollView>
   );
 };
 
-export default Step5;
+export default IndustriesScreen;
 
 const styles = StyleSheet.create({});

@@ -19,19 +19,24 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { SIGNUP_02 } from "@env";
 import { BarIndicator } from "react-native-indicators";
 import { getToken, storeData } from "./AsynFunc";
-import { SignupStackScreenProps, Istep3Response } from "../../../types";
+import {
+  SignUpStackScreenProps,
+  Istep3Response,
+  SignUpData,
+  SignUpAPI,
+  SignUpStackParamList,
+} from "../../../types";
 import { log } from "react-native-reanimated";
 
-const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
-  const [otp, setOtp] = useState<string | undefined>("");
-  const [loader, setLoader] = useState<string | any>("Next");
+const OptScreen = () => {
+  const navigation =
+    useNavigation<SignUpStackScreenProps<"Step2">["navigation"]>();
+  const route = useRoute<SignUpStackScreenProps<"Step2">["route"]>();
+  const [otp, setOtp] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchData = async () => {
-    setLoader(
-      <View style={tw`pt-1`}>
-        <BarIndicator color="white" size={20} />
-      </View>
-    );
+    setLoading(true);
 
     const token = await getToken();
     axios
@@ -39,30 +44,26 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
         verification_code: otp,
       })
       .then((response) => {
-        const {
-          success = true,
-          message,
-          token,
-        }: Istep3Response = response.data;
-        console.log("top----", response.data);
+        const { success = true, data }: SignUpAPI = response.data;
+        console.log("optScreen-", response.data);
 
         if (success) {
-          setLoader("Next"),
+          setLoading(false),
             navigation.replace("SignUpIndex", {
-              screen: "Step4",
+              screen: ("Step" + data.steps) as keyof SignUpStackParamList,
               params: {
                 api: response.data.next,
               },
             }),
-            storeData("Step4");
+            storeData("Step" + data.steps);
         } else {
           Alert.alert("Failed", "Wrong code Please try again or resend code"),
             setOtp(""),
-            setLoader("Next");
+            setLoading(false);
         }
       })
       .catch((err) => {
-        setLoader("Next");
+        setLoading(false);
       });
   };
   const ResendCode = async () => {
@@ -71,7 +72,7 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
       .get("https://docudash.net/api/sendCodeAgain/" + token)
       .then((response) => {
         const data = response.data;
-
+        console.log("resend code ", data);
         if (data.success) {
           Alert.alert("Code sent to " + data.data.email);
         } else {
@@ -118,7 +119,7 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
             style={tw`text-center`}
             keyboardType={"number-pad"}
           />
-          <GreenButton text={loader} onPress={fetchData} />
+          <GreenButton loading={loading} text={"Next"} onPress={fetchData} />
           <TouchableOpacity style={tw`p-5`} onPress={ResendCode}>
             <Text style={tw`text-blue-700 text-center`}>Resend code</Text>
           </TouchableOpacity>
@@ -128,6 +129,6 @@ const Step3 = ({ navigation, route }: SignupStackScreenProps<"Step3">) => {
   );
 };
 
-export default Step3;
+export default OptScreen;
 
 const styles = StyleSheet.create({});

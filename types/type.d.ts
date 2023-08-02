@@ -8,100 +8,43 @@ import type { DrawerScreenProps } from "@react-navigation/drawer";
 import { Industry } from "./Step4";
 
 export type RootStackParamList = {
-  SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
-  TabNavigator: NavigatorScreenParams<SignupStackParamList>;
-  ManageDrawer: NavigatorScreenParams<SignupStackParamList>;
+  SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
+  TabNavigator: NavigatorScreenParams<SignUpStackParamList>;
+  ManageDrawer: NavigatorScreenParams<SignUpStackParamList>;
   LoginIndex: NavigatorScreenParams<LoginStackParamList>;
   Details: NavigatorScreenParams<SignedInStackParamList>;
   TemplateHistory: undefined;
   Signatures: undefined;
   AddSignature: undefined;
-  Edit: undefined
+  Edit: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   StackScreenProps<RootStackParamList, T>;
 
-export type SignupStackParamList = {
-  Step1: undefined;
+export type SignUpStackParamList = {
+  Index: undefined;
+  Step1: { api: string };
   Step2: { api: string };
   Step3: { api: string };
-  Step4: { api: string };
-  Step5: { industry: Industry[]; signUpReasons: Industry[] };
+  Step4: { industry: Industry[]; signUpReasons: Industry[] };
+  Step5: { token: string; email: string };
 };
-export type LoginStackParamList = {
-  Step1: undefined;
-  Step2: { token: string; email: string };
-  Inbox: { heading: string };
-};
+
 export type SignedInStackParamList = {
   Inbox: undefined;
   Details: undefined;
 };
-    CompositeScreenProps,
-    NavigatorScreenParams,
-  } from '@react-navigation/native';
-  import type { StackScreenProps } from '@react-navigation/stack';
-  import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-  import type { DrawerScreenProps } from '@react-navigation/drawer';
-import { Industry } from './Step4';
-  
-  export type RootStackParamList = {
-    SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
-    TabNavigator: NavigatorScreenParams<SignupStackParamList>;
-    ManageDrawer:  NavigatorScreenParams<SignupStackParamList>;
-    LoginIndex:  NavigatorScreenParams<LoginStackParamList>;
-    Details:  NavigatorScreenParams<SignedInStackParamList>
-    TemplateHistory: undefined
-    Signatures: undefined
-    AddSignature: undefined
-    Edit: undefined
-  };
-  
-  export type RootStackScreenProps<T extends keyof RootStackParamList> =
-    StackScreenProps<RootStackParamList, T>;
-  
-  export type SignupStackParamList = {
-    Step1: undefined;
-    Step2:{api:string}
-    Step3: {api:string};
-    Step4: {api:string};
-    Step5: {industry :Industry[],signUpReasons:Industry[]};
-    
-  };
-  export type LoginStackParamList = {
-    Step1: undefined;
-    Step2:{token:string,email:string};
-    Inbox: {heading:string};
-    
-  };
-  export type SignedInStackParamList = {
-    Inbox: undefined;
-    Details: undefined
-   
-    
-  };
 
 export type RootStackParamList = {
-  SignUpIndex: NavigatorScreenParams<SignupStackParamList>;
-  TabNavigator: NavigatorScreenParams<SignupStackParamList>;
-  ManageDrawer: NavigatorScreenParams<SignupStackParamList>;
-  LoginIndex: NavigatorScreenParams<LoginStackParamList>;
+  SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
+  TabNavigator: NavigatorScreenParams<SignUpStackParamList>;
+  ManageDrawer: NavigatorScreenParams<SignUpStackParamList>;
   Details: NavigatorScreenParams<SignedInStackParamList>;
   TemplateHistory: undefined;
   Signatures: undefined;
 };
 
-export type RootStackScreenProps<T extends keyof RootStackParamList> =
-  StackScreenProps<RootStackParamList, T>;
-
-export type SignupStackParamList = {
-  Step1: undefined;
-  Step2: { api: string };
-  Step3: { api: string };
-  Step4: { api: string };
-  Step5: { industry: Industry[]; signUpReasons: Industry[] };
-};
 export type LoginStackParamList = {
   Step1: undefined;
   Step2: { token: string; email: string };
@@ -116,9 +59,9 @@ export type ManageDrawerParamList = {
   Inbox: { heading: string };
 };
 
-export type SignupStackScreenProps<T extends keyof SignupStackParamList> =
+export type SignUpStackScreenProps<T extends keyof SignUpStackParamList> =
   CompositeScreenProps<
-    StackScreenProps<SignupStackParamList, T>,
+    StackScreenProps<SignUpStackParamList, T>,
     RootStackScreenProps<keyof RootStackParamList>
   >;
 export type LoginStackScreenProps<T extends keyof LoginStackParamList> =
@@ -418,6 +361,8 @@ export interface UploadDocumentAPI {
   message: string;
   generateSignatureDetails: GenerateSignatureDetail[];
   generateSignatureDetailsImages: GenerateSignatureDetailsImage[];
+  uniqid: string;
+  signature_id: number;
 }
 
 export interface GenerateSignatureDetailsImage {
@@ -432,4 +377,62 @@ export interface GenerateSignatureDetailsImage {
   deleted: number;
   created_at: string;
   updated_at: string;
+}
+//sign api
+export interface SignUpAPI {
+  success: boolean;
+  message: string | { email: []; first_name: [] };
+  next: string;
+  data: SignUpData;
+  next_access: string;
+}
+
+export interface SignUpData {
+  id: number;
+  first_name: null;
+  last_name: null;
+  name: null;
+  email: string;
+  user_type: number;
+  country: null;
+  state: null;
+  city: null;
+  address1: null;
+  address2: null;
+  zip_code: number;
+  video_call: null;
+  licence_number: null;
+  account_type: number;
+  mobile: null;
+  image: string;
+  phone: null;
+  verification_code: null;
+  verification_status: number;
+  verification_date: null;
+  industry_id: number;
+  sign_up_reasons_id: number;
+  lat: null;
+  long: null;
+  steps: number;
+  logged_in: number;
+  logged_in_at: null;
+  logged_out_at: null;
+  ip_sign_up: string;
+  location_sign_up: string;
+  ip_sign_in: null;
+  location_sign_in: null;
+  email_verified_at: null;
+  about_notary: null;
+  hired_time: null;
+  bussiness_start_up_date: null;
+  status: number;
+  deleted: number;
+  created_by: number;
+  updated_by: number;
+  created_at: string;
+  updated_at: string;
+  trial_account_expired: number;
+  trial_account: number;
+  company: null;
+  profile_photo_url: string;
 }

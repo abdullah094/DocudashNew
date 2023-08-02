@@ -2,23 +2,25 @@ import { StyleSheet, Text, View, Pressable } from "react-native";
 import React from "react";
 import tw from "twrnc";
 import { colors } from "../Colors";
+import { Button } from "react-native-paper";
 interface props {
   text: string | JSX.Element;
   onPress: () => void;
-  styles: object;
+  styles?: object;
+  loading: boolean;
 }
 const GreenButton = (props: props) => {
-  const { text, onPress, styles } = props;
+  const { text, onPress, styles = {}, loading = false } = props;
   return (
-    <Pressable
+    <Button
+      mode="contained"
+      loading={loading}
+      disabled={loading}
       onPress={onPress}
-      style={[
-        tw`bg-[${colors.green}] mt-4 h-11 rounded-full justify-center items-center`,
-        styles,
-      ]}
+      style={[tw` mt-4 h-11 `, styles]}
     >
-      <Text style={tw`text-[${colors.white}] `}>{text}</Text>
-    </Pressable>
+      {text}
+    </Button>
   );
 };
 

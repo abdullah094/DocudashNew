@@ -17,9 +17,10 @@ import ImageUploadModal from "../DashBoard/Components/ImageUploadModal";
 import axios from "axios";
 import { useCounterStore } from "../../../MobX/TodoStore";
 import { Popup } from "../../components/Popup";
-import { DashboardAPI, IUserData } from "../../../types";
+import { DashboardAPI, IUserData, User } from "../../../types";
 import * as DocumentPicker from "expo-document-picker";
 import { Button } from "react-native-ui-lib";
+import { useNavigation } from "@react-navigation/native";
 
 interface box {
   text: string;
@@ -37,7 +38,7 @@ const Box = ({ text, num }: box) => {
   );
 };
 const Dashboard = () => {
-  const [userData, setUserData] = useState<IUserData>();
+  const [userData, setUserData] = useState<User>();
   const [signature, setSignature] = useState<any>();
   const [documents, setdocuments] = useState([]);
   const [progressBar, setProgressBar] = useState<number>(0);
@@ -45,6 +46,7 @@ const Dashboard = () => {
   const [setshowMeObj, setSetshowMeObj] = useState<object | null | undefined>();
   const [imageRef, setImageRef] = useState<boolean>();
   const [alert, setAlert] = useState(false);
+  const navigation = useNavigation();
   const Mobx = useCounterStore();
   console.log(Mobx.access_token);
 
@@ -57,12 +59,11 @@ const Dashboard = () => {
       })
       .then((response) => {
         const data: DashboardAPI = response.data;
-        console.log(data);
-
+        console.log("DashboardAPI", data);
+        Mobx.AddUser(data.user);
         setUserData(data.user);
         if (data.signature?.signature) {
           setSignature(data.signature);
-          Mobx.AddUser(data.user);
         } else {
           setSignature("");
         }
@@ -71,7 +72,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashData();
-  }, []);
+  }, [navigation]);
 
   const fetchData = () => {
     console.log("Fetch data");
@@ -167,7 +168,7 @@ const Dashboard = () => {
               {signature ? (
                 <>
                   <Image
-                    style={[tw` h-10 w-40 `, { tintColor: "black" }]}
+                    style={[tw`h-12 w-full`, { tintColor: "white" }]}
                     source={{
                       uri: signature?.signature.replace(/(\r\n|\n|\r)/gm, ""),
                     }}

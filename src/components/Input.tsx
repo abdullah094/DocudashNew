@@ -7,30 +7,26 @@ import {
   KeyboardAvoidingView,
   StyleProp,
   ViewStyle,
+  KeyboardTypeOptions,
 } from "react-native";
 import React, { SetStateAction, Dispatch, FC, FunctionComponent } from "react";
 import { colors } from "../Colors";
 import tw from "twrnc";
 interface props {
   state: string | number | undefined | SetStateAction<string | undefined>;
-  setState: Dispatch<React.SetStateAction<string | undefined>>;
+  setState: Dispatch<React.SetStateAction<string>>;
   placeholder: string;
-  style: StyleProp<ViewStyle> | object;
-  secureTextEntry: boolean;
-  keyboardType:
-    | string
-    | undefined
-    | React.FC<TextInputProps>
-    | Readonly<TextInputProps>
-    | any;
+  style?: StyleProp<ViewStyle> | object;
+  secureTextEntry?: boolean;
+  keyboardType?: KeyboardTypeOptions;
 }
 const Input = (props: props) => {
   const {
     state,
     setState,
     placeholder,
-    style,
-    keyboardType,
+    style = {},
+    keyboardType = "default",
     secureTextEntry = false,
   } = props;
 
