@@ -52,7 +52,6 @@ const Profile = () => {
         Authorization: `Bearer ${Mobx.access_token}`,
         "Content-Type": "multipart/form-data",
       };
-      console.log({ formData });
       axios
         .post("https://docudash.net/api/upload-image", formData, { headers })
         .then((response) => {

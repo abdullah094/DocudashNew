@@ -10,14 +10,9 @@ import {
 import React, { useState } from "react";
 import { Button, Searchbar } from "react-native-paper";
 import tw from "twrnc";
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from "react-native-popup-menu";
+
 import { DateTimePicker } from "react-native-ui-lib";
-import { event } from "react-native-reanimated";
+
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 interface IFilter {
   onPress: () => void;
@@ -102,7 +97,7 @@ const FilterModal = ({ onPress }: IFilter) => {
             <DateTimePicker
               value={SelectedDate}
               // title="Select time"
-              onChange={(date) => setSelectedDate(date)}
+              onChange={(date: Date) => setSelectedDate(date)}
               // placeholder="Placeholder"
 
               display="spinner"

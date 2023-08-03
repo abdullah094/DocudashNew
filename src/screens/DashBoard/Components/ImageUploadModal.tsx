@@ -13,7 +13,6 @@ import React, { useState } from "react";
 import tw from "twrnc";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { colors } from "../../../Colors";
-import { BlurView } from "react-native-blur";
 import { SvgUri } from "react-native-svg";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
