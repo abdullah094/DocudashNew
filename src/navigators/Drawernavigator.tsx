@@ -7,6 +7,7 @@ import Manage from "../screens/Manage/Manage";
 import Dashboard from "../screens/DashboardDrawerScreens/Dashboard";
 import CustomDrawer from "../screens/DashBoard/CustomDrawer";
 import Signatures from "../screens/Signatures/Index";
+import Stamps from "../screens/Stamps/Index";
 const Drawer = createDrawerNavigator();
 const Drawernavigator = () => {
   return (
@@ -18,6 +19,7 @@ const Drawernavigator = () => {
       <Drawer.Screen name="Home" component={Home} />
       <Drawer.Screen name="Template" component={Template} />
       <Drawer.Screen name="Signatures" component={Signatures} />
+      <Drawer.Screen name="Stamps" component={Stamps} />
     </Drawer.Navigator>
   );
 };

@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const Signatures = () => {
+const ChooseStampItem = () => {
   return (
     <View>
-      <Text>Signatures</Text>
+      <Text>ChooseStampItem</Text>
     </View>
   );
 };
 
-export default Signatures;
+export default ChooseStampItem;
 
 const styles = StyleSheet.create({});

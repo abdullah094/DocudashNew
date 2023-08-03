@@ -263,17 +263,17 @@ const Index = () => {
         </View>
 
         {/* {more ? (
-          <View style={tw`gap-2`}>
-            <View style={tw`flex-row items-center gap-4`}>
-              <Text>Status:</Text>
-              <SwitchComp />
+            <View style={tw`gap-2`}>
+              <View style={tw`flex-row items-center gap-4`}>
+                <Text>Status:</Text>
+                <SwitchComp />
+              </View>
+              <View style={tw`flex-row items-center gap-4`}>
+                <Text>Action:</Text>
+                <DropdownComp />
+              </View>
             </View>
-            <View style={tw`flex-row items-center gap-4`}>
-              <Text>Action:</Text>
-              <DropdownComp />
-            </View>
-          </View>
-        ) : null} */}
+          ) : null} */}
       </View>
     );
   };
@@ -281,15 +281,15 @@ const Index = () => {
   return (
     <View>
       <View style={tw`m-4 gap-1 `}>
-        <Text style={tw`text-black text-5 font-bold `}>Signautres</Text>
+        <Text style={tw`text-black text-5 font-bold `}>Stamps</Text>
         <Text style={tw`text-[${colors.gray}] text-3`}>
-          Add or update your name and signature styles.
+          Add or update your name and stamps.
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate("AddSignature")}
+          onPress={() => navigation.navigate("AddStamp")}
           style={tw`bg-[${colors.green}] justify-center items-center w-35 h-10 rounded-md self-end m-4`}
         >
-          <Text style={tw`text-white`}>Add Signature</Text>
+          <Text style={tw`text-white`}>Add Stamp</Text>
         </TouchableOpacity>
       </View>
 

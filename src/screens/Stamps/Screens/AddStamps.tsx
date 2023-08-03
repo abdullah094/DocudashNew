@@ -26,7 +26,7 @@ import {
 } from "react-native-paper";
 import tw from "twrnc";
 import { colors } from "../../../Colors";
-import AddSignatureDraw from "../Components/AddSignauteDraw";
+import AddSignatureDraw from "../Components/AddStampDraw";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
@@ -34,9 +34,9 @@ import { useCounterStore } from "../../../../MobX/TodoStore";
 
 import { Signature, SignaturePreview, User } from "../../../../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import ChooseSignatureItem from "../Components/ChooseSignatureItem";
+import ChooseSignatureItem from "../Components/ChooseStampItem";
 
-const AddSignature = () => {
+const AddStamp = () => {
   const Mobx = useCounterStore();
   const user: User = Mobx.user;
   const [fullName, setFullName] = React.useState(
@@ -74,7 +74,7 @@ const AddSignature = () => {
     }
   }, []);
 
-  const uploadSignature = async () => {
+  const uploadStamp = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -86,23 +86,6 @@ const AddSignature = () => {
 
       if (!result.cancelled) {
         setSetselectedUri(result.assets[0].base64);
-      }
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-  const uploadInitial = async () => {
-    try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [1, 2],
-        quality: 0.1,
-        base64: true,
-      });
-
-      if (!result.cancelled) {
-        setSetselectedInitialUri(result.assets[0].base64);
       }
     } catch (err) {
       console.log("err", err);
@@ -133,7 +116,7 @@ const AddSignature = () => {
       });
   };
   return (
-    <SafeAreaView style={tw`p-3  gap-2 flex-1`}>
+    <SafeAreaView style={tw`p-3 gap-2 flex-1`}>
       <TextInput
         mode="outlined"
         label="Full Name"
@@ -198,32 +181,13 @@ const AddSignature = () => {
                 source={{ uri: "data:image/png;base64," + selectedUri }}
               />
             )}
-            <TouchableOpacity style={tw`p-1 `} onPress={uploadSignature}>
+            <TouchableOpacity style={tw`p-1 `} onPress={uploadStamp}>
               <Image
                 style={tw`h-10 w-10 self-center`}
                 source={require("../../../assets/Upload.png")}
               />
               <Text style={tw`text-[${colors.blue}] mt-2`}>
-                Upload your signature
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
-          >
-            {initial && (
-              <Image
-                style={tw`h-20 w-20 bg-red-300`}
-                source={{ uri: "data:image/png;base64," + selectedInitialUri }}
-              />
-            )}
-            <TouchableOpacity style={tw`p-1 `} onPress={uploadInitial}>
-              <Image
-                style={tw`h-10 w-10 self-center`}
-                source={require("../../../assets/Upload.png")}
-              />
-              <Text style={tw`text-[${colors.blue}] mt-2`}>
-                Upload your signature
+                Upload your stamps
               </Text>
             </TouchableOpacity>
           </View>
@@ -238,7 +202,7 @@ const AddSignature = () => {
   );
 };
 
-export default AddSignature;
+export default AddStamp;
 
 const styles = StyleSheet.create({
   h2: tw`font-bold text-4`,

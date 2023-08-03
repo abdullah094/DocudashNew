@@ -106,6 +106,12 @@ const CustomDrawer = () => {
                 navigation.navigate("Signatures");
               }}
             />
+            <List.Item
+              title="Stamps"
+              onPress={() => {
+                navigation.navigate("Stamps");
+              }}
+            />
             <TouchableOpacity
               style={styles.button}
               onPress={() => {

@@ -17,6 +17,7 @@ export type RootStackParamList = {
   Signatures: undefined;
   AddSignature: undefined;
   Edit: undefined;
+  AddStamp: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
