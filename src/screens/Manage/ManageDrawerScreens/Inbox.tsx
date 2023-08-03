@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, FlatList, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  SafeAreaView,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import EmailBar from "../Components/EmailBar";
 import tw from "twrnc";
@@ -13,7 +20,7 @@ import {
   ManageDrawerScreenProps,
 } from "../../../../types/type";
 import { EmailBar as IEmailbar } from "../../../../types";
-import { Button, Divider } from "react-native-paper";
+import { Appbar, Button, Divider } from "react-native-paper";
 import FilterModal from "../Components/FilterModal";
 import Entypo from "@expo/vector-icons/Entypo";
 import { colors } from "../../../Colors";
@@ -58,9 +65,10 @@ const Inbox = observer(() => {
   };
 
   const Header = () => (
-    <Pressable onPress={() => navigation.toggleDrawer()} style={tw`p-5`}>
-      <Entypo name="menu" color={colors.black} size={30} />
-    </Pressable>
+    <Appbar.Header>
+      <Appbar.Action icon="menu" onPress={() => navigation.toggleDrawer()} />
+      <Appbar.Content title={heading} />
+    </Appbar.Header>
   );
   useEffect(() => {
     fetchData();

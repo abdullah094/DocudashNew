@@ -25,6 +25,7 @@ import {
 import { log } from "react-native-reanimated";
 import axios from "axios";
 import { useCounterStore } from "../../../../MobX/TodoStore";
+import { Appbar } from "react-native-paper";
 
 interface IButton {
   text: string;
@@ -83,225 +84,245 @@ const Details = () => {
   }, []);
 
   return (
-    <ScrollView>
-      <View style={tw`p-4 gap-3 py-10`}>
-        <View style={tw`flex-row items-center gap-3`}>
-          <Text style={styles.heading}>
-            {data?.generateSignatureDetails[0].emailSubject}
-          </Text>
-          <Menu>
-            <MenuTrigger
-              text={
-                <AntDesign name="exclamationcircle" size={24} color="black" />
-              }
-            />
-            <MenuOptions>
-              <MenuOption
-                style={styles.menu_block}
-                onSelect={() => alert(`Save`)}
-                text={<Text style={tw`font-bold text-black`}>Details</Text>}
-              />
-              <MenuOption
-                style={styles.menu_block}
-                onSelect={() => alert(`Save`)}
-                text={
-                  <View style={tw`gap-1`}>
-                    <Text style={tw`font-bold text-black`}>Created At:{}</Text>
-                    <Text style={tw`text-black`}>
-                      {data?.generateSignature.created_at}
-                    </Text>
-                  </View>
-                }
-              />
-              <MenuOption
-                style={styles.menu_block}
-                onSelect={() => alert(`Save`)}
-                text={
-                  <View style={tw`gap-1`}>
-                    <Text style={tw`font-bold text-black`}>Modified At</Text>
-                    <Text style={tw`text-black`}>
-                      {data?.generateSignature.updated_at}
-                    </Text>
-                  </View>
-                }
-              />
-              <MenuOption
-                style={styles.menu_block}
-                onSelect={() => alert(`Save`)}
-                text={
-                  <View style={tw`gap-1`}>
-                    <Text style={tw`font-bold text-black`}>Owner</Text>
-                    <Text style={tw`text-black`}>
-                      {data?.generateSignature.user.first_name}
-                    </Text>
-                  </View>
-                }
-              />
-            </MenuOptions>
-          </Menu>
-        </View>
-
-        <View style={tw`mt-5 gap-1`}>
-          <Text style={tw`text-[#6FAC46]`}>
-            Envelope ID: {data?.generateSignatureDetails[0].uniqid}
-          </Text>
-          <Text>
-            From:{" "}
-            <Text style={tw`text-[#6FAC46]`}>
-              {" "}
-              {data?.generateSignatureDetails[0].user.first_name}{" "}
-              {data?.generateSignatureDetails[0].user.last_name}
+    <View style={tw`flex-1`}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content
+          title={data?.generateSignatureDetails[0].emailSubject}
+        />
+      </Appbar.Header>
+      <ScrollView>
+        <View style={tw`p-4 gap-3 py-10`}>
+          <View style={tw`flex-row items-center gap-3`}>
+            <Text style={styles.heading}>
+              {data?.generateSignatureDetails[0].emailSubject}
             </Text>
-          </Text>
-          <Text>
-            {"Last change on " +
-              new Date(data?.generateSignature.created_at).toUTCString()}
-          </Text>
-          <Text>
-            Sent on {new Date(data?.generateSignature.created_at).toUTCString()}
-          </Text>
-        </View>
-
-        {/* Buttons */}
-        <View style={tw`py-5`}>
-          <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
-            <Button
-              text="Sign"
-              onPress={() => {
-                console.log("Sign");
-              }}
-              pressed={true}
-            />
-            <Button
-              text="Move"
-              onPress={() => {
-                console.log("Move");
-              }}
-              pressed={false}
-            />
-          </View>
-          <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
-            <Button
-              text="Resend"
-              onPress={() => {
-                console.log("Resend");
-              }}
-              pressed={false}
-            />
             <Menu>
               <MenuTrigger
                 text={
-                  <View
-                    style={tw`border-2 justify-center items-center h-10 w-30 rounded-lg flex-row gap-1`}
-                  >
-                    <Text style={[tw`text-4 font-bold text-black`]}>More</Text>
-                    <AntDesign name="caretdown" size={15} color="black" />
-                  </View>
+                  <AntDesign name="exclamationcircle" size={24} color="black" />
                 }
               />
               <MenuOptions>
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
-                  text="Copy"
+                  text={<Text style={tw`font-bold text-black`}>Details</Text>}
                 />
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
-                  text="Save as Template"
+                  text={
+                    <View style={tw`gap-1`}>
+                      <Text style={tw`font-bold text-black`}>
+                        Created At:{}
+                      </Text>
+                      <Text style={tw`text-black`}>
+                        {data?.generateSignature.created_at}
+                      </Text>
+                    </View>
+                  }
                 />
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
-                  text="Void"
-                />
-                <MenuOption
-                  style={styles.menu_block}
-                  onSelect={() => navigation.navigate("TemplateHistory")}
-                  text="History"
-                />
-                <MenuOption
-                  style={styles.menu_block}
-                  onSelect={() => alert(`Save`)}
-                  text="Transfer Ownership"
-                />
-                <MenuOption
-                  style={styles.menu_block}
-                  onSelect={() => alert(`Save`)}
-                  text="Export as CSV"
+                  text={
+                    <View style={tw`gap-1`}>
+                      <Text style={tw`font-bold text-black`}>Modified At</Text>
+                      <Text style={tw`text-black`}>
+                        {data?.generateSignature.updated_at}
+                      </Text>
+                    </View>
+                  }
                 />
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
-                  text="Delete"
+                  text={
+                    <View style={tw`gap-1`}>
+                      <Text style={tw`font-bold text-black`}>Owner</Text>
+                      <Text style={tw`text-black`}>
+                        {data?.generateSignature.user.first_name}
+                      </Text>
+                    </View>
+                  }
                 />
               </MenuOptions>
             </Menu>
           </View>
-          <View
-            style={tw`flex-row items-center gap-5 py-2 justify-center`}
-          ></View>
-        </View>
-        <View style={tw`flex-row items-center py-2 gap-7 p-5 justify-end`}>
-          <TouchableOpacity>
-            <Image
-              style={tw`w-5 h-5 `}
-              source={require("../../../assets/Download.png")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image
-              style={tw`w-5 h-5 `}
-              source={require("../../../assets/DocumentImage.png")}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={tw`py-2`}>
-          <View style={tw`flex-row items-center justify-between`}>
-            <Text style={styles.heading}>Recipients</Text>
-            <SigningOrderModal
-              senderName={data?.generateSignature.user.first_name}
-              details={data?.generateSignatureDetails}
-            />
+
+          <View style={tw`mt-5 gap-1`}>
+            <Text>
+              Envelope ID:{" "}
+              <Text style={tw`text-[#6FAC46]`}>
+                {data?.generateSignatureDetails[0].uniqid}
+              </Text>
+            </Text>
+            <Text>
+              From:{" "}
+              <Text style={tw`text-[#6FAC46]`}>
+                {" "}
+                {data?.generateSignatureDetails[0].user.first_name}{" "}
+                {data?.generateSignatureDetails[0].user.last_name}
+              </Text>
+            </Text>
+            <Text>
+              Last change on{" "}
+              <Text style={tw`text-[#6FAC46]`}>
+                {new Date(data?.generateSignature.created_at).toUTCString()}
+              </Text>
+            </Text>
+            <Text>
+              Sent on{" "}
+              <Text style={tw`text-[#6FAC46]`}>
+                {new Date(data?.generateSignature.created_at).toUTCString()}
+              </Text>
+            </Text>
           </View>
-          {data?.generateSignatureDetails.map((item) => (
-            <View style={tw` mt-5 py-3 flex-row items-center  `}>
-              <View style={tw`flex-1`}>
-                <View style={tw`flex-row items-center justify-between`}>
-                  <Text style={styles.h2} numberOfLines={2}>
-                    {item.recName}
-                  </Text>
-                </View>
-                <Text style={tw`font-thin text-black`}>{item.recEmail}</Text>
-              </View>
-              <View style={tw`flex-row items-center flex-0.6 `}>
-                <Image
-                  style={tw`w-5 h-5 mx-2`}
-                  source={require("../../../assets/NeedToSign.png")}
-                />
-                <View>
-                  <Text style={tw`text-3 font-bold overflow-hidden w-full`}>
-                    {item.sign_type == 1
-                      ? "Need to Sign"
-                      : item.sign_type == 2
-                      ? "In Person Signer"
-                      : item.sign_type === 3
-                      ? "Receives a Copy"
-                      : "Needs to View"}
-                  </Text>
-                </View>
-              </View>
+
+          {/* Buttons */}
+          <View style={tw`py-5`}>
+            <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
+              <Button
+                text="Sign"
+                onPress={() => {
+                  console.log("Sign");
+                }}
+                pressed={true}
+              />
+              <Button
+                text="Move"
+                onPress={() => {
+                  console.log("Move");
+                }}
+                pressed={false}
+              />
             </View>
-          ))}
-        </View>
-        <View style={tw`py-2`}>
-          <Text style={styles.heading}>Message</Text>
-          <View style={tw`m-3 mt-5`}>
-            <Text style={tw`font-thin`}>No message have been enterred</Text>
+            <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
+              <Button
+                text="Resend"
+                onPress={() => {
+                  console.log("Resend");
+                }}
+                pressed={false}
+              />
+              <Menu>
+                <MenuTrigger
+                  text={
+                    <View
+                      style={tw`border-2 justify-center items-center h-10 w-30 rounded-lg flex-row gap-1`}
+                    >
+                      <Text style={[tw`text-4 font-bold text-black`]}>
+                        More
+                      </Text>
+                      <AntDesign name="caretdown" size={15} color="black" />
+                    </View>
+                  }
+                />
+                <MenuOptions>
+                  <MenuOption
+                    style={styles.menu_block}
+                    onSelect={() => alert(`Save`)}
+                    text="Copy"
+                  />
+                  <MenuOption
+                    style={styles.menu_block}
+                    onSelect={() => alert(`Save`)}
+                    text="Save as Template"
+                  />
+                  <MenuOption
+                    style={styles.menu_block}
+                    onSelect={() => alert(`Save`)}
+                    text="Void"
+                  />
+                  <MenuOption
+                    style={styles.menu_block}
+                    onSelect={() => navigation.navigate("TemplateHistory")}
+                    text="History"
+                  />
+                  <MenuOption
+                    style={styles.menu_block}
+                    onSelect={() => alert(`Save`)}
+                    text="Transfer Ownership"
+                  />
+                  <MenuOption
+                    style={styles.menu_block}
+                    onSelect={() => alert(`Save`)}
+                    text="Export as CSV"
+                  />
+                  <MenuOption
+                    style={styles.menu_block}
+                    onSelect={() => alert(`Save`)}
+                    text="Delete"
+                  />
+                </MenuOptions>
+              </Menu>
+            </View>
+            <View
+              style={tw`flex-row items-center gap-5 py-2 justify-center`}
+            ></View>
+          </View>
+          <View style={tw`flex-row items-center py-2 gap-7 p-5 justify-end`}>
+            <TouchableOpacity>
+              <Image
+                style={tw`w-5 h-5 `}
+                source={require("../../../assets/Download.png")}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image
+                style={tw`w-5 h-5 `}
+                source={require("../../../assets/DocumentImage.png")}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={tw`py-2`}>
+            <View style={tw`flex-row items-center justify-between`}>
+              <Text style={styles.heading}>Recipients</Text>
+              <SigningOrderModal
+                senderName={data?.generateSignature.user.first_name}
+                details={data?.generateSignatureDetails}
+              />
+            </View>
+            {data?.generateSignatureDetails.map((item) => (
+              <View style={tw` mt-5 py-3 flex-row items-center  `}>
+                <View style={tw`flex-1`}>
+                  <View style={tw`flex-row items-center justify-between`}>
+                    <Text style={styles.h2} numberOfLines={2}>
+                      {item.recName}
+                    </Text>
+                  </View>
+                  <Text style={tw`font-thin text-black`}>{item.recEmail}</Text>
+                </View>
+                <View style={tw`flex-row items-center flex-0.6 `}>
+                  <Image
+                    style={tw`w-5 h-5 mx-2`}
+                    source={require("../../../assets/NeedToSign.png")}
+                  />
+                  <View>
+                    <Text style={tw`text-3 font-bold overflow-hidden w-full`}>
+                      {item.sign_type == 1
+                        ? "Need to Sign"
+                        : item.sign_type == 2
+                        ? "In Person Signer"
+                        : item.sign_type === 3
+                        ? "Receives a Copy"
+                        : "Needs to View"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+          <View style={tw`py-2`}>
+            <Text style={styles.heading}>Message</Text>
+            <View style={tw`m-3 mt-5`}>
+              <Text style={tw`font-thin`}>No message have been enterred</Text>
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
