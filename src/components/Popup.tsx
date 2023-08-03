@@ -1,11 +1,7 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Modal, View, Text } from "react-native";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import tw from "twrnc";
-import {
-  Dialog,
-  Text as LulliText,
-  View as LulliView,
-} from "react-native-ui-lib"; // eslint-disable-line
+
 import { colors } from "../Colors";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -24,7 +20,7 @@ export const Popup = ({ heading, alert, description, setAlert }: IPopup) => {
   }, [alert]);
 
   return (
-    <Dialog
+    <Modal
       visible={isVisible}
       onDismiss={() => {
         setIsVisible(false);
@@ -32,16 +28,14 @@ export const Popup = ({ heading, alert, description, setAlert }: IPopup) => {
       }}
       // panDirection={PanningProvider.Directions.DOWN}
     >
-      <LulliView style={tw`bg-[${colors.green}] p-3 pt-5 rounded-xl `}>
-        <LulliText style={tw`text-[${colors.white}] text-5 font-bold`}>
+      <View style={tw`bg-[${colors.green}] p-3 pt-5 rounded-xl `}>
+        <Text style={tw`text-[${colors.white}] text-5 font-bold`}>
           {heading}
-        </LulliText>
+        </Text>
 
-        <LulliView style={tw`mt-2`}>
-          <LulliText style={tw`text-[${colors.white}] text-4`}>
-            {description}
-          </LulliText>
-        </LulliView>
+        <View style={tw`mt-2`}>
+          <Text style={tw`text-[${colors.white}] text-4`}>{description}</Text>
+        </View>
         <TouchableOpacity
           onPress={() => {
             setIsVisible(false);
@@ -49,10 +43,10 @@ export const Popup = ({ heading, alert, description, setAlert }: IPopup) => {
           }}
           style={tw`bg-[${colors.blue}] items-center justify-center py-2 rounded-2xl mt-3`}
         >
-          <LulliText style={tw`text-[${colors.white}]`}>Close</LulliText>
+          <Text style={tw`text-[${colors.white}]`}>Close</Text>
         </TouchableOpacity>
-      </LulliView>
-    </Dialog>
+      </View>
+    </Modal>
   );
 };
 

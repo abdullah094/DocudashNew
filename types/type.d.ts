@@ -140,7 +140,7 @@ export interface User {
   city: null;
   address1: null;
   address2: null;
-  zip_code: number;
+  zip_code: string;
   video_call: null;
   licence_number: null;
   account_type: number;

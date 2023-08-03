@@ -19,7 +19,6 @@ import { useCounterStore } from "../../../MobX/TodoStore";
 import { Popup } from "../../components/Popup";
 import { DashboardAPI, IUserData, User } from "../../../types";
 import * as DocumentPicker from "expo-document-picker";
-import { Button } from "react-native-ui-lib";
 import { useNavigation } from "@react-navigation/native";
 
 interface box {
@@ -214,7 +213,6 @@ const Dashboard = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <Button onPress={() => uploadFile()}></Button>
       </ScrollView>
       <Popup
         heading={"Alert"}

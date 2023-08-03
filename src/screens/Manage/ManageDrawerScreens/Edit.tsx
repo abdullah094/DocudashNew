@@ -35,6 +35,8 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 const Edit = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
   const Mobx = useCounterStore();
   const [data, setData] = useState([
     {
@@ -60,7 +62,6 @@ const Edit = () => {
     useState<GenerateSignature>();
   const [generateSignatureDetailsImages, setGenerateSignatureDetailsImages] =
     useState<GenerateSignatureDetailsImage[]>([]);
-  const route = useRoute();
   const envelope: Envelope = route.params;
   // console.log("data", envelope.id, envelope.signature_id);
 
@@ -257,7 +258,13 @@ const Edit = () => {
       });
   };
   return (
-    <SafeAreaView>
+    <View style={tw`flex-1`}>
+      <Appbar.Header mode="small">
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content
+          title={envelope ? "Editing Envelope" : "Creating New Envelope"}
+        />
+      </Appbar.Header>
       <ScrollView>
         <View
           style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}
@@ -266,6 +273,7 @@ const Edit = () => {
 
           {data.map((recipient, index) => (
             <View
+              id={index + ""}
               style={tw`flex-1 gap-2 p-2 border border-gray-500 my-2 rounded-lg`}
             >
               <View style={tw`flex-row justify-between items-center`}>
@@ -297,7 +305,7 @@ const Edit = () => {
                     )
                   )
                 }
-                value={recipient.sign_type}
+                value={String(recipient.sign_type)}
                 setValue={(value) => {
                   setData((prev) =>
                     prev.map((item, i) =>
@@ -564,7 +572,7 @@ const Edit = () => {
           </Button>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

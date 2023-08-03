@@ -8,6 +8,7 @@ import Dashboard from "../screens/DashboardDrawerScreens/Dashboard";
 import CustomDrawer from "../screens/DashBoard/CustomDrawer";
 import Signatures from "../screens/Signatures/Index";
 import Stamps from "../screens/Stamps/Index";
+import Profile from "../screens/Manage/Profile";
 const Drawer = createDrawerNavigator();
 const Drawernavigator = () => {
   return (
