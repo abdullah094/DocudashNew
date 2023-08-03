@@ -14,6 +14,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { colors } from "../../../Colors";
 import { useCounterStore } from "../../../../MobX/TodoStore";
 import { User } from "../../../../types";
+import { useNavigation } from "@react-navigation/native";
 
 const DrawerProfileModal = () => {
   const Mobx = useCounterStore();
@@ -21,7 +22,7 @@ const DrawerProfileModal = () => {
   console.log(user);
 
   const [modalVisible, setModalVisible] = useState(false);
-
+  const navigation = useNavigation();
   return (
     <>
       {user && (
@@ -79,6 +80,10 @@ const DrawerProfileModal = () => {
                 {user.first_name} {user.last_name}
               </Text>
               <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(false);
+                  navigation.navigate("Profile");
+                }}
                 style={tw`bg-[${colors.green}] justify-center items-center h-8 rounded-lg`}
               >
                 <Text style={tw`text-white`}>Manage Profile</Text>
