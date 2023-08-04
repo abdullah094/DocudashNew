@@ -29,6 +29,7 @@ import {
   Envelope,
   GenerateSignature,
   GenerateSignatureDetailsImage,
+  RootStackParamList,
   RootStackScreenProps,
   UploadDocumentAPI,
   ViewDocument,
@@ -37,7 +38,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const Edit = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<RootStackParamList>();
   const route = useRoute();
   const Mobx = useCounterStore();
   const [data, setData] = useState([
@@ -216,9 +217,10 @@ const Edit = () => {
       )
       .then((response) => {
         setLoading(false);
-        if (response.data.status === 200) {
+        if (response.data.status) {
           // navigation.navigate('Home');
           console.log(JSON.stringify(response.data));
+          navigation.navigate("DocumentEditor", { item: item });
         } else {
           console.log(JSON.stringify(response.data));
         }

@@ -19,6 +19,7 @@ export type RootStackParamList = {
   Edit: undefined;
   AddStamp: undefined;
   TestScreen: undefined;
+  DocumentEditor: undefined
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
