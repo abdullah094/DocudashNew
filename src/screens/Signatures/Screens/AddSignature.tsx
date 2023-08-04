@@ -18,6 +18,7 @@ import React, {
   useEffect,
 } from "react";
 import {
+  Appbar,
   Button,
   Checkbox,
   RadioButton,
@@ -101,8 +102,11 @@ const AddSignature = () => {
         base64: true,
       });
 
-      if (!result.cancelled) {
-        setSetselectedInitialUri(result.assets[0].base64);
+      if (!result.canceled) {
+        const image = result.assets[0];
+        if (image && image.base64) {
+          setSetselectedInitialUri(image.base64);
+        }
       }
     } catch (err) {
       console.log("err", err);
@@ -110,6 +114,11 @@ const AddSignature = () => {
   };
 
   const create = () => {
+    if (selectedInitialUri.length == 0 && selectedUri.length == 0) {
+      Alert.alert("Please add a signature");
+      return;
+    }
+    console.log(selectedInitialUri, selectedUri);
     axios
       .post(
         "https://docudash.net/api/signatures/create",
@@ -124,8 +133,20 @@ const AddSignature = () => {
         }
       )
       .then((response) => {
-        const data = response.data;
-        Alert.alert("Signature added");
+        const {
+          message,
+          success,
+        }: {
+          message: string;
+          success: boolean;
+        } = response.data;
+        console.log(response.data);
+        if (success) {
+          navigation.navigate("Signatures", {});
+        } else {
+          Alert.alert("Signature added");
+        }
+
         console.log(data);
       })
       .catch((err) => {
@@ -133,108 +154,116 @@ const AddSignature = () => {
       });
   };
   return (
-    <SafeAreaView style={tw`p-3  gap-2 flex-1`}>
-      <TextInput
-        mode="outlined"
-        label="Full Name"
-        disabled
-        value={fullName}
-        onChangeText={(text) => setFullName(text)}
-      />
-      <TextInput
-        label="Initials"
-        mode="outlined"
-        disabled
-        value={initials}
-        onChangeText={(text) => setInitials(text)}
-      />
-      <SegmentedButtons
-        value={value}
-        onValueChange={setValue}
-        buttons={[
-          {
-            value: "choose",
-            label: "Choose",
-          },
-          {
-            value: "draw",
-            label: "Draw",
-          },
-          { value: "upload", label: "Upload" },
-        ]}
-      />
-      {value === "choose" ? (
-        <FlatList
-          data={list}
-          renderItem={({ item, index }) => (
-            <ChooseSignatureItem
-              item={item}
-              id={index}
-              setList={setList}
-              fullName={fullName}
-              initials={initials}
-              setSetselectedUri={setSetselectedUri}
-              setSetselectedInitialUri={setSetselectedInitialUri}
-            />
-          )}
+    <View style={tw`h-full`}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="Add Signature" />
+      </Appbar.Header>
+      <View style={tw`mx-2 gap-2 flex-1`}>
+        <TextInput
+          mode="outlined"
+          label="Full Name"
+          disabled
+          value={fullName}
+          onChangeText={(text) => setFullName(text)}
         />
-      ) : null}
-      {value === "draw" ? (
-        <AddSignatureDraw
-          setSetselectedUri={setSetselectedUri}
-          setSetselectedInitialUri={setSetselectedInitialUri}
+        <TextInput
+          label="Initials"
+          mode="outlined"
+          disabled
+          value={initials}
+          onChangeText={(text) => setInitials(text)}
         />
-      ) : null}
-      {value === "upload" ? (
-        <ScrollView
-          contentContainerStyle={tw`bg-white px-8 py-8 rounded-md gap-5`}
-        >
-          <View
-            style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
-          >
-            {sign && (
-              <Image
-                style={tw`h-20 w-20 bg-red-300`}
-                source={{ uri: "data:image/png;base64," + selectedUri }}
+        <SegmentedButtons
+          value={value}
+          onValueChange={setValue}
+          buttons={[
+            {
+              value: "choose",
+              label: "Choose",
+            },
+            {
+              value: "draw",
+              label: "Draw",
+            },
+            { value: "upload", label: "Upload" },
+          ]}
+        />
+        {value === "choose" ? (
+          <FlatList
+            data={list}
+            renderItem={({ item, index }) => (
+              <ChooseSignatureItem
+                item={item}
+                id={index}
+                setList={setList}
+                fullName={fullName}
+                initials={initials}
+                setSetselectedUri={setSetselectedUri}
+                setSetselectedInitialUri={setSetselectedInitialUri}
               />
             )}
-            <TouchableOpacity style={tw`p-1 `} onPress={uploadSignature}>
-              <Image
-                style={tw`h-10 w-10 self-center`}
-                source={require("../../../assets/Upload.png")}
-              />
-              <Text style={tw`text-[${colors.blue}] mt-2`}>
-                Upload your signature
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
+          />
+        ) : null}
+        {value === "draw" ? (
+          <AddSignatureDraw
+            setSetselectedUri={setSetselectedUri}
+            setSetselectedInitialUri={setSetselectedInitialUri}
+          />
+        ) : null}
+        {value === "upload" ? (
+          <ScrollView
+            contentContainerStyle={tw`bg-white px-8 py-8 rounded-md gap-5`}
           >
-            {initial && (
-              <Image
-                style={tw`h-20 w-20 bg-red-300`}
-                source={{ uri: "data:image/png;base64," + selectedInitialUri }}
-              />
-            )}
-            <TouchableOpacity style={tw`p-1 `} onPress={uploadInitial}>
-              <Image
-                style={tw`h-10 w-10 self-center`}
-                source={require("../../../assets/Upload.png")}
-              />
-              <Text style={tw`text-[${colors.blue}] mt-2`}>
-                Upload your signature
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      ) : null}
+            <View
+              style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
+            >
+              {sign && (
+                <Image
+                  style={tw`h-20 w-20 bg-red-300`}
+                  source={{ uri: "data:image/png;base64," + selectedUri }}
+                />
+              )}
+              <TouchableOpacity style={tw`p-1 `} onPress={uploadSignature}>
+                <Image
+                  style={tw`h-10 w-10 self-center`}
+                  source={require("../../../assets/Upload.png")}
+                />
+                <Text style={tw`text-[${colors.blue}] mt-2`}>
+                  Upload your signature
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
+            >
+              {initial && (
+                <Image
+                  style={tw`h-20 w-20 bg-red-300`}
+                  source={{
+                    uri: "data:image/png;base64," + selectedInitialUri,
+                  }}
+                />
+              )}
+              <TouchableOpacity style={tw`p-1 `} onPress={uploadInitial}>
+                <Image
+                  style={tw`h-10 w-10 self-center`}
+                  source={require("../../../assets/Upload.png")}
+                />
+                <Text style={tw`text-[${colors.blue}] mt-2`}>
+                  Upload your signature
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        ) : null}
 
-      {/* Create sign button */}
-      <Button onPress={create} mode="contained" style={tw`mt-4`}>
-        Create
-      </Button>
-    </SafeAreaView>
+        {/* Create sign button */}
+        <Button onPress={create} mode="contained" style={tw`my-4`}>
+          Create
+        </Button>
+      </View>
+    </View>
   );
 };
 

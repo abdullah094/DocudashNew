@@ -19,6 +19,8 @@ import React, {
 } from "react";
 import {
   Appbar,
+  Avatar,
+  Badge,
   Button,
   Checkbox,
   RadioButton,
@@ -33,60 +35,61 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { useCounterStore } from "../../../../MobX/TodoStore";
 
-import { Signature, SignaturePreview, User } from "../../../../types";
+import { Signature, StampPreview, User } from "../../../../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import ChooseSignatureItem from "../Components/ChooseStampItem";
+import FormData from "form-data";
 
 const AddStamp = () => {
   const Mobx = useCounterStore();
-  const user: User = Mobx.user;
-  const [fullName, setFullName] = React.useState(
-    user.first_name + " " + user.last_name
-  );
-
-  const [initials, setInitials] = React.useState(
-    fullName
-      .replace(/\b(\w)\w+/g, "$1")
-      .replace(/\s/g, "")
-      .replace(/\.$/, "")
-      .toUpperCase()
-  );
-  const [value, setValue] = React.useState("choose");
-  const [list, setList] = React.useState(
-    new Array(6).fill({ selected: false })
-  );
-  const [selectedUri, setSetselectedUri] = useState<string>("");
-  const [selectedInitialUri, setSetselectedInitialUri] = useState<string>("");
-  const [sign, setSign] = useState<Array<{}> | undefined>();
-  const [initial, setInitial] = useState<Array<{}> | undefined>();
+  const user = Mobx.user as User;
   const navigation = useNavigation();
   const route = useRoute();
-  const signaturePreview = route.params as SignaturePreview;
+  const StampPreview = route.params as StampPreview;
+  const [base64, setBase64] = useState("");
+  const [name, setName] = useState("");
+  const [stampId, setStampId] = useState("0");
+  const [loading, setLoading] = useState(false);
+
+  const [image, setImage] = useState<{
+    uri: string;
+    name: string;
+    type: "image" | "video" | undefined;
+  }>();
 
   useEffect(() => {
-    if (signaturePreview) {
-      setList((prev) =>
-        prev.map((sign, i) =>
-          i === signaturePreview.DT_RowIndex - 1
-            ? { ...sign, selected: true }
-            : { ...sign, selected: false }
-        )
+    if (StampPreview) {
+      setBase64(
+        StampPreview.image_base64.replace("data:image/png;base64,", "")
       );
+      setStampId(String(StampPreview.id));
+      setName(StampPreview.title);
+      console.log(StampPreview.id);
     }
   }, []);
 
   const uploadStamp = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+      const result = await ImagePicker.launchImageLibraryAsync({
+        selectionLimit: 1,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [1, 2],
-        quality: 0.1,
+        aspect: [4, 3],
+        quality: 1,
         base64: true,
       });
 
-      if (!result.cancelled) {
-        setSetselectedUri(result.assets[0].base64);
+      if (!result.canceled) {
+        const image = result.assets[0];
+        const imageToUpload = {
+          uri: image.uri,
+          name: image.fileName || image.uri,
+          type: image.type,
+        };
+        setImage(imageToUpload);
+        if (image.base64) {
+          setBase64(image.base64);
+        }
       }
     } catch (err) {
       console.log("err", err);
@@ -94,66 +97,115 @@ const AddStamp = () => {
   };
 
   const create = () => {
+    if (name.length < 0 || name.length > 20) {
+      Alert.alert("Name length should be between 0 and 20");
+      return;
+    }
+    let formData = new FormData();
+    if (image == undefined) {
+      Alert.alert("Please select an image");
+      return;
+    }
+    // const imageToUpload = {
+    //   uri: image.uri,
+    //   name: image.name || image.uri,
+    //   type: image.type,
+    // };
+
+    formData.append("updateID", stampId);
+    formData.append("title", name);
+    formData.append("imageName", image.name);
+    formData.append("stampCroppedImg", "data:image/png;base64," + base64);
+    let headers = {
+      Authorization: `Bearer ${Mobx.access_token}`,
+      "Content-Type": "multipart/form-data",
+    };
+    setLoading(true);
+
     axios
-      .post(
-        "https://docudash.net/api/signatures/create",
-        {
-          signature: "data:image/png;base64," + selectedUri,
-          initial: "data:image/png;base64," + selectedInitialUri,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${Mobx.access_token}`,
-          },
-        }
-      )
+      .post("https://docudash.net/api/stamps/create", formData, { headers })
       .then((response) => {
-        const data = response.data;
-        Alert.alert("Signature added");
-        console.log(data);
+        const { status, message }: { status: boolean; message: string } =
+          response.data;
+        if (status) {
+          navigation.navigate("Stamps", {});
+        } else {
+          if (message.stamp_photo) {
+            Alert.alert(message.stamp_photo[0]);
+          } else {
+            Alert.alert(message);
+          }
+        }
+        console.log(response.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       });
   };
   return (
-    <SafeAreaView style={tw`px-3 h-full`}>
+    <View style={tw`h-full`}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title={StampPreview ? "Edit Stamp" : "Add Stamp"} />
+      </Appbar.Header>
       {/* Create sign button */}
-      <Button icon={"back"}></Button>
-      <Text style={tw`font-bold text-5 px-5`}>Stamps</Text>
-      <View style={tw`px-5 flex-1 justify-center`}>
-        <View style={tw`items-center gap-5 py-5 `}>
-          <Image
-            style={tw`h-15 w-15 `}
-            source={require("../../../assets/Stamp-drop-icon.png")}
-          />
-          <Text style={tw`font-bold text-4 text-center`}>
-            Drag & drop your stamp image or stamp data file here, or hit browse.
-          </Text>
-          <Text style={tw`font-bold text-4 text-center`}>
-            Formats supported:{" "}
-            <Text style={tw`font-normal`}>
-              jpg, jpeg, gif, png, bmp, x-ms-bmp, x-bmp, ipx Note: Stamp image
-              must be no larger than 200KB.
-            </Text>
-          </Text>
-          {selectedUri && (
-            <Image
-              style={tw`h-20 w-20 rounded-full`}
-              source={{ uri: "data:image/png;base64," + selectedUri }}
+      <View style={tw`flex-1 items-center justify-center p-5 gap-4`}>
+        {base64 ? (
+          <View style={tw`items-center w-full gap-2`}>
+            <View>
+              <Badge
+                style={tw`absolute z-1 right-1`}
+                onPress={() => {
+                  setBase64("");
+                }}
+              >
+                X
+              </Badge>
+              <Avatar.Image
+                size={100}
+                source={{ uri: "data:image/png;base64," + base64 }}
+              />
+            </View>
+            <TextInput
+              mode="outlined"
+              label="Stamp Name"
+              style={tw`w-full`}
+              value={name}
+              onChangeText={(text) => setName(text)}
             />
-          )}
-          <View style={tw`flex-row items-center gap-2`}>
-            <Button onPress={uploadStamp} mode="contained">
-              Upload
-            </Button>
           </View>
+        ) : (
+          <View style={tw`items-center gap-5 py-5 `}>
+            <Image
+              style={tw`h-15 w-15 `}
+              source={require("../../../assets/Stamp-drop-icon.png")}
+            />
+            <Text style={tw`font-bold text-4 text-center`}>
+              Drag & drop your stamp image or stamp data file here, or hit
+              browse.
+            </Text>
+            <Text style={tw`font-bold text-4 text-center`}>
+              Formats supported:{" "}
+              <Text style={tw`font-normal`}>
+                jpg, jpeg, gif, png, bmp, x-ms-bmp, x-bmp, ipx Note: Stamp image
+                must be no larger than 200KB.
+              </Text>
+            </Text>
+          </View>
+        )}
+        <View style={tw`flex-row items-center gap-2`}>
+          <Button
+            loading={loading}
+            onPress={base64 ? create : uploadStamp}
+            mode="contained"
+          >
+            {base64 ? "Upload" : "Browse"}
+          </Button>
         </View>
-        <Button onPress={create} mode="contained" style={tw`mt-4`}>
-          Create
-        </Button>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

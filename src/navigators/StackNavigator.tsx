@@ -36,7 +36,6 @@ const StackNavigator = observer(() => {
           <Stack.Screen name="TemplateHistory" component={TemplateHistory} />
           <Stack.Screen name="AddSignature" component={AddSignature} />
           <Stack.Screen name="AddStamp" component={AddStamp} />
-          <Stack.Screen name="TestScreen" component={TestScreen} />
         </Stack.Group>
       ) : (
         <Stack.Group>

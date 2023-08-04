@@ -51,12 +51,19 @@ const CustomDrawer = () => {
             <MenuOptions>
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() => alert(`Save`)}
+                onSelect={() =>
+                  navigation.navigate("Browser", "https://docudash.net/pricing")
+                }
                 text="Get Started"
               />
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() => alert(`Save`)}
+                onSelect={() =>
+                  navigation.navigate(
+                    "Browser",
+                    "https://docudash.net/contact-us"
+                  )
+                }
                 text="Support"
               />
               <MenuOption
@@ -71,7 +78,12 @@ const CustomDrawer = () => {
               />
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() => alert(`Save`)}
+                onSelect={() =>
+                  navigation.navigate(
+                    "Browser",
+                    "https://docudash.net/contact-us"
+                  )
+                }
                 text="Contact Us"
               />
             </MenuOptions>
@@ -112,22 +124,23 @@ const CustomDrawer = () => {
                 navigation.navigate("Stamps");
               }}
             />
-            <TouchableOpacity
-              style={styles.button}
+            <List.Item
+              title="Signout"
               onPress={() => {
                 Alert.alert("Signout Successfull");
                 Mobx.deleteAccessToken();
                 clearToken();
               }}
-            >
-              <Text style={styles.button_text}>Signout</Text>
-            </TouchableOpacity>
+            />
           </View>
         </ScrollView>
       </View>
       <View style={tw`absolute bottom-5 left-0 right-0 bg-white`}>
         <Button
           mode="contained"
+          onPress={() => {
+            navigation.navigate("Browser", "https://docudash.net/pricing");
+          }}
           style={[tw`items-center w-40 rounded-lg  self-center`]}
         >
           View Plans

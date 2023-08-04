@@ -23,18 +23,20 @@ import {
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   RootStackParamList,
-  SignaturePreview,
+  StampPreview,
   SignaturesListAPI,
+  StampListAPI,
 } from "../../../types";
 
 const Index = () => {
-  const [list, setList] = React.useState<SignaturePreview[]>();
+  const [list, setList] = React.useState<StampPreview[]>();
   const [isFetching, setIsFetching] = React.useState(false);
   const Mobx = useCounterStore();
   const navigation = useNavigation();
+  const route = useRoute();
   console.log(Mobx.access_token);
 
   const fetchList = () => {
@@ -46,9 +48,12 @@ const Index = () => {
         },
       })
       .then((response) => {
-        const data = response.data;
-
-        setList(data.data.data);
+        const { data, message, status } = response.data as StampListAPI;
+        if (status) {
+          setList(data.data);
+        } else {
+          alert(message);
+        }
         setIsFetching(false);
       })
       .catch((err) => {
@@ -57,93 +62,8 @@ const Index = () => {
   };
   React.useEffect(() => {
     fetchList();
-  }, []);
+  }, [route]);
 
-  const DropdownComp = () => {
-    const [action, setAction] = React.useState("");
-    const [showDropDown, setShowDropDown] = React.useState(false);
-    const ActionList = [
-      {
-        label: "Edit",
-        value: "edit",
-      },
-      {
-        label: "Delete",
-        value: "delete",
-      },
-    ];
-
-    return (
-      <DropDown
-        label={"Action"}
-        mode={"outlied"}
-        visible={showDropDown}
-        showDropDown={() => setShowDropDown(true)}
-        onDismiss={() => setShowDropDown(false)}
-        value={action}
-        setValue={setAction}
-        list={ActionList}
-      />
-    );
-  };
-  const TableRow = () => {
-    const [openModal, setOpenModal] = React.useState(false);
-
-    return (
-      <>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={openModal}
-          onDismiss={() => setOpenModal(false)}
-        >
-          <View style={tw`flex-1 justify-center items-center `}>
-            <View
-              style={tw`border-2  w-70 rounded-lg bg-white p-5 gap-4 pb-25`}
-            >
-              <Pressable
-                style={tw`absolute top-1 right-1 p-1`}
-                onPress={() => setOpenModal(false)}
-              >
-                <MaterialCommunityIcons name="close-circle" size={30} />
-              </Pressable>
-              <Text style={tw`font-bold`}>Status</Text>
-              <SwitchComp />
-              <Text style={tw`font-bold`}>Action</Text>
-              <DropdownComp />
-            </View>
-          </View>
-        </Modal>
-        <DataTable.Row>
-          <DataTable.Cell style={tw`items-center h-35`}>
-            <Image
-              style={tw`w-20 h-4`}
-              resizeMode="contain"
-              source={require("../../assets/docudash_pow_logo.png")}
-            />
-          </DataTable.Cell>
-          <DataTable.Cell style={tw` items-center justify-center h-35`}>
-            <Image
-              style={tw`w-15 h-4`}
-              resizeMode="contain"
-              source={require("../../assets/docudash_pow_logo.png")}
-            />
-          </DataTable.Cell>
-          <DataTable.Cell style={tw` items-center h-35 justify-center`}>
-            <View style={tw`justify-start items-center gap-2 overflow-hidden`}>
-              <Text style={tw`text-3 text-[${colors.gray}]`} numberOfLines={2}>
-                {"5qDXe96-pkhNTj-55211"}
-              </Text>
-              <Button
-                onPress={() => setOpenModal(!openModal)}
-                icon="dots-horizontal"
-              ></Button>
-            </View>
-          </DataTable.Cell>
-        </DataTable.Row>
-      </>
-    );
-  };
   const Delete = (id: number) => {
     axios
       .post(
@@ -168,7 +88,7 @@ const Index = () => {
 
     axios
       .post(
-        "https://docudash.net/api/signatures/statusUpdate",
+        "https://docudash.net/api/stamps/statusUpdate",
         {
           id: id,
           status: status,
@@ -202,9 +122,9 @@ const Index = () => {
     return (
       <View style={tw` bg-white p-2 my-1 gap-2 px-3`}>
         <View style={tw`flex-row gap-2 overflow-hidden`}>
-          <View style={tw`flex-1 gap-3 p-2 items-center overflow-hidden `}>
+          <View style={tw`flex-1 gap-3 p-2 items-start overflow-hidden `}>
             <Image
-              style={tw`w-full h-20  `}
+              style={tw`w-20 h-20 rounded-full overflow-hidden `}
               resizeMode="contain"
               source={{
                 uri: item.image_base64,
@@ -225,7 +145,6 @@ const Index = () => {
             <View>
               <View style={tw`flex-row items-center gap-1`}>
                 <Chip
-                  mode="outlined"
                   selectedColor={colors.blue}
                   onPress={() => {
                     navigation.navigate("AddStamp", item);
@@ -234,26 +153,11 @@ const Index = () => {
                 >
                   Edit
                 </Chip>
-                <Chip mode="outlined" onPress={() => Delete(item.id)}>
-                  Delete
-                </Chip>
+                <Chip onPress={() => Delete(item.id)}>Delete</Chip>
               </View>
             </View>
           </View>
         </View>
-
-        {/* {more ? (
-            <View style={tw`gap-2`}>
-              <View style={tw`flex-row items-center gap-4`}>
-                <Text>Status:</Text>
-                <SwitchComp />
-              </View>
-              <View style={tw`flex-row items-center gap-4`}>
-                <Text>Action:</Text>
-                <DropdownComp />
-              </View>
-            </View>
-          ) : null} */}
       </View>
     );
   };

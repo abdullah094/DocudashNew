@@ -23,7 +23,7 @@ import {
   MenuOptions,
   MenuTrigger,
 } from "react-native-popup-menu";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   RootStackParamList,
   SignaturePreview,
@@ -36,6 +36,7 @@ const Index = () => {
   const Mobx = useCounterStore();
   const navigation = useNavigation();
   console.log(Mobx.access_token);
+  const route = useRoute();
 
   const fetchList = () => {
     setIsFetching(true);
@@ -66,7 +67,7 @@ const Index = () => {
   };
   React.useEffect(() => {
     fetchList();
-  }, []);
+  }, [route]);
 
   const DropdownComp = () => {
     const [action, setAction] = React.useState("");
@@ -245,7 +246,6 @@ const Index = () => {
             <View>
               <View style={tw`flex-row items-center gap-1`}>
                 <Chip
-                  mode="outlined"
                   selectedColor={colors.blue}
                   onPress={() => {
                     navigation.navigate("AddSignature", item);
@@ -254,26 +254,11 @@ const Index = () => {
                 >
                   Edit
                 </Chip>
-                <Chip mode="outlined" onPress={() => Delete(item.id)}>
-                  Delete
-                </Chip>
+                <Chip onPress={() => Delete(item.id)}>Delete</Chip>
               </View>
             </View>
           </View>
         </View>
-
-        {/* {more ? (
-          <View style={tw`gap-2`}>
-            <View style={tw`flex-row items-center gap-4`}>
-              <Text>Status:</Text>
-              <SwitchComp />
-            </View>
-            <View style={tw`flex-row items-center gap-4`}>
-              <Text>Action:</Text>
-              <DropdownComp />
-            </View>
-          </View>
-        ) : null} */}
       </View>
     );
   };

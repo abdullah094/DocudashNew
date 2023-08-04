@@ -8,6 +8,7 @@ import CustomDrawer from "../screens/DashBoard/CustomDrawer";
 import Signatures from "../screens/Signatures/Index";
 import Stamps from "../screens/Stamps/Index";
 import Profile from "../screens/Manage/Profile";
+import Browser from "../screens/DashboardDrawerScreens/Browser";
 import Template from "../screens/Template/Index";
 const Drawer = createDrawerNavigator();
 const Drawernavigator = () => {
@@ -22,6 +23,7 @@ const Drawernavigator = () => {
       <Drawer.Screen name="Signatures" component={Signatures} />
       <Drawer.Screen name="Stamps" component={Stamps} />
       <Drawer.Screen name="Profile" component={Profile} />
+      <Drawer.Screen name="Browser" component={Browser} />
     </Drawer.Navigator>
   );
 };

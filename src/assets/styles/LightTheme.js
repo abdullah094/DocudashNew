@@ -1,17 +1,17 @@
-export const light = {
+const lightColors = {
   colors: {
     primary: "rgb(51, 107, 7)",
     onPrimary: "rgb(255, 255, 255)",
     primaryContainer: "rgb(179, 245, 133)",
     onPrimaryContainer: "rgb(10, 33, 0)",
-    secondary: "rgb(82, 86, 169)",
+    secondary: "rgb(86, 98, 75)",
     onSecondary: "rgb(255, 255, 255)",
-    secondaryContainer: "rgb(225, 224, 255)",
-    onSecondaryContainer: "rgb(9, 7, 100)",
-    tertiary: "rgb(0, 104, 116)",
+    secondaryContainer: "rgb(217, 231, 202)",
+    onSecondaryContainer: "rgb(20, 30, 12)",
+    tertiary: "rgb(63, 90, 169)",
     onTertiary: "rgb(255, 255, 255)",
-    tertiaryContainer: "rgb(151, 240, 255)",
-    onTertiaryContainer: "rgb(0, 31, 36)",
+    tertiaryContainer: "rgb(219, 225, 255)",
+    onTertiaryContainer: "rgb(0, 23, 75)",
     error: "rgb(186, 26, 26)",
     onError: "rgb(255, 255, 255)",
     errorContainer: "rgb(255, 218, 214)",
@@ -43,20 +43,20 @@ export const light = {
   },
 };
 
-export const dark = {
+const darkColors = {
   colors: {
     primary: "rgb(152, 216, 108)",
     onPrimary: "rgb(22, 56, 0)",
     primaryContainer: "rgb(35, 81, 0)",
     onPrimaryContainer: "rgb(179, 245, 133)",
-    secondary: "rgb(192, 193, 255)",
-    onSecondary: "rgb(34, 36, 120)",
-    secondaryContainer: "rgb(58, 61, 143)",
-    onSecondaryContainer: "rgb(225, 224, 255)",
-    tertiary: "rgb(79, 216, 235)",
-    onTertiary: "rgb(0, 54, 61)",
-    tertiaryContainer: "rgb(0, 79, 88)",
-    onTertiaryContainer: "rgb(151, 240, 255)",
+    secondary: "rgb(189, 203, 175)",
+    onSecondary: "rgb(40, 52, 32)",
+    secondaryContainer: "rgb(62, 74, 53)",
+    onSecondaryContainer: "rgb(217, 231, 202)",
+    tertiary: "rgb(180, 197, 255)",
+    onTertiary: "rgb(0, 42, 120)",
+    tertiaryContainer: "rgb(36, 66, 144)",
+    onTertiaryContainer: "rgb(219, 225, 255)",
     error: "rgb(255, 180, 171)",
     onError: "rgb(105, 0, 5)",
     errorContainer: "rgb(147, 0, 10)",
@@ -87,3 +87,5 @@ export const dark = {
     backdrop: "rgba(45, 50, 40, 0.4)",
   },
 };
+
+export { lightColors, darkColors };

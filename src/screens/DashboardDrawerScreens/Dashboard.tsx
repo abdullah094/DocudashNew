@@ -7,6 +7,7 @@ import {
   Pressable,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getTokenGlobal } from "../../AsyncGlobal";
@@ -18,9 +19,16 @@ import ImageUploadModal from "../DashBoard/Components/ImageUploadModal";
 import axios from "axios";
 import { useCounterStore } from "../../../MobX/TodoStore";
 import { Popup } from "../../components/Popup";
-import { DashboardAPI, IUserData, User } from "../../../types";
+import {
+  DashboardAPI,
+  HeaderAPI,
+  HeaderOption,
+  IUserData,
+  User,
+} from "../../../types";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from "@react-navigation/native";
+import { ActivityIndicator, Avatar, Chip } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { Button } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -48,11 +56,12 @@ const Dashboard = () => {
   );
   const [progressBar, setProgressBar] = useState<number>(0);
   const [completeNumber, setCompleteNumber] = useState<number>(0);
-  const [setshowMeObj, setSetshowMeObj] = useState<object | null | undefined>();
+  const [Headers, setHeaders] = useState<HeaderOption>();
   const [imageRef, setImageRef] = useState<boolean>();
   const [alert, setAlert] = useState(false);
   const navigation = useNavigation();
   const Mobx = useCounterStore();
+  const [loading, setLoading] = useState(false);
 
   console.log("documents", documents);
 
@@ -88,13 +97,15 @@ const Dashboard = () => {
         headers: { Authorization: `Bearer ${Mobx.access_token}` },
       })
       .then((response) => {
+        const { data, message, status } = response.data as HeaderAPI;
+
         let ones = 0;
         let zeros = 0;
 
         const obj = response.data.data;
         setProgressBar(obj.percentage / 100);
         delete obj.percentage;
-        setSetshowMeObj(obj);
+        setHeaders(obj);
 
         const key_array = Object.values(obj);
         key_array.forEach((element) => {
@@ -105,6 +116,8 @@ const Dashboard = () => {
           }
         });
         setCompleteNumber(ones);
+
+        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -125,6 +138,63 @@ const Dashboard = () => {
       if (result.type !== "cancel") setDocuments((prev) => [...prev, result]);
     } catch (err) {
       console.log("err");
+    }
+  };
+
+  const pickImage = async () => {
+    if (loading) return;
+
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      selectionLimit: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+    setLoading(true);
+    if (!result.canceled) {
+      const image = result.assets[0];
+      let formData = new FormData();
+      const imageToUpload = {
+        uri: image.uri,
+        name: image.fileName || image.uri,
+        type: image.type,
+      };
+
+      formData.append("photo", imageToUpload);
+      let headers = {
+        Authorization: `Bearer ${Mobx.access_token}`,
+        "Content-Type": "multipart/form-data",
+      };
+      axios
+        .post("https://docudash.net/api/upload-image", formData, { headers })
+        .then((response) => {
+          setLoading(false);
+          const {
+            success,
+            message,
+          }: {
+            success: false;
+            message: {
+              photo: string[];
+            };
+          } = response.data;
+          if (success) {
+            // navigation.navigate('Home');
+            Alert.alert(message);
+            fetchDashData();
+          } else {
+            message.photo.map((x) => Alert.alert(x));
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log("error", error);
+        });
+      // setImage(result.assets[0].uri);
     }
   };
   return (
@@ -152,13 +222,25 @@ const Dashboard = () => {
           </View>
           <ProgressModal
             progress={progressBar}
-            obj={setshowMeObj}
+            obj={Headers}
             steps={completeNumber}
           />
         </View>
         {/* 2nd */}
         <View style={tw`items-center bg-[${colors.green}] py-10 gap-2`}>
           <View style={tw`flex-row items-center h-25`}>
+            {loading ? (
+              <ActivityIndicator size={100} animating={true} />
+            ) : (
+              <TouchableOpacity onPress={pickImage}>
+                <Avatar.Image
+                  size={100}
+                  style={tw`m-2`}
+                  source={{ uri: userData?.profile_photo }}
+                />
+              </TouchableOpacity>
+            )}
+
             <Image
               style={tw`w-2.1 h-24 rounded-full mt-5 top--2 mx-2`}
               source={require("../../assets/WhiteLine.png")}

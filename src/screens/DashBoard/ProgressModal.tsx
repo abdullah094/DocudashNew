@@ -15,15 +15,28 @@ import { colors } from "../../Colors";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Progress from "react-native-progress";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { IconButton } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { HeaderOption } from "../../../types";
 
 interface IRectangle {
   heading: string;
   description: string;
-  check: boolean;
+  check: number;
+  onPress: () => void;
+  id: string;
 }
-const Rectangle = ({ heading, description, check }: IRectangle) => {
+const Rectangle = ({
+  id,
+  heading,
+  description,
+  check,
+  onPress,
+}: IRectangle) => {
   return (
-    <View
+    <TouchableOpacity
+      id={id}
+      onPress={onPress}
       style={tw`flex-row items-center  py-3 mt-5  pl-3 pr-10 shadow-md bg-white rounded-lg`}
     >
       <View
@@ -37,19 +50,21 @@ const Rectangle = ({ heading, description, check }: IRectangle) => {
         <Text style={tw`font-bold text-[${colors.black}]`}>{heading}</Text>
         <Text style={tw`text-[${colors.gray}]`}>{description}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
 interface IProgressModal {
   progress: number;
-  obj: object | null | undefined;
+  obj: HeaderOption | undefined;
   steps: number | null;
 }
 const { width } = Dimensions.get("window");
 const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [progressBar, setProgressBar] = useState<number>(0);
+  const navigation = useNavigation();
+  if (!obj) return <></>;
 
   return (
     <>
@@ -64,20 +79,20 @@ const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
         <ScrollView
-          contentContainerStyle={tw` flex-1 items-center justify-center `}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={tw` items-center justify-center `}
         >
-          <View style={tw`bg-gray-100 w-full py-10 px-5 `}>
-            <Pressable
-              style={tw`absolute top-1 right-2 p-2`}
-              onPress={() => setModalVisible(false)}
-            >
-              <MaterialCommunityIcons name="close-circle" size={30} />
-            </Pressable>
+          <View style={tw`bg-gray-100 w-full py-10 px-5`}>
+            <View style={tw`flex-row items-center justify-end`}>
+              <IconButton
+                icon={"close-circle"}
+                onPress={() => setModalVisible(false)}
+              ></IconButton>
+            </View>
             <View>
               <View style={tw`flex-row items-center py-5 justify-between`}>
                 <View style={tw`overflow-hidden  w-2/3`}>
@@ -104,38 +119,66 @@ const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
               />
             </View>
             <Rectangle
+              id={"1"}
               heading={"Sign up now"}
               description={"All set. Now let's get started!"}
               check={obj?.sign_up}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}
             />
             <Rectangle
+              id={"2"}
               heading={"Send Documents for Signature"}
               description={"Easily track your envelope with us"}
               check={obj?.Send_Documents_for_Signature}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                navigation.navigate("Edit");
+              }}
             />
             <Rectangle
+              id={"3"}
               heading={"Upload your photos"}
               description={"Personalize your envelopes with a photo."}
               check={obj?.Upload_Your_Photo}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                navigation.navigate("Profile");
+              }}
             />
             <Rectangle
+              id={"4"}
               heading={"Adopt Your Signature"}
               description={"Create your personal signature."}
               check={obj?.adopt_your_signature}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                navigation.navigate("Signatures");
+              }}
             />
             <Rectangle
+              id={"5"}
               heading={"Create a Template"}
               description={
                 "Resending the same documents? Save time with templates."
               }
               check={obj?.template}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+                navigation.navigate("Template");
+              }}
             />
             <Rectangle
+              id={"6"}
               heading={"Brand Your Account"}
               description={
                 "Add your professional touch with your logo and colors."
               }
               check={obj?.brand}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}
             />
           </View>
         </ScrollView>

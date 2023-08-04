@@ -80,6 +80,7 @@ const Inbox = observer(() => {
   return (
     <View style={tw`flex-1`}>
       <Header />
+
       <FlatList
         data={filter(Name) ? filter(Name) : data}
         ListHeaderComponent={

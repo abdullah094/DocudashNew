@@ -13,28 +13,35 @@ import {
   Surface,
   ThemeProvider,
   PaperProvider,
+  MD3DarkTheme,
+  MD3LightTheme,
   useTheme,
   MD2LightTheme,
   MD2DarkTheme,
 } from "react-native-paper";
-import { light, dark } from "./src/assets/styles/LightTheme";
+import { darkColors, lightColors } from "./src/assets/styles/LightTheme";
+import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { MenuProvider } from "react-native-popup-menu";
 import { Provider as ReduxProvider } from "react-redux";
 import Store from "./src/Redux/Store";
+
 export default function App() {
-  const [nightMode, setNightmode] = useState(false);
   const isLoadingComplete = useCachedResources();
 
-  const theme = {
-    ...DefaultTheme,
-    colors: light.colors, // Copy it from the color codes scheme and then use it here
-  };
+  const colorScheme = useColorScheme();
+  // const { theme } = useMaterial3Theme();
+
+  const paperTheme =
+    colorScheme === "dark"
+      ? { ...MD3DarkTheme, colors: darkColors.colors }
+      : { ...MD3LightTheme, colors: lightColors.colors };
+
   if (!isLoadingComplete) {
     return null;
   }
   return (
     <ReduxProvider store={Store}>
-      <PaperProvider theme={theme}>
+      <PaperProvider theme={paperTheme}>
         <MenuProvider>
           <NavigationContainer>
             <StackNavigator />

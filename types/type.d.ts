@@ -18,8 +18,7 @@ export type RootStackParamList = {
   AddSignature: undefined;
   Edit: undefined;
   AddStamp: undefined;
-  
-  TestScreen: undefined
+  TestScreen: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -438,4 +437,65 @@ export interface SignUpData {
   trial_account: number;
   company: null;
   profile_photo_url: string;
+}
+
+//stamp api
+export interface StampListAPI {
+  status: boolean;
+  message: string;
+  data: StampPagination;
+}
+
+export interface StampPagination {
+  current_page: number;
+  data: StampPreview[];
+  first_page_url: string;
+  from: number;
+  last_page: number;
+  last_page_url: string;
+  links: Link[];
+  next_page_url: null;
+  path: string;
+  per_page: number;
+  prev_page_url: null;
+  to: number;
+  total: number;
+}
+
+export interface StampPreview {
+  id: number;
+  title: string;
+  image: string;
+  image_base64: string;
+  stamp_code: string;
+  status: number;
+  created_by: number;
+  updated_by: number;
+  deleted: number;
+  created_at: string;
+  updated_at: string;
+  user: User;
+}
+
+export interface Link {
+  url: null | string;
+  label: string;
+  active: boolean;
+}
+
+//header Api
+export interface HeaderAPI {
+  data: HeaderOption;
+  message: string;
+  status: boolean;
+}
+
+export interface HeaderOption {
+  Send_Documents_for_Signature: number;
+  Upload_Your_Photo: number;
+  adopt_your_signature: number;
+  brand: number;
+  percentage?: number;
+  sign_up: number;
+  template: number;
 }

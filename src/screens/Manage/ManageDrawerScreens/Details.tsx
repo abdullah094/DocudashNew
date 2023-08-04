@@ -284,8 +284,11 @@ const Details = () => {
                 details={data?.generateSignatureDetails}
               />
             </View>
-            {data?.generateSignatureDetails.map((item) => (
-              <View style={tw` mt-5 py-3 flex-row items-center  `}>
+            {data?.generateSignatureDetails.map((item, index) => (
+              <View
+                id={String(index)}
+                style={tw` mt-5 py-3 flex-row items-center  `}
+              >
                 <View style={tw`flex-1`}>
                   <View style={tw`flex-row items-center justify-between`}>
                     <Text style={styles.h2} numberOfLines={2}>
@@ -301,11 +304,11 @@ const Details = () => {
                   />
                   <View>
                     <Text style={tw`text-3 font-bold overflow-hidden w-full`}>
-                      {item.sign_type == 1
+                      {item.sign_type == "1"
                         ? "Need to Sign"
-                        : item.sign_type == 2
+                        : item.sign_type == "2"
                         ? "In Person Signer"
-                        : item.sign_type === 3
+                        : item.sign_type === "3"
                         ? "Receives a Copy"
                         : "Needs to View"}
                     </Text>
