@@ -228,7 +228,7 @@ const Index = () => {
                   mode="outlined"
                   selectedColor={colors.blue}
                   onPress={() => {
-                    navigation.navigate("AddSignature", item);
+                    navigation.navigate("AddStamp", item);
                     // console.log(item);
                   }}
                 >

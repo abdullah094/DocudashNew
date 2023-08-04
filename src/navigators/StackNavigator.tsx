@@ -13,6 +13,7 @@ import Details from "../screens/Manage/ManageDrawerScreens/Details";
 import TemplateHistory from "../screens/Manage/ManageDrawerScreens/TemplateHistory";
 import Drawernavigator from "./Drawernavigator";
 import AddStamp from "../screens/Stamps/Screens/AddStamps";
+import TestScreen from "../screens/DashboardDrawerScreens/TestScreen";
 const Stack = createStackNavigator<RootStackParamList>();
 
 const StackNavigator = observer(() => {
@@ -35,6 +36,7 @@ const StackNavigator = observer(() => {
           <Stack.Screen name="TemplateHistory" component={TemplateHistory} />
           <Stack.Screen name="AddSignature" component={AddSignature} />
           <Stack.Screen name="AddStamp" component={AddStamp} />
+          <Stack.Screen name="TestScreen" component={TestScreen} />
         </Stack.Group>
       ) : (
         <Stack.Group>
