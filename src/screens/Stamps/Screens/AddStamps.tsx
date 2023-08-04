@@ -18,6 +18,7 @@ import React, {
   useEffect,
 } from "react";
 import {
+  Appbar,
   Button,
   Checkbox,
   RadioButton,
@@ -116,88 +117,21 @@ const AddStamp = () => {
       });
   };
   return (
-    <SafeAreaView style={tw`p-3 gap-2 flex-1`}>
-      <TextInput
-        mode="outlined"
-        label="Full Name"
-        disabled
-        value={fullName}
-        onChangeText={(text) => setFullName(text)}
-      />
-      <TextInput
-        label="Initials"
-        mode="outlined"
-        disabled
-        value={initials}
-        onChangeText={(text) => setInitials(text)}
-      />
-      <SegmentedButtons
-        value={value}
-        onValueChange={setValue}
-        buttons={[
-          {
-            value: "choose",
-            label: "Choose",
-          },
-          {
-            value: "draw",
-            label: "Draw",
-          },
-          { value: "upload", label: "Upload" },
-        ]}
-      />
-      {value === "choose" ? (
-        <FlatList
-          data={list}
-          renderItem={({ item, index }) => (
-            <ChooseSignatureItem
-              item={item}
-              id={index}
-              setList={setList}
-              fullName={fullName}
-              initials={initials}
-              setSetselectedUri={setSetselectedUri}
-              setSetselectedInitialUri={setSetselectedInitialUri}
-            />
-          )}
-        />
-      ) : null}
-      {value === "draw" ? (
-        <AddSignatureDraw
-          setSetselectedUri={setSetselectedUri}
-          setSetselectedInitialUri={setSetselectedInitialUri}
-        />
-      ) : null}
-      {value === "upload" ? (
-        <ScrollView
-          contentContainerStyle={tw`bg-white px-8 py-8 rounded-md gap-5`}
-        >
-          <View
-            style={tw` border-2 py-10 rounded-xl border-dashed gap-5 border-[${colors.blue}] justify-center items-center`}
-          >
-            {sign && (
-              <Image
-                style={tw`h-20 w-20 bg-red-300`}
-                source={{ uri: "data:image/png;base64," + selectedUri }}
-              />
-            )}
-            <TouchableOpacity style={tw`p-1 `} onPress={uploadStamp}>
-              <Image
-                style={tw`h-10 w-10 self-center`}
-                source={require("../../../assets/Upload.png")}
-              />
-              <Text style={tw`text-[${colors.blue}] mt-2`}>
-                Upload your stamps
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      ) : null}
-
+    <SafeAreaView style={tw`p-3 gap-2 overflow-hidden flex-1 w-full`}>
       {/* Create sign button */}
-      <Button onPress={create} mode="contained" style={tw`mt-4`}>
-        Create
-      </Button>
+      <View style={tw`p-5`}>
+        <Text>Stamps</Text>
+
+        <View>
+          <Image
+            style={tw`h-15 w-15 `}
+            source={require("../../../assets/Stamp-drop-icon.png")}
+          />
+        </View>
+        <Button onPress={create} mode="contained" style={tw`mt-4`}>
+          Create
+        </Button>
+      </View>
     </SafeAreaView>
   );
 };

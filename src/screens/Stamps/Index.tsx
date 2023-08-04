@@ -40,24 +40,15 @@ const Index = () => {
   const fetchList = () => {
     setIsFetching(true);
     axios
-      .get("https://docudash.net/api/signatures/list", {
+      .get("https://docudash.net/api/stamps", {
         headers: {
           Authorization: `Bearer ${Mobx.access_token}`,
         },
       })
       .then((response) => {
-        const data: SignaturesListAPI = response.data;
+        const data = response.data;
 
-        const changedata = data.data.map((x) => {
-          return {
-            ...x,
-            signature: x.signature.replace(/(\r\n|\n|\r)/gm, ""),
-            initial: x.initial.replace(/(\r\n|\n|\r)/gm, ""),
-          };
-        });
-
-        setList(changedata);
-        // setList(data.data);
+        setList(data.data.data);
         setIsFetching(false);
       })
       .catch((err) => {
@@ -156,7 +147,7 @@ const Index = () => {
   const Delete = (id: number) => {
     axios
       .post(
-        "https://docudash.net/api/signatures/delete",
+        "https://docudash.net/api/stamps/delete",
         {
           deleteId: id,
         },
@@ -211,31 +202,20 @@ const Index = () => {
     return (
       <View style={tw` bg-white p-2 my-1 gap-2 px-3`}>
         <View style={tw`flex-row gap-2 overflow-hidden`}>
-          <View style={tw`flex-1`}>
-            <View>
-              <Text style={tw`font-medium`}>Signed by</Text>
-              <Image
-                style={tw`w-full h-20  `}
-                resizeMode="contain"
-                source={{
-                  uri: item.signature,
-                }}
-              />
-            </View>
-            <View>
-              <Text style={tw`font-medium`}>Initials</Text>
-              <Image
-                style={tw`w-full h-20`}
-                resizeMode="contain"
-                source={{ uri: item.initial }}
-              />
-            </View>
-            <View style={tw`gap-4  `}>
-              <Text style={tw`font-medium overflow-hidden`}>
-                Signature Code
-              </Text>
-              <Text>{item.signature_code}</Text>
-            </View>
+          <View style={tw`flex-1 gap-3 p-2 items-center overflow-hidden `}>
+            <Image
+              style={tw`w-full h-20  `}
+              resizeMode="contain"
+              source={{
+                uri: item.image_base64,
+              }}
+            />
+
+            <Text style={tw`font-medium`}>{item.title}</Text>
+
+            <Text style={tw`font-medium overflow-hidden`}>
+              {item.stamp_code}
+            </Text>
           </View>
           <View style={tw` p-2 justify-between`}>
             <View style={tw`gap-2`}>
