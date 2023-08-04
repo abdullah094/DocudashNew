@@ -5,6 +5,7 @@ import {
   View,
   Image,
   SafeAreaView,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -33,6 +34,7 @@ import {
   ViewDocument,
 } from "../../../../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const Edit = () => {
   const navigation = useNavigation();
@@ -54,8 +56,10 @@ const Edit = () => {
       showPrivateMessage: false,
     },
   ]);
+  const item = route.params?.item;
   const [emailSubject, setEmailSubject] = React.useState("");
   const [emailMessage, setEmailMessage] = React.useState("");
+  const [documents, setDocuments] = useState([item]);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generateSignature, setGenerateSignature] =
@@ -63,6 +67,8 @@ const Edit = () => {
   const [generateSignatureDetailsImages, setGenerateSignatureDetailsImages] =
     useState<GenerateSignatureDetailsImage[]>([]);
   const envelope: Envelope = route.params;
+  console.log(item);
+
   // console.log("data", envelope.id, envelope.signature_id);
 
   const addNewRecipient = () => {
@@ -556,6 +562,32 @@ const Edit = () => {
                   Drop documents here to get started
                 </Text>
               </TouchableOpacity>
+            </View>
+            <View style={tw`py-5 my-2`}>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={documents}
+                renderItem={({ item }) => (
+                  <View
+                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
+                  >
+                    <MaterialCommunityIcons
+                      name={
+                        item.mimeType === "application/pdf"
+                          ? "file-pdf-box"
+                          : item.mimeType === "image/png"
+                          ? "file-image"
+                          : "file-question-outline"
+                      }
+                      size={40}
+                    />
+                    <Text style={tw`w-25 text-center`} numberOfLines={2}>
+                      {item.name}
+                    </Text>
+                  </View>
+                )}
+              />
             </View>
           </View>
         </View>

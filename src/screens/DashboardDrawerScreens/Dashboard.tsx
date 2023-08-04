@@ -222,18 +222,31 @@ const Dashboard = () => {
               data={documents}
               renderItem={({ item }) => (
                 <>
-                  <View style={tw`items-center mx-2`}>
-                    <MaterialCommunityIcons
-                      name={
-                        item.mimeType === "application/pdf"
-                          ? "file-pdf-box"
-                          : item.mimeType === "image/png"
-                          ? "file-image"
-                          : "file-question-outline"
+                  <View>
+                    <View
+                      style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
+                    >
+                      <MaterialCommunityIcons
+                        name={
+                          item.mimeType === "application/pdf"
+                            ? "file-pdf-box"
+                            : item.mimeType === "image/png"
+                            ? "file-image"
+                            : "file-question-outline"
+                        }
+                        size={40}
+                      />
+                      <Text style={tw`w-25 text-center`} numberOfLines={2}>
+                        {item.name}
+                      </Text>
+                    </View>
+                    <Button
+                      onPress={() =>
+                        navigation.navigate("Edit", { item: item })
                       }
-                      size={40}
-                    />
-                    <Text style={tw`w-25 text-center`}>{item.name}</Text>
+                    >
+                      Start Now
+                    </Button>
                   </View>
                 </>
               )}
