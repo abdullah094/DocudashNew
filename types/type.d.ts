@@ -18,6 +18,7 @@ export type RootStackParamList = {
   AddSignature: undefined;
   Edit: undefined;
   AddStamp: undefined;
+  
   TestScreen: undefined
 };
 
