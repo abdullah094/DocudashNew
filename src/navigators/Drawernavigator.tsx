@@ -21,6 +21,7 @@ const Drawernavigator = () => {
       <Drawer.Screen name="Template" component={Template} />
       <Drawer.Screen name="Signatures" component={Signatures} />
       <Drawer.Screen name="Stamps" component={Stamps} />
+      <Drawer.Screen name="Profile" component={Profile} />
     </Drawer.Navigator>
   );
 };

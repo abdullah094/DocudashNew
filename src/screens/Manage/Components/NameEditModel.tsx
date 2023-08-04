@@ -25,8 +25,9 @@ const NameEditModal = () => {
   const [lastName, setLastName] = useState(user.last_name);
 
   const onSave = () => {
-    if (firstName.length > 0 && lastName.length > 0) {
+    if (firstName.length < 0 && lastName.length < 0) {
       alert("Please enter a valid name");
+      return;
     }
     axios
       .post(
