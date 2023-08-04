@@ -216,42 +216,59 @@ const Dashboard = () => {
               </Text>
             </TouchableOpacity>
           </View>
+
           <View style={tw`py-5 my-2`}>
             <FlatList
               horizontal
+              showsHorizontalScrollIndicator={false}
               data={documents}
-              renderItem={({ item }) => (
+              renderItem={({ item, index }) => (
                 <>
-                  <View>
-                    <View
-                      style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
+                  <View
+                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
+                  >
+                    <Pressable
+                      onPress={() => {
+                        setDocuments(
+                          documents.filter((x, i) => {
+                            return index != i;
+                          })
+                        );
+                      }}
+                      style={tw` top--5 right--11`}
                     >
                       <MaterialCommunityIcons
-                        name={
-                          item.mimeType === "application/pdf"
-                            ? "file-pdf-box"
-                            : item.mimeType === "image/png"
-                            ? "file-image"
-                            : "file-question-outline"
-                        }
-                        size={40}
+                        name="close-circle"
+                        color={"red"}
+                        size={25}
                       />
-                      <Text style={tw`w-25 text-center`} numberOfLines={2}>
-                        {item.name}
-                      </Text>
-                    </View>
-                    <Button
-                      onPress={() =>
-                        navigation.navigate("Edit", { item: item })
+                    </Pressable>
+                    <MaterialCommunityIcons
+                      name={
+                        item.mimeType === "application/pdf"
+                          ? "file-pdf-box"
+                          : item.mimeType === "image/png"
+                          ? "file-image"
+                          : "file-question-outline"
                       }
-                    >
-                      Start Now
-                    </Button>
+                      size={40}
+                    />
+                    <Text style={tw`w-25 text-center`} numberOfLines={2}>
+                      {item.name}
+                    </Text>
                   </View>
                 </>
               )}
             />
           </View>
+          {documents.length > 0 && (
+            <Button
+              mode="contained"
+              onPress={() => navigation.navigate("Edit", { item: documents })}
+            >
+              Start Now
+            </Button>
+          )}
         </View>
       </ScrollView>
       <Popup

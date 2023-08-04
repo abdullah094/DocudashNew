@@ -567,7 +567,7 @@ const Edit = () => {
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={documents}
+                data={item}
                 renderItem={({ item }) => (
                   <View
                     style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
