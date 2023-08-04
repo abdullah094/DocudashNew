@@ -117,16 +117,37 @@ const AddStamp = () => {
       });
   };
   return (
-    <SafeAreaView style={tw`p-3 gap-2 overflow-hidden flex-1 w-full`}>
+    <SafeAreaView style={tw`px-3 h-full`}>
       {/* Create sign button */}
-      <View style={tw`p-5`}>
-        <Text>Stamps</Text>
-
-        <View>
+      <Button icon={"back"}></Button>
+      <Text style={tw`font-bold text-5 px-5`}>Stamps</Text>
+      <View style={tw`px-5 flex-1 justify-center`}>
+        <View style={tw`items-center gap-5 py-5 `}>
           <Image
             style={tw`h-15 w-15 `}
             source={require("../../../assets/Stamp-drop-icon.png")}
           />
+          <Text style={tw`font-bold text-4 text-center`}>
+            Drag & drop your stamp image or stamp data file here, or hit browse.
+          </Text>
+          <Text style={tw`font-bold text-4 text-center`}>
+            Formats supported:{" "}
+            <Text style={tw`font-normal`}>
+              jpg, jpeg, gif, png, bmp, x-ms-bmp, x-bmp, ipx Note: Stamp image
+              must be no larger than 200KB.
+            </Text>
+          </Text>
+          {selectedUri && (
+            <Image
+              style={tw`h-20 w-20 rounded-full`}
+              source={{ uri: "data:image/png;base64," + selectedUri }}
+            />
+          )}
+          <View style={tw`flex-row items-center gap-2`}>
+            <Button onPress={uploadStamp} mode="contained">
+              Upload
+            </Button>
+          </View>
         </View>
         <Button onPress={create} mode="contained" style={tw`mt-4`}>
           Create
