@@ -42,6 +42,7 @@ const InfoEditModal = () => {
   }>();
 
   const onSave = () => {
+    setHasErrors({});
     // if (company.length == 0) {
     //   Alert.alert("Please enter a company name.");
     //   return;
