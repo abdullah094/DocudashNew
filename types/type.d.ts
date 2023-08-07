@@ -6,6 +6,7 @@ import type { StackScreenProps } from "@react-navigation/stack";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { DrawerScreenProps } from "@react-navigation/drawer";
 import { Industry } from "./Step4";
+import { DocumentPickerOptions } from "expo-document-picker";
 
 export type RootStackParamList = {
   SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
@@ -16,7 +17,7 @@ export type RootStackParamList = {
   TemplateHistory: undefined;
   Signatures: undefined;
   AddSignature: undefined;
-  Edit: undefined;
+  Edit: { Envelope: Envelope; files: DocumentPickerOptions.DocumentResult[] };
   AddStamp: undefined;
   TestScreen: undefined;
   DocumentEditor: undefined

@@ -47,7 +47,7 @@ const EmailBar = ({
         onPress={() =>
           heading == "Inbox"
             ? navigation.navigate("Details", item)
-            : navigation.navigate("Edit", item)
+            : navigation.navigate("Edit", { Envelope: item })
         }
       >
         <View style={tw`flex-row overflow-hidden gap-2 items-center h-16`}>

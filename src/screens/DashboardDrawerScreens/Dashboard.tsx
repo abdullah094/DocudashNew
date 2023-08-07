@@ -346,7 +346,7 @@ const Dashboard = () => {
           {documents.length > 0 && (
             <Button
               mode="contained"
-              onPress={() => navigation.navigate("Edit", { item: documents })}
+              onPress={() => navigation.navigate("Edit", { files: documents })}
             >
               Start Now
             </Button>

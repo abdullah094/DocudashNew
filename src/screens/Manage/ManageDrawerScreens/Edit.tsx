@@ -36,10 +36,11 @@ import {
 } from "../../../../types";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-
+import * as DocumentPicker from "expo-document-picker";
 const Edit = () => {
-  const navigation = useNavigation<RootStackParamList>();
-  const route = useRoute();
+  const navigation =
+    useNavigation<RootStackScreenProps<"Edit">["navigation"]>();
+  const route = useRoute<RootStackScreenProps<"Edit">["route"]>();
   const Mobx = useCounterStore();
   const [data, setData] = useState([
     {
@@ -57,18 +58,22 @@ const Edit = () => {
       showPrivateMessage: false,
     },
   ]);
-  const item = route.params?.item;
+
   const [emailSubject, setEmailSubject] = React.useState("");
   const [emailMessage, setEmailMessage] = React.useState("");
-  const [documents, setDocuments] = useState([item]);
+
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generateSignature, setGenerateSignature] =
     useState<GenerateSignature>();
   const [generateSignatureDetailsImages, setGenerateSignatureDetailsImages] =
     useState<GenerateSignatureDetailsImage[]>([]);
-  const envelope: Envelope = route.params;
-  console.log(item);
+  const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
+    []
+  );
+  const envelope: Envelope = route.params.Envelope;
+  const files = route.params.files;
+  console.log(files);
 
   // console.log("data", envelope.id, envelope.signature_id);
 
@@ -111,6 +116,9 @@ const Edit = () => {
     },
   ];
   useEffect(() => {
+    if (files) {
+      setDocuments(files);
+    }
     if (envelope) {
       axios
         .get(
@@ -202,7 +210,11 @@ const Edit = () => {
 
     images.forEach((image, index) => {
       formData.append("photosID[" + index + "]", "0");
-      formData.append("image[]", image, `image${index + 1}.png`);
+      formData.append("photos[]", image, `image${index + 1}.png`);
+    });
+    documents.forEach((image, index) => {
+      formData.append("photosID[" + index + "]", "0");
+      formData.append("photos[]", image, `image${index + 1}.png`);
     });
     let headers = {
       Authorization: `Bearer ${Mobx.access_token}`,
@@ -569,7 +581,7 @@ const Edit = () => {
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={item}
+                data={files}
                 renderItem={({ item }) => (
                   <View
                     style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
