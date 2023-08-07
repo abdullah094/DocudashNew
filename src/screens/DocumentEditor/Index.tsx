@@ -18,7 +18,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 const Index = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const item = route.params?.item;
+  const item = route.params?.files;
   console.log(item);
 
   return (

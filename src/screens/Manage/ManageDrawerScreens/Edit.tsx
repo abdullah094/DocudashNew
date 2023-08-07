@@ -232,7 +232,7 @@ const Edit = () => {
         if (response.data.status) {
           // navigation.navigate('Home');
           console.log(JSON.stringify(response.data));
-          navigation.navigate("DocumentEditor", { item: item });
+          navigation.navigate("DocumentEditor", { files: files });
         } else {
           console.log(JSON.stringify(response.data));
         }
