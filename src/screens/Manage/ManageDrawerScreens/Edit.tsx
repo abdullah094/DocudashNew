@@ -71,8 +71,8 @@ const Edit = () => {
   const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
     []
   );
-  const envelope: Envelope = route.params.Envelope;
-  let files = route.params.files;
+  const envelope: Envelope = route.params?.Envelope;
+  let files = route.params?.files;
 
   console.log(files);
 
@@ -81,7 +81,7 @@ const Edit = () => {
       const result = await DocumentPicker.getDocumentAsync({
         type: ["image/*", "application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
-      if (result.type !== "cancel") files.push(result);
+      if (result.type !== "cancel") setDocuments((prev) => [...prev, result]);
     } catch (err) {
       console.log("err");
     }
@@ -243,7 +243,10 @@ const Edit = () => {
         if (response.data.status) {
           // navigation.navigate('Home');
           console.log(JSON.stringify(response.data));
-          navigation.navigate("DocumentEditor", { files: files });
+          navigation.replace("DocumentEditor", {
+            files: files,
+            Envelope: generateSignature,
+          });
         } else {
           console.log(JSON.stringify(response.data));
         }
@@ -589,6 +592,21 @@ const Edit = () => {
               </TouchableOpacity>
             </View>
             <View style={tw`py-5 my-2`}>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={generateSignatureDetailsImages}
+                renderItem={({ item }) => (
+                  <Image
+                    source={{
+                      uri:
+                        "https://docudash.net/public/uploads/generateSignature/photos/" +
+                        item.image,
+                    }}
+                    style={tw`h-20 w-20`}
+                  />
+                )}
+              />
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
