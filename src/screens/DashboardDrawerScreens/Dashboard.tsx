@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { getTokenGlobal } from "../../AsyncGlobal";
@@ -28,10 +30,12 @@ import {
 } from "../../../types";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from "@react-navigation/native";
-import { ActivityIndicator, Avatar, Chip } from "react-native-paper";
+import { ActivityIndicator, Avatar, Chip, Divider } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { Button } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import BottomSheet, { useBottomSheet } from "@gorhom/bottom-sheet";
+import { List } from "react-native-paper";
 
 interface box {
   text: string;
@@ -49,11 +53,16 @@ const Box = ({ text, num }: box) => {
   );
 };
 const Dashboard = () => {
+  const bottomSheetRef = React.useRef(null);
+  const snapPoints = React.useMemo(() => ["35%", "35%"], []);
+  const handleSheetChanges = React.useCallback((index: number) => {}, []);
+
   const [userData, setUserData] = useState<User>();
   const [signature, setSignature] = useState<any>();
   const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
     new Array()
   );
+  const [imagesUpload, setImagesUpload] = useState(new Array());
   const [progressBar, setProgressBar] = useState<number>(0);
   const [completeNumber, setCompleteNumber] = useState<number>(0);
   const [Headers, setHeaders] = useState<HeaderOption>();
@@ -62,8 +71,9 @@ const Dashboard = () => {
   const navigation = useNavigation();
   const Mobx = useCounterStore();
   const [loading, setLoading] = useState(false);
-
-  console.log("documents", documents);
+  const [docTypeModal, setDocTypeModal] = useState(false);
+  const [docTypeSelected, setDocTypeSelected] = useState();
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
 
   const fetchDashData = () => {
     axios
@@ -130,14 +140,33 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData();
   }, [imageRef]);
-  const uploadFile = async () => {
+
+  const uploadFile = async (selected: string) => {
+    bottomSheetRef.current.close();
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["image/*", "application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+        type: ["application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
       if (result.type !== "cancel") setDocuments((prev) => [...prev, result]);
     } catch (err) {
-      console.log("err");
+      console.log("err", err);
+    }
+  };
+  console.log("docs", imagesUpload);
+
+  const uploadImage = async () => {
+    bottomSheetRef.current.close();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // console.log("reault", result);
+
+    if (!result.canceled) {
+      setImagesUpload((prev) => [...prev, result.assets[0]]);
     }
   };
 
@@ -285,10 +314,11 @@ const Dashboard = () => {
         </View>
 
         <View style={tw`bg-white px-8 py-8 gap-4`}>
-          <View
-            style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
+          <Pressable
+            onPress={() => bottomSheetRef.current.snapToIndex(1)}
+            style={tw`border-2 py-10  rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
           >
-            <TouchableOpacity style={tw`p-1`} onPress={uploadFile}>
+            <View style={tw`p-1`}>
               <Image
                 style={tw`h-10 w-10 self-center`}
                 source={require("../../assets/Upload.png")}
@@ -296,14 +326,14 @@ const Dashboard = () => {
               <Text style={tw`text-[${colors.blue}] mt-2`}>
                 Drop documents here to get started
               </Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+          </Pressable>
 
           <View style={tw`py-5 my-2`}>
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}
-              data={documents}
+              data={[...documents, ...imagesUpload]}
               renderItem={({ item, index }) => (
                 <>
                   <View
@@ -346,13 +376,48 @@ const Dashboard = () => {
           {documents.length > 0 && (
             <Button
               mode="contained"
-              onPress={() => navigation.navigate("Edit", { files: documents })}
+              onPress={() =>
+                navigation.navigate("Edit", {
+                  files: documents,
+                  images: imagesUpload,
+                })
+              }
             >
               Start Now
             </Button>
           )}
         </View>
       </ScrollView>
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      >
+        <View style={tw`flex-1 bg-white`}>
+          <List.Item
+            onPress={uploadFile}
+            title="Upload Document"
+            description="Sign document files like pdf"
+            left={(props) => <List.Icon {...props} icon="folder" />}
+          />
+          <Divider />
+          <List.Item
+            onPress={uploadImage}
+            title="Upload Image"
+            description="Sign images like png/jpg"
+            left={(props) => <List.Icon {...props} icon="folder" />}
+          />
+          <Divider />
+          <List.Item
+            onPress={() => bottomSheetRef.current.close()}
+            title="Cancel"
+            left={(props) => <List.Icon {...props} icon="close" />}
+          />
+        </View>
+      </BottomSheet>
+
       <Popup
         heading={"Alert"}
         description={"Upload a document"}
@@ -370,4 +435,6 @@ const styles = StyleSheet.create({
   box: tw`border-2 border-white p-2 mt-1 rounded-lg w-[40%] mx-2 h-22`,
   box_num: tw`text-10 text-white`,
   box_text: tw`text-white text-4`,
+  doc_type_modal_button: tw` bg-[${colors.blue}] w-50 h-15 rounded-xl justify-center items-center `,
+  doc_type_modal_button_text: tw`text-white z-auto font-bold text-5 `,
 });

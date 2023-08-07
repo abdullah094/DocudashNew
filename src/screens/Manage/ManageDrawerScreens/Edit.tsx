@@ -72,9 +72,20 @@ const Edit = () => {
     []
   );
   const envelope: Envelope = route.params.Envelope;
-  const files = route.params.files;
+  let files = route.params.files;
+
   console.log(files);
 
+  const uploadFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ["image/*", "application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+      });
+      if (result.type !== "cancel") files.push(result);
+    } catch (err) {
+      console.log("err");
+    }
+  };
   // console.log("data", envelope.id, envelope.signature_id);
 
   const addNewRecipient = () => {
@@ -567,7 +578,7 @@ const Edit = () => {
             <View
               style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
             >
-              <TouchableOpacity style={tw`p-1`} onPress={() => {}}>
+              <TouchableOpacity style={tw`p-1`} onPress={uploadFile}>
                 <Image
                   style={tw`h-10 w-10 self-center`}
                   source={require("../../../assets/Upload.png")}
@@ -581,7 +592,7 @@ const Edit = () => {
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={files}
+                data={documents}
                 renderItem={({ item }) => (
                   <View
                     style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
