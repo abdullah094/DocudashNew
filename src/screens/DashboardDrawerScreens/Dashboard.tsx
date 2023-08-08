@@ -87,6 +87,12 @@ const Dashboard = () => {
   const [docTypeSelected, setDocTypeSelected] = useState();
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
+  const [dashNumber, setDashNumber] = useState({
+    actionrequired: 0,
+    waitingForothers: 0,
+    expiringSoon: 0,
+    completed: 0,
+  });
 
   const fetchDashData = () => {
     axios
@@ -98,6 +104,11 @@ const Dashboard = () => {
       .then((response) => {
         const data: DashboardAPI = response.data;
         console.log("DashboardAPI", data);
+        setDashNumber({
+          ...dashNumber,
+          waitingForothers: data.WaitingForOthers,
+          completed: data.CompletedEmails,
+        });
         Mobx.AddUser(data.user);
         setUserData(data.user);
         setDataLoading(false);
@@ -322,11 +333,14 @@ const Dashboard = () => {
           </View>
           <View style={tw`flex-row items-center mt-6`}>
             <Box text={"Action Required"} num={0} />
-            <Box text={"Waiting for Others"} num={0} />
+            <Box
+              text={"Waiting for Others"}
+              num={dashNumber.waitingForothers}
+            />
           </View>
           <View style={tw`flex-row items-center`}>
             <Box text={"Expiring Soon"} num={0} />
-            <Box text={"Completed"} num={0} />
+            <Box text={"Completed"} num={dashNumber.completed} />
           </View>
         </View>
 
@@ -420,7 +434,7 @@ const Dashboard = () => {
 
       <BottomSheetModal
         ref={bottomSheetRef}
-        index={-1}
+        index={0}
         snapPoints={snapPoints}
         enablePanDownToClose
         onChange={handleSheetChanges}

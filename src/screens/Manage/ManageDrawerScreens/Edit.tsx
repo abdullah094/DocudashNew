@@ -85,14 +85,9 @@ const Edit = () => {
   const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
     []
   );
-<<<<<<< HEAD
   const envelope: Envelope = route.params.Envelope;
   let files = route.params.files;
   let image = route.params.images;
-=======
-  const envelope: Envelope = route.params?.Envelope;
-  let files = route.params?.files;
->>>>>>> d83925132a4ff423954c28f871524e471d8c0069
 
   console.log(files);
 
@@ -633,26 +628,7 @@ const Edit = () => {
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-<<<<<<< HEAD
                 data={[...documents, ...image]}
-=======
-                data={generateSignatureDetailsImages}
-                renderItem={({ item }) => (
-                  <Image
-                    source={{
-                      uri:
-                        "https://docudash.net/public/uploads/generateSignature/photos/" +
-                        item.image,
-                    }}
-                    style={tw`h-20 w-20`}
-                  />
-                )}
-              />
-              <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={documents}
->>>>>>> d83925132a4ff423954c28f871524e471d8c0069
                 renderItem={({ item }) => (
                   <View
                     style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
