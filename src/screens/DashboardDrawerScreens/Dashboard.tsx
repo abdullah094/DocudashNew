@@ -420,8 +420,9 @@ const Dashboard = () => {
 
       <BottomSheetModal
         ref={bottomSheetRef}
-        index={0}
+        index={-1}
         snapPoints={snapPoints}
+        enablePanDownToClose
         onChange={handleSheetChanges}
       >
         <View style={tw`flex-1 bg-white`}>
