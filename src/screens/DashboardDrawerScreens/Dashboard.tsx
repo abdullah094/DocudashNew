@@ -30,12 +30,21 @@ import {
 } from "../../../types";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from "@react-navigation/native";
-import { ActivityIndicator, Avatar, Chip, Divider } from "react-native-paper";
+import {
+  ActivityIndicator,
+  Avatar,
+  Chip,
+  Divider,
+  Button,
+  List,
+} from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { Button } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import BottomSheet, { useBottomSheet } from "@gorhom/bottom-sheet";
-import { List } from "react-native-paper";
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+import Loader from "../MainLoader/Loader";
 
 interface box {
   text: string;
@@ -54,8 +63,11 @@ const Box = ({ text, num }: box) => {
 };
 const Dashboard = () => {
   const bottomSheetRef = React.useRef(null);
-  const snapPoints = React.useMemo(() => ["35%", "35%"], []);
+  const snapPoints = React.useMemo(() => ["35%", "45%"], []);
   const handleSheetChanges = React.useCallback((index: number) => {}, []);
+  const handlePresentModalPress = React.useCallback(() => {
+    bottomSheetRef.current?.present();
+  }, []);
 
   const [userData, setUserData] = useState<User>();
   const [signature, setSignature] = useState<any>();
@@ -74,6 +86,7 @@ const Dashboard = () => {
   const [docTypeModal, setDocTypeModal] = useState(false);
   const [docTypeSelected, setDocTypeSelected] = useState();
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
 
   const fetchDashData = () => {
     axios
@@ -87,6 +100,7 @@ const Dashboard = () => {
         console.log("DashboardAPI", data);
         Mobx.AddUser(data.user);
         setUserData(data.user);
+        setDataLoading(false);
         if (data.signature?.signature) {
           setSignature(data.signature);
         } else {
@@ -226,6 +240,9 @@ const Dashboard = () => {
       // setImage(result.assets[0].uri);
     }
   };
+
+  if (dataLoading) return <Loader />;
+
   return (
     <>
       <ScrollView contentContainerStyle={tw`pb-20`}>
@@ -315,7 +332,7 @@ const Dashboard = () => {
 
         <View style={tw`bg-white px-8 py-8 gap-4`}>
           <Pressable
-            onPress={() => bottomSheetRef.current.snapToIndex(1)}
+            onPress={handlePresentModalPress}
             style={tw`border-2 py-10  rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
           >
             <View style={tw`p-1`}>
@@ -337,7 +354,7 @@ const Dashboard = () => {
               renderItem={({ item, index }) => (
                 <>
                   <View
-                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
+                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
                   >
                     <Pressable
                       onPress={() => {
@@ -365,15 +382,15 @@ const Dashboard = () => {
                       }
                       size={40}
                     />
-                    <Text style={tw`w-25 text-center`} numberOfLines={2}>
-                      {item.name}
+                    <Text style={tw`w-25 text-center text-3`} numberOfLines={2}>
+                      {item.name ? item.name : "Untitled file"}
                     </Text>
                   </View>
                 </>
               )}
             />
           </View>
-          {documents.length > 0 && (
+          {documents.length > 0 ? (
             <Button
               mode="contained"
               onPress={() =>
@@ -385,11 +402,23 @@ const Dashboard = () => {
             >
               Start Now
             </Button>
-          )}
+          ) : imagesUpload.length > 0 ? (
+            <Button
+              mode="contained"
+              onPress={() =>
+                navigation.navigate("Edit", {
+                  files: documents,
+                  images: imagesUpload,
+                })
+              }
+            >
+              Start Now
+            </Button>
+          ) : null}
         </View>
       </ScrollView>
 
-      <BottomSheet
+      <BottomSheetModal
         ref={bottomSheetRef}
         index={0}
         snapPoints={snapPoints}
@@ -416,7 +445,7 @@ const Dashboard = () => {
             left={(props) => <List.Icon {...props} icon="close" />}
           />
         </View>
-      </BottomSheet>
+      </BottomSheetModal>
 
       <Popup
         heading={"Alert"}

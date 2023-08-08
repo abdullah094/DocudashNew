@@ -24,6 +24,10 @@ import { useMaterial3Theme } from "@pchmn/expo-material3-theme";
 import { MenuProvider } from "react-native-popup-menu";
 import { Provider as ReduxProvider } from "react-redux";
 import Store from "./src/Redux/Store";
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -41,13 +45,15 @@ export default function App() {
   }
   return (
     <ReduxProvider store={Store}>
-      <PaperProvider theme={paperTheme}>
-        <MenuProvider>
-          <NavigationContainer>
-            <StackNavigator />
-          </NavigationContainer>
-        </MenuProvider>
-      </PaperProvider>
+      <BottomSheetModalProvider>
+        <PaperProvider theme={paperTheme}>
+          <MenuProvider>
+            <NavigationContainer>
+              <StackNavigator />
+            </NavigationContainer>
+          </MenuProvider>
+        </PaperProvider>
+      </BottomSheetModalProvider>
     </ReduxProvider>
   );
 }

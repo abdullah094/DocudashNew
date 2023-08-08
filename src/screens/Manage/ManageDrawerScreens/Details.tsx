@@ -26,6 +26,7 @@ import { log } from "react-native-reanimated";
 import axios from "axios";
 import { useCounterStore } from "../../../../MobX/TodoStore";
 import { Appbar } from "react-native-paper";
+import Loader from "../../MainLoader/Loader";
 
 interface IButton {
   text: string;
@@ -59,6 +60,7 @@ const Details = () => {
   const route = useRoute<RootStackScreenProps<"Details">["route"]>();
   const inbox: EmailBar = route.params;
   const [data, setData] = useState<ViewDocument>();
+  const [dataLoader, setDataLoader] = useState(true);
 
   console.log(inbox.uniqid, inbox.signature_id);
 
@@ -77,11 +79,14 @@ const Details = () => {
         const data: ViewDocument = response.data;
         console.log("Data----", data);
         setData(data);
+        setDataLoader(false);
       })
       .catch((error) => {
         console.log("Error----", error);
       });
   }, []);
+
+  if (dataLoader) return <Loader />;
 
   return (
     <View style={tw`flex-1`}>

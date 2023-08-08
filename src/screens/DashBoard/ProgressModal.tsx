@@ -84,9 +84,10 @@ const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={tw` items-center justify-center `}
+          contentContainerStyle={tw` items-center justify-center h-full
+           `}
         >
-          <View style={tw`bg-gray-100 w-full py-10 px-5`}>
+          <View style={tw`bg-gray-100 w-full flex-1 py-10 px-5`}>
             <View style={tw`flex-row items-center justify-end`}>
               <IconButton
                 icon={"close-circle"}

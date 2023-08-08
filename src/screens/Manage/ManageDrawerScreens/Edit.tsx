@@ -17,6 +17,7 @@ import {
   Text,
   HelperText,
   IconButton,
+  List,
 } from "react-native-paper";
 import DropDown from "react-native-paper-dropdown";
 import tw from "twrnc";
@@ -37,6 +38,12 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as DocumentPicker from "expo-document-picker";
+import * as ImagePicker from "expo-image-picker";
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
+
 const Edit = () => {
   const navigation =
     useNavigation<RootStackScreenProps<"Edit">["navigation"]>();
@@ -61,6 +68,13 @@ const Edit = () => {
 
   const [emailSubject, setEmailSubject] = React.useState("");
   const [emailMessage, setEmailMessage] = React.useState("");
+  // bottom sheets
+  const bottomSheetRef = React.useRef(null);
+  const snapPoints = React.useMemo(() => ["35%", "45%"], []);
+  const handleSheetChanges = React.useCallback((index: number) => {}, []);
+  const handlePresentModalPress = React.useCallback(() => {
+    bottomSheetRef.current?.present();
+  }, []);
 
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -73,6 +87,7 @@ const Edit = () => {
   );
   const envelope: Envelope = route.params.Envelope;
   let files = route.params.files;
+  let image = route.params.images;
 
   console.log(files);
 
@@ -84,6 +99,21 @@ const Edit = () => {
       if (result.type !== "cancel") files.push(result);
     } catch (err) {
       console.log("err");
+    }
+  };
+  const uploadImage = async () => {
+    bottomSheetRef.current.close();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // console.log("reault", result);
+
+    if (!result.canceled) {
+      setImagesUpload((prev) => [...prev, result.assets[0]]);
     }
   };
   // console.log("data", envelope.id, envelope.signature_id);
@@ -578,13 +608,16 @@ const Edit = () => {
             <View
               style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
             >
-              <TouchableOpacity style={tw`p-1`} onPress={uploadFile}>
+              <TouchableOpacity
+                style={tw`p-1`}
+                onPress={handlePresentModalPress}
+              >
                 <Image
                   style={tw`h-10 w-10 self-center`}
                   source={require("../../../assets/Upload.png")}
                 />
                 <Text style={tw`text-[${colors.blue}] mt-2`}>
-                  Drop documents here to get started
+                  Drop additional documents if any
                 </Text>
               </TouchableOpacity>
             </View>
@@ -592,23 +625,21 @@ const Edit = () => {
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={documents}
+                data={[...documents, ...image]}
                 renderItem={({ item }) => (
                   <View
-                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5`}
+                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
                   >
                     <MaterialCommunityIcons
                       name={
                         item.mimeType === "application/pdf"
                           ? "file-pdf-box"
-                          : item.mimeType === "image/png"
-                          ? "file-image"
-                          : "file-question-outline"
+                          : "image/png"
                       }
                       size={40}
                     />
                     <Text style={tw`w-25 text-center`} numberOfLines={2}>
-                      {item.name}
+                      {item.name ? item.name : "Untitled file"}
                     </Text>
                   </View>
                 )}
@@ -629,6 +660,35 @@ const Edit = () => {
           </Button>
         </View>
       </ScrollView>
+
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+      >
+        <View style={tw`flex-1 bg-white`}>
+          <List.Item
+            onPress={uploadFile}
+            title="Upload Document"
+            description="Sign document files like pdf"
+            left={(props) => <List.Icon {...props} icon="folder" />}
+          />
+          <Divider />
+          <List.Item
+            onPress={uploadImage}
+            title="Upload Image"
+            description="Sign images like png/jpg"
+            left={(props) => <List.Icon {...props} icon="folder" />}
+          />
+          <Divider />
+          <List.Item
+            onPress={() => bottomSheetRef.current.close()}
+            title="Cancel"
+            left={(props) => <List.Icon {...props} icon="close" />}
+          />
+        </View>
+      </BottomSheetModal>
     </View>
   );
 };
