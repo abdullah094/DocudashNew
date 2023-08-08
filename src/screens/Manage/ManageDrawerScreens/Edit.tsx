@@ -6,6 +6,7 @@ import {
   Image,
   SafeAreaView,
   FlatList,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -76,7 +77,13 @@ const Edit = () => {
     bottomSheetRef.current?.present();
   }, []);
 
-  const [images, setImages] = useState([]);
+  const [uploadImage, setUploadImage] = useState<
+    {
+      uri: string;
+      name: string;
+      type: "image" | "video" | undefined;
+    }[]
+  >(new Array());
   const [loading, setLoading] = useState(false);
   const [generateSignature, setGenerateSignature] =
     useState<GenerateSignature>();
@@ -85,9 +92,9 @@ const Edit = () => {
   const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
     []
   );
-  const envelope: Envelope = route.params.Envelope;
-  let files = route.params.files;
-  let image = route.params.images;
+  const envelope: Envelope = route.params?.Envelope;
+  let files = route.params?.files;
+  let images = route.params?.images;
 
   console.log(files);
 
@@ -101,7 +108,7 @@ const Edit = () => {
       console.log("err");
     }
   };
-  const uploadImage = async () => {
+  const uploadImage1 = async () => {
     bottomSheetRef.current.close();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -113,7 +120,13 @@ const Edit = () => {
     // console.log("reault", result);
 
     if (!result.canceled) {
-      setImagesUpload((prev) => [...prev, result.assets[0]]);
+      const image = result.assets[0];
+      const imageToUpload = {
+        uri: image.uri,
+        name: image.fileName || image.uri,
+        type: image.type,
+      };
+      setUploadImage((prev) => [...prev, imageToUpload]);
     }
   };
   // console.log("data", envelope.id, envelope.signature_id);
@@ -159,6 +172,9 @@ const Edit = () => {
   useEffect(() => {
     if (files) {
       setDocuments(files);
+    }
+    if (images) {
+      setUploadImage(images);
     }
     if (envelope) {
       axios
@@ -227,6 +243,14 @@ const Edit = () => {
   }, []);
   const save = () => {
     if (!generateSignature) return;
+    if (emailSubject == "") {
+      Alert.alert("Please enter email subject");
+      return;
+    }
+    if (emailMessage == "") {
+      Alert.alert("Please enter email message");
+      return;
+    }
     setLoading(true);
     let formData = new FormData();
     formData.append("uniqid", generateSignature.uniqid);
@@ -239,7 +263,7 @@ const Edit = () => {
         );
         formData.append("recName[" + index + "]", item.recName);
         formData.append("recEmail[" + index + "]", item.recEmail);
-        formData.append("sign_type[" + index + "]", String(item.sign_type));
+        formData.append("sign_type[" + index + "]", item.sign_type);
         formData.append("hostName[" + index + "]", item.hostName);
         formData.append("hostEmail[" + index + "]", item.hostEmail);
         formData.append("access_code[" + index + "]", item.access_code);
@@ -249,14 +273,14 @@ const Edit = () => {
     formData.append("emailSubject", emailSubject);
     formData.append("emailMessage", emailMessage);
 
-    images.forEach((image, index) => {
+    [...documents, ...uploadImage].forEach((image, index) => {
       formData.append("photosID[" + index + "]", "0");
       formData.append("photos[]", image, `image${index + 1}.png`);
     });
-    documents.forEach((image, index) => {
-      formData.append("photosID[" + index + "]", "0");
-      formData.append("photos[]", image, `image${index + 1}.png`);
-    });
+    // documents.forEach((image, index) => {
+    //   formData.append("photosID[" + index + "]", "0");
+    //   formData.append("photos[]", image, `image${index + 1}.png`);
+    // });
     let headers = {
       Authorization: `Bearer ${Mobx.access_token}`,
       "Content-Type": "multipart/form-data",
@@ -270,14 +294,27 @@ const Edit = () => {
       )
       .then((response) => {
         setLoading(false);
-        if (response.data.status) {
+        const {
+          status,
+          message,
+        }: {
+          status: boolean;
+          message: {
+            emailSubject: string[];
+            emailMessage: string[];
+            "recName.0": string[];
+            "photos.0": string[];
+          };
+        } = response.data;
+        if (status) {
           // navigation.navigate('Home');
-          console.log(JSON.stringify(response.data));
           navigation.replace("DocumentEditor", {
-            files: files,
             Envelope: generateSignature,
           });
         } else {
+          for (const [key, value] of Object.entries(message)) {
+            alert(value);
+          }
           console.log(JSON.stringify(response.data));
         }
       })
@@ -628,22 +665,63 @@ const Edit = () => {
               <FlatList
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={[...documents, ...image]}
+                data={generateSignatureDetailsImages}
+                renderItem={({ item }) => {
+                  let imageUrl = "";
+                  if (item.image?.includes("pdf")) {
+                    item.image.split(".")[0] + "-1.jpg";
+                    imageUrl =
+                      "https://docudash.net/public/uploads/generateSignature/photos/converted/" +
+                      item.image.split(".")[0] +
+                      "-1.jpg";
+                  } else {
+                    imageUrl =
+                      "https://docudash.net/public/uploads/generateSignature/photos/" +
+                      item.image;
+                  }
+                  return (
+                    <Image
+                      source={{
+                        uri: imageUrl,
+                      }}
+                      style={tw`h-20 w-20 m-2 rounded-lg`}
+                    />
+                  );
+                }}
+              />
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={[...documents, ...uploadImage]}
                 renderItem={({ item }) => (
                   <View
                     style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
                   >
-                    <MaterialCommunityIcons
-                      name={
-                        item.mimeType === "application/pdf"
-                          ? "file-pdf-box"
-                          : "image/png"
-                      }
-                      size={40}
-                    />
-                    <Text style={tw`w-25 text-center`} numberOfLines={2}>
-                      {item.name ? item.name : "Untitled file"}
-                    </Text>
+                    {item.type === "image" ||
+                    item.mimeType === "image/png" ||
+                    item.mimeType === "image/jpeg" ? (
+                      <Image
+                        source={{ uri: item.uri }}
+                        style={tw`w-20 h-20`}
+                        resizeMode="contain"
+                      ></Image>
+                    ) : (
+                      <>
+                        <MaterialCommunityIcons
+                          name={
+                            item.mimeType === "application/pdf"
+                              ? "file-pdf-box"
+                              : item.mimeType === "image/png"
+                              ? "file-image"
+                              : "file-question-outline"
+                          }
+                          size={40}
+                        />
+                        <Text style={tw`w-25 text-center`} numberOfLines={2}>
+                          {item.name}
+                        </Text>
+                      </>
+                    )}
                   </View>
                 )}
               />
@@ -679,7 +757,7 @@ const Edit = () => {
           />
           <Divider />
           <List.Item
-            onPress={uploadImage}
+            onPress={uploadImage1}
             title="Upload Image"
             description="Sign images like png/jpg"
             left={(props) => <List.Icon {...props} icon="folder" />}

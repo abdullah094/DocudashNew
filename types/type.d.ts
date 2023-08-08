@@ -21,13 +21,12 @@ export type RootStackParamList = {
   Edit: {
     Envelope?: Envelope;
     files?: DocumentPickerOptions.DocumentResult[];
-    images?: ImagePickerSuccessResult;
+    images?: ImagePicker.ImagePickerAsset[];
   };
   AddStamp: undefined;
   TestScreen: undefined;
   DocumentEditor: {
     Envelope: GenerateSignature;
-    files: DocumentPickerOptions.DocumentResult[];
   };
 };
 
@@ -270,6 +269,8 @@ export interface DashboardAPI {
   signature: Signature;
   status: boolean;
   user: User;
+  WaitingForOthers: number;
+  CompletedEmails: number;
 }
 
 export interface Signature {

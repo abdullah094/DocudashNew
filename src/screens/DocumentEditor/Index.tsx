@@ -257,6 +257,19 @@ const Index = () => {
           <FlatList
             data={images}
             renderItem={({ item, index }) => {
+              let imageUrl = "";
+              if (item.image?.includes("pdf")) {
+                item.image.split(".")[0] + "-1.jpg";
+                imageUrl =
+                  "https://docudash.net/public/uploads/generateSignature/photos/converted/" +
+                  item.image.split(".")[0] +
+                  "-1.jpg";
+              } else {
+                imageUrl =
+                  "https://docudash.net/public/uploads/generateSignature/photos/" +
+                  item.image;
+              }
+              console.log(imageUrl);
               return (
                 <View
                   // id={index + "_"}
@@ -271,9 +284,7 @@ const Index = () => {
                   <Image
                     style={tw`w-full aspect-square`}
                     source={{
-                      uri:
-                        "https://docudash.net/public/uploads/generateSignature/photos/" +
-                        item.image,
+                      uri: imageUrl,
                     }}
                   />
                   {draggedElArr?.company

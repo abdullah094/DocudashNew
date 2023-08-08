@@ -62,7 +62,7 @@ const Box = ({ text, num }: box) => {
   );
 };
 const Dashboard = () => {
-  const bottomSheetRef = React.useRef(null);
+  const bottomSheetRef = React.useRef();
   const snapPoints = React.useMemo(() => ["35%", "45%"], []);
   const handleSheetChanges = React.useCallback((index: number) => {}, []);
   const handlePresentModalPress = React.useCallback(() => {
@@ -74,7 +74,13 @@ const Dashboard = () => {
   const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
     new Array()
   );
-  const [imagesUpload, setImagesUpload] = useState(new Array());
+  const [imagesUpload, setImagesUpload] = useState<
+    {
+      uri: string;
+      name: string;
+      type: "image" | "video" | undefined;
+    }[]
+  >(new Array());
   const [progressBar, setProgressBar] = useState<number>(0);
   const [completeNumber, setCompleteNumber] = useState<number>(0);
   const [Headers, setHeaders] = useState<HeaderOption>();
@@ -83,13 +89,10 @@ const Dashboard = () => {
   const navigation = useNavigation();
   const Mobx = useCounterStore();
   const [loading, setLoading] = useState(false);
-  const [docTypeModal, setDocTypeModal] = useState(false);
-  const [docTypeSelected, setDocTypeSelected] = useState();
-  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [dashNumber, setDashNumber] = useState({
-    actionrequired: 0,
-    waitingForothers: 0,
+    actionRequired: 0,
+    waitingForOthers: 0,
     expiringSoon: 0,
     completed: 0,
   });
@@ -106,7 +109,7 @@ const Dashboard = () => {
         console.log("DashboardAPI", data);
         setDashNumber({
           ...dashNumber,
-          waitingForothers: data.WaitingForOthers,
+          waitingForOthers: data.WaitingForOthers,
           completed: data.CompletedEmails,
         });
         Mobx.AddUser(data.user);
@@ -170,7 +173,7 @@ const Dashboard = () => {
     bottomSheetRef.current.close();
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+        type: ["image/*", "application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
       if (result.type !== "cancel") setDocuments((prev) => [...prev, result]);
     } catch (err) {
@@ -191,7 +194,13 @@ const Dashboard = () => {
     // console.log("reault", result);
 
     if (!result.canceled) {
-      setImagesUpload((prev) => [...prev, result.assets[0]]);
+      const image = result.assets[0];
+      const imageToUpload = {
+        uri: image.uri,
+        name: image.fileName || image.uri,
+        type: image.type,
+      };
+      setImagesUpload((prev) => [...prev, imageToUpload]);
     }
   };
 
@@ -237,11 +246,13 @@ const Dashboard = () => {
             };
           } = response.data;
           if (success) {
-            // navigation.navigate('Home');
+            // @ts-ignore
             Alert.alert(message);
             fetchDashData();
           } else {
-            message.photo.map((x) => Alert.alert(x));
+            if (message.photo) {
+              message.photo.map((x) => Alert.alert(x));
+            }
           }
         })
         .catch((error) => {
@@ -335,7 +346,7 @@ const Dashboard = () => {
             <Box text={"Action Required"} num={0} />
             <Box
               text={"Waiting for Others"}
-              num={dashNumber.waitingForothers}
+              num={dashNumber.waitingForOthers}
             />
           </View>
           <View style={tw`flex-row items-center`}>
