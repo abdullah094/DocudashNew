@@ -7,10 +7,7 @@ export type RootStackParamList = {
   DashboardDrawerNavigator: DashBoardDrawerScreenProps<DashBoardDrawerParamList>;
   ManageDrawer: ManagedDrawerScreenProps<ManagedDrawerParamList>;
   SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
-  TabNavigator: NavigatorScreenParams<SignUpStackParamList>;
-  LoginIndex: NavigatorScreenParams<LoginStackParamList>;
   TemplateHistory: undefined;
-  TestScreen: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<
@@ -25,21 +22,6 @@ export type SignUpStackParamList = {
   Step3: { api: string };
   Step4: { industry: Industry[]; signUpReasons: Industry[] };
   Step5: { token: string; email: string };
-};
-
-export type SignedInStackParamList = {
-  Inbox: undefined;
-  Details: undefined;
-};
-
-export type LoginStackParamList = {
-  Step1: undefined;
-  Step2: { token: string; email: string };
-  Inbox: { heading: string };
-};
-export type SignedInStackParamList = {
-  Inbox: undefined;
-  Details: Envelope;
 };
 
 export type ManageDrawerParamList = {
@@ -63,7 +45,7 @@ export type DashBoardDrawerParamList = {
   Template: undefined;
   Signatures: {} | undefined;
   AddSignature: { SignaturePreview?: SignaturePreview };
-  Stamps: undefined;
+  Stamps: {} | undefined;
   AddStamp: { Stamp?: StampPreview };
   Profile: undefined;
   Browser: { url: string };
@@ -73,15 +55,7 @@ export type SignUpStackScreenProps<T extends keyof SignUpStackParamList> = Compo
   StackScreenProps<SignUpStackParamList, T>,
   RootStackScreenProps<keyof RootStackParamList>
 >;
-export type LoginStackScreenProps<T extends keyof LoginStackParamList> = CompositeScreenProps<
-  StackScreenProps<LoginStackParamList, T>,
-  RootStackScreenProps<keyof RootStackParamList>
->;
-export type SignedInpStackScreenProps<T extends keyof SignedInStackParamList> =
-  CompositeScreenProps<
-    StackScreenProps<SignedInStackParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
-  >;
+
 export type ManageDrawerScreenProps<T extends keyof ManageDrawerParamList> = CompositeScreenProps<
   DrawerScreenProps<ManageDrawerParamList, T>,
   RootStackScreenProps<keyof RootStackParamList>

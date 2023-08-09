@@ -1,8 +1,7 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native';
 import React from 'react';
-import tw from 'twrnc';
-import { colors } from '../Colors';
+import { StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
+import tw from 'twrnc';
 interface props {
   text: string | JSX.Element;
   onPress: () => void;

@@ -204,8 +204,10 @@ const Edit = () => {
             });
             setEmailMessage(fixData[0].emailMessage);
             setEmailSubject(fixData[0].emailSubject);
+            // @ts-ignore
             setData(fixData);
           }
+          // @ts-ignore
           const generate: GenerateSignature = {
             signature_id: data.signature_id,
             uniqid: data.uniqid,

@@ -74,11 +74,6 @@ const AddStamp = () => {
       Alert.alert('Please select an image');
       return;
     }
-    // const imageToUpload = {
-    //   uri: image.uri,
-    //   name: image.name || image.uri,
-    //   type: image.type,
-    // };
 
     formData.append('updateID', stampId);
     formData.append('title', name);
@@ -97,7 +92,9 @@ const AddStamp = () => {
         if (status) {
           navigation.navigate('Stamps', {});
         } else {
+          // @ts-ignore
           if (message.stamp_photo) {
+            // @ts-ignore
             Alert.alert(message.stamp_photo[0]);
           } else {
             Alert.alert(message);

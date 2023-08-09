@@ -2,9 +2,8 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { getTokenGlobal, clearToken } from '../AsyncGlobal';
 import { useCounterStore } from '../../MobX/TodoStore';
-import { observer } from 'mobx-react-lite';
+import { clearToken, getTokenGlobal } from '../AsyncGlobal';
 
 export default function useCachedResources() {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
@@ -43,7 +42,4 @@ export default function useCachedResources() {
   }, []);
 
   return isLoadingComplete;
-}
-function deleteAccessToken() {
-  throw new Error('Function not implemented.');
 }

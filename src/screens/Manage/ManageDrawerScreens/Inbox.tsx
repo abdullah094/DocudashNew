@@ -6,12 +6,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { Appbar, Divider } from 'react-native-paper';
 import tw from 'twrnc';
 import { useCounterStore } from '../../../../MobX/TodoStore';
-import {
-  Envelope,
-  InboxApiResponse,
-  LoginStackScreenProps,
-  ManageDrawerScreenProps,
-} from '../../../../types/type';
+import { Envelope, InboxApiResponse, ManageDrawerScreenProps } from '../../../../types/type';
 import EmailBar from '../Components/EmailBar';
 import FilterModal from '../Components/FilterModal';
 
@@ -27,7 +22,7 @@ const Inbox = observer(() => {
 
   const [Name, setName] = useState<string | undefined>();
   const navigation = useNavigation<ManageDrawerScreenProps<'Inbox'>['navigation']>();
-  const route = useRoute<LoginStackScreenProps<'Inbox'>['route']>();
+  const route = useRoute<ManageDrawerScreenProps<'Inbox'>['route']>();
   const heading = route.params?.heading || ('Inbox' as string);
   const Mobx = useCounterStore();
   const fetchData = async () => {

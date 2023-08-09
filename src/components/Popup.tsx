@@ -1,9 +1,9 @@
-import { StyleSheet, Modal, View, Text } from 'react-native';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import tw from 'twrnc';
 
-import { colors } from '../Colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { colors } from '../Colors';
 
 interface IPopup {
   heading: string | null;

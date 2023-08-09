@@ -1,10 +1,15 @@
-import { StyleSheet, View } from 'react-native';
 import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import tw from 'twrnc';
 
 const Index = () => {
-  const [time, setTime] = React.useState({
+  const [time, setTime] = React.useState<{
+    days?: string;
+    hours?: string;
+    minutes?: string;
+    seconds?: string;
+  }>({
     days: '',
     hours: '',
     minutes: '',
