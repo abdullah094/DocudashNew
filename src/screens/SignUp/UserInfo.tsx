@@ -112,28 +112,27 @@ const UserInfoScreen = () => {
           >
             Lets's get the basics. Enter your info below
           </Text>
-          <View style={tw`flex-row  justify-between `}>
+          <View style={tw`flex-row  justify-between gap-2`}>
             <Input
               state={form.first_Name}
               setState={(text) => setForm({ ...form, first_Name: text })}
-              placeholder={'first name'}
+              placeholder={'First name'}
               keyboardType={'default'}
-              style={{ flex: 0.47 }}
+              style={{ flex: 1 }}
             />
             <Input
               state={form.last_Name}
               setState={(text) => setForm({ ...form, last_Name: text })}
-              placeholder={'last name'}
+              placeholder={'Last name'}
               keyboardType={'default'}
-              style={{ flex: 0.47 }}
+              style={{ flex: 1 }}
             />
           </View>
           <Input
             state={form.phone}
             setState={(text) => setForm({ ...form, phone: text })}
-            placeholder={'phone'}
+            placeholder={'Phone Number'}
             keyboardType={'number-pad'}
-            style={{}}
           />
           <View style={tw`flex-row justify-between items-center `}>
             <Image

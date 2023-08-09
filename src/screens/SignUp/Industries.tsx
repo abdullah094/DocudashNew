@@ -161,7 +161,7 @@ const IndustriesScreen = () => {
             <View style={tw`border-2 border-[${colors.green}] rounded-3xl overflow-hidden mb-0`}>
               <DropDown
                 mode={'flat'}
-                placeholder={'Why did you signup?'}
+                placeholder={'Why did you SignUp?'}
                 visible={showDropDownReason}
                 inputProps={{ backgroundColor: 'white', width: '100%' }}
                 showDropDown={() => setShowDropDownReason(true)}

@@ -1,7 +1,7 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import { KeyboardTypeOptions, StyleProp, StyleSheet, TextInput, ViewStyle } from 'react-native';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { KeyboardTypeOptions, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import tw from 'twrnc';
-import { colors } from '../Colors';
 interface props {
   state: string | number | undefined | SetStateAction<string | undefined>;
   setState: Dispatch<React.SetStateAction<string>> | string;
@@ -20,27 +20,23 @@ const Input = (props: props) => {
     secureTextEntry = false,
   } = props;
 
+  const [safe, setSafe] = useState(secureTextEntry);
+
   return (
     <TextInput
       value={String(state)}
       onChangeText={setState}
       keyboardType={keyboardType}
       placeholder={placeholder}
-      secureTextEntry={secureTextEntry}
-      style={[
-        {
-          borderWidth: 2,
-          borderRadius: 20,
-          borderColor: colors.green,
-          paddingHorizontal: 15,
-          height: 45,
-          marginTop: 20,
-          color: 'black',
-          backgroundColor: '#F6F6F6',
-          ...style,
-        },
-        tw`h-11`,
-      ]}
+      mode="outlined"
+      outlineStyle={tw`rounded-full`}
+      secureTextEntry={safe}
+      right={secureTextEntry ? <TextInput.Icon icon="eye" onPress={() => setSafe(!safe)} /> : null}
+      style={{
+        height: 56,
+        marginTop: 20,
+        ...style,
+      }}
     />
   );
 };

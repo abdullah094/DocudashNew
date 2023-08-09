@@ -25,17 +25,19 @@ const PasswordScreen = () => {
         password: password,
       })
       .then((response) => {
-        const data = response.data;
+        const { token, success, message }: { token: string; success: boolean; message: any } =
+          response.data;
+        console.log(response.data);
         setLoading(false);
-        if (data.success) {
-          storeTokenGlobal(data.token);
-          Mobx.addAccessToken(data.token);
+        if (success) {
+          storeTokenGlobal(token);
+          Mobx.addAccessToken(token);
         } else {
-          Alert.alert(data.message.password[0]);
+          Alert.alert(message);
         }
       })
       .catch((error) => {
-        Alert.alert('Error', error.response.data.message.password[0]);
+        Alert.alert('Error', error.message);
         setLoading(false);
         console.log(error);
         Alert.alert(error.message);
