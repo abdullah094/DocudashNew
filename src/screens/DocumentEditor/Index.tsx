@@ -1,33 +1,30 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import FormData from 'form-data';
+import React, { useEffect, useState } from 'react';
 import {
+  Dimensions,
   FlatList,
-  ImageBackground,
-  ScrollView,
-  StyleSheet,
-  View,
   Image,
   SafeAreaView,
+  ScrollView,
+  StyleSheet,
   TouchableOpacity,
-  Dimensions,
+  View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Appbar, Avatar, Badge, Button, Text, IconButton } from 'react-native-paper';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import Draggable from 'react-native-draggable';
+import { Appbar, Avatar, Badge, Button, IconButton, Text } from 'react-native-paper';
 import tw from 'twrnc';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import axios from 'axios';
+import { useCounterStore } from '../../../MobX/TodoStore';
 import {
   DraggedElArr,
   DraggedElement,
-  Envelope,
   GenerateSignature,
   GenerateSignatureDetail,
   GenerateSignatureDetails,
   HtmlEditorAPI,
-  RootStackScreenProps,
+  ManageDrawerScreenProps,
 } from '../../../types';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import Draggable from 'react-native-draggable';
-import FormData from 'form-data';
 
 const { width, height } = Dimensions.get('window');
 
@@ -76,8 +73,8 @@ const color = [
   },
 ];
 const Index = () => {
-  const navigation = useNavigation<RootStackScreenProps<'DocumentEditor'>['navigation']>();
-  const route = useRoute<RootStackScreenProps<'DocumentEditor'>['route']>();
+  const navigation = useNavigation<ManageDrawerScreenProps<'DocumentEditor'>['navigation']>();
+  const route = useRoute<ManageDrawerScreenProps<'DocumentEditor'>['route']>();
   const [draggedElArr, setDraggedElArr] = useState<DraggedElArr>({
     signature: [],
     initial: [],

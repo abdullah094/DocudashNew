@@ -1,23 +1,20 @@
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
+  Dimensions,
+  Modal,
+  ScrollView,
   StyleSheet,
   Text,
-  View,
-  Modal,
-  Alert,
   TouchableOpacity,
-  Pressable,
-  Dimensions,
-  ScrollView,
+  View,
 } from 'react-native';
-import React, { useState } from 'react';
-import tw from 'twrnc';
-import { colors } from '../../Colors';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import * as Progress from 'react-native-progress';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { IconButton } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import { HeaderOption } from '../../../types';
+import * as Progress from 'react-native-progress';
+import tw from 'twrnc';
+import { DashBoardDrawerScreenProps, HeaderOption } from '../../../types';
+import { colors } from '../../Colors';
 
 interface IRectangle {
   heading: string;
@@ -55,7 +52,7 @@ const { width } = Dimensions.get('window');
 const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [progressBar, setProgressBar] = useState<number>(0);
-  const navigation = useNavigation();
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'Dashboard'>['navigation']>();
   if (!obj) return <></>;
 
   return (
@@ -119,7 +116,7 @@ const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
               check={obj?.Send_Documents_for_Signature}
               onPress={() => {
                 setModalVisible(!modalVisible);
-                navigation.navigate('Edit');
+                navigation.navigate('ManageDrawer', { screen: 'Edit' });
               }}
             />
             <Rectangle

@@ -1,17 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import EmailScreen from './Email';
-import UserInfoScreen from './UserInfo';
-import PasswordScreen from './Password';
 import { createStackNavigator } from '@react-navigation/stack';
-import OptScreen from './OptScreen';
-import SetPasswordScreen from './SetPassword';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { getData, clearAsync } from './AsynFunc';
-import { observer } from 'mobx-react-lite';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import IndustriesScreen from './Industries';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { SignUpStackParamList } from '../../../types';
+import { getData } from './AsynFunc';
+import EmailScreen from './Email';
+import IndustriesScreen from './Industries';
+import OptScreen from './OptScreen';
+import PasswordScreen from './Password';
+import SetPasswordScreen from './SetPassword';
+import UserInfoScreen from './UserInfo';
 
 const LoginStack = createStackNavigator<SignUpStackParamList>();
 
@@ -22,8 +19,6 @@ const Index = () => {
 
   useEffect(() => {
     getData().then((response) => {
-      console.log(response);
-
       if (response) {
         setStep(response as keyof SignUpStackParamList | undefined);
       }

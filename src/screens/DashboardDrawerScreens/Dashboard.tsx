@@ -1,32 +1,35 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Alert,
+  FlatList,
+  Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  Image,
-  Pressable,
   TouchableOpacity,
-  FlatList,
-  Alert,
-  Modal,
-  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getTokenGlobal } from '../../AsyncGlobal';
+import { ActivityIndicator, Avatar, Button, Divider, List } from 'react-native-paper';
 import * as Progress from 'react-native-progress';
 import tw from 'twrnc';
-import { colors } from '../../Colors';
-import ProgressModal from '../DashBoard/ProgressModal';
-import axios from 'axios';
 import { useCounterStore } from '../../../MobX/TodoStore';
+import {
+  DashBoardDrawerScreenProps,
+  DashboardAPI,
+  HeaderAPI,
+  HeaderOption,
+  User,
+} from '../../../types';
+import { colors } from '../../Colors';
 import { Popup } from '../../components/Popup';
-import { DashboardAPI, HeaderAPI, HeaderOption, IUserData, User } from '../../../types';
-import * as DocumentPicker from 'expo-document-picker';
-import { useNavigation } from '@react-navigation/native';
-import { ActivityIndicator, Avatar, Chip, Divider, Button, List } from 'react-native-paper';
-import * as ImagePicker from 'expo-image-picker';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import BottomSheet, { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import ProgressModal from '../DashBoard/ProgressModal';
 import Loader from '../MainLoader/Loader';
 
 interface box {
@@ -67,7 +70,7 @@ const Dashboard = () => {
   const [Headers, setHeaders] = useState<HeaderOption>();
   const [imageRef, setImageRef] = useState<boolean>();
   const [alert, setAlert] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'Dashboard'>['navigation']>();
   const Mobx = useCounterStore();
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
@@ -171,9 +174,6 @@ const Dashboard = () => {
       aspect: [4, 3],
       quality: 1,
     });
-
-    // console.log("reault", result);
-
     if (!result.canceled) {
       const image = result.assets[0];
       const imageToUpload = {
@@ -375,9 +375,9 @@ const Dashboard = () => {
             <Button
               mode="contained"
               onPress={() =>
-                navigation.navigate('Edit', {
-                  files: documents,
-                  images: imagesUpload,
+                navigation.navigate('ManageDrawer', {
+                  screen: 'Edit',
+                  params: { files: documents, images: imagesUpload },
                 })
               }
             >
@@ -387,9 +387,9 @@ const Dashboard = () => {
             <Button
               mode="contained"
               onPress={() =>
-                navigation.navigate('Edit', {
-                  files: documents,
-                  images: imagesUpload,
+                navigation.navigate('ManageDrawer', {
+                  screen: 'Edit',
+                  params: { files: documents, images: imagesUpload },
                 })
               }
             >

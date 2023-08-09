@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, ScrollView, FlatList } from 'react-native';
 import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, Divider, List } from 'react-native-paper';
 import tw from 'twrnc';
-import { List, Divider, Button } from 'react-native-paper';
 
 interface IBox {
   heading: string;

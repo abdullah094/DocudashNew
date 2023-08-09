@@ -1,32 +1,19 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Modal,
-  Pressable,
-  FlatList,
-} from 'react-native';
-import React from 'react';
-import tw from 'twrnc';
-import { colors } from '../../Colors';
-import { Button, Chip, DataTable, Switch } from 'react-native-paper';
-import DropDown from 'react-native-paper-dropdown';
-import axios from 'axios';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackParamList, StampPreview, SignaturesListAPI, StampListAPI } from '../../../types';
+import axios from 'axios';
+import React from 'react';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Chip, Switch } from 'react-native-paper';
+import tw from 'twrnc';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { DashBoardDrawerScreenProps, StampListAPI, StampPreview } from '../../../types';
+import { colors } from '../../Colors';
 
 const Index = () => {
   const [list, setList] = React.useState<StampPreview[]>();
   const [isFetching, setIsFetching] = React.useState(false);
   const Mobx = useCounterStore();
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'Stamps'>['navigation']>();
+  const route = useRoute<DashBoardDrawerScreenProps<'Stamps'>['route']>();
   console.log(Mobx.access_token);
 
   const fetchList = () => {
@@ -95,7 +82,7 @@ const Index = () => {
       });
   };
 
-  const RenderItem = ({ item }) => {
+  const RenderItem = ({ item }: { item: StampPreview }) => {
     const [more, setMore] = React.useState(false);
     const [isSwitchOn, setIsSwitchOn] = React.useState(item.status === 1 ? true : false);
     console.log('switchStatus', isSwitchOn);
@@ -133,8 +120,7 @@ const Index = () => {
                 <Chip
                   selectedColor={colors.blue}
                   onPress={() => {
-                    navigation.navigate('AddStamp', item);
-                    // console.log(item);
+                    navigation.navigate('AddStamp', { Stamp: item });
                   }}
                 >
                   Edit
@@ -154,7 +140,7 @@ const Index = () => {
         <Text style={tw`text-black text-5 font-bold `}>Stamps</Text>
         <Text style={tw`text-[${colors.gray}] text-3`}>Add or update your name and stamps.</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('AddStamp')}
+          onPress={() => navigation.navigate('AddStamp', {})}
           style={tw`bg-[${colors.green}] justify-center items-center w-35 h-10 rounded-md self-end m-4`}
         >
           <Text style={tw`text-white`}>Add Stamp</Text>
@@ -163,7 +149,7 @@ const Index = () => {
 
       <FlatList
         data={list}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id + '_'}
         onRefresh={fetchList}
         refreshing={isFetching}
         contentContainerStyle={tw`pb-50`}

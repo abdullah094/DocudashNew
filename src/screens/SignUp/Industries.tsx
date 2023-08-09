@@ -1,19 +1,15 @@
-import { StyleSheet, Text, View, Image, ScrollView, TextInput, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { clearAsync, getToken, storeData, storeToken } from './AsynFunc';
-import tw from 'twrnc';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import GreenButton from '../../components/GreenButton';
-import Input from '../../components/Input';
-import { colors } from '../../Colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
-import { BarIndicator } from 'react-native-indicators';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import DropDown from 'react-native-paper-dropdown';
-import { Istep5Response, SignUpStackScreenProps } from '../../../types';
-import { number } from 'mobx-state-tree/dist/internal';
-import { storeTokenGlobal } from '../../AsyncGlobal';
+import tw from 'twrnc';
 import { useCounterStore } from '../../../MobX/TodoStore';
+import { Istep5Response, SignUpStackScreenProps } from '../../../types';
+import { storeTokenGlobal } from '../../AsyncGlobal';
+import { colors } from '../../Colors';
+import GreenButton from '../../components/GreenButton';
+import { clearAsync, getToken } from './AsynFunc';
 
 interface route {
   email: string;
@@ -95,7 +91,7 @@ const IndustriesScreen = () => {
         sign_up_reasons_id: reasonID,
       })
       .then((response) => {
-        const { success = true, message, token }: Istep5Response = response.data;
+        const { success, message, token }: Istep5Response = response.data;
         if (success) {
           mobX.addAccessToken(token),
             setLoading(false),
@@ -104,10 +100,14 @@ const IndustriesScreen = () => {
             clearAsync();
         } else {
           setLoading(false);
+          // @ts-ignore
           if (message.industry_id) {
+            // @ts-ignore
             Alert.alert(message.industry_id[0]);
           }
+          // @ts-ignore
           if (message.sign_up_reasons_id) {
+            // @ts-ignore
             Alert.alert(message.sign_up_reasons_id[0]);
           }
         }

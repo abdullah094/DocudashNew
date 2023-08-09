@@ -1,15 +1,13 @@
-import { StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
 import React, { useState } from 'react';
-import { getToken, storeData } from './AsynFunc';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import tw from 'twrnc';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { SignUpStackScreenProps, iStep4 } from '../../../types';
+import { colors } from '../../Colors';
 import GreenButton from '../../components/GreenButton';
 import Input from '../../components/Input';
-import { colors } from '../../Colors';
-import axios from 'axios';
-import { BarIndicator } from 'react-native-indicators';
-import { SignUpStackScreenProps, iStep4 } from '../../../types';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { getToken, storeData } from './AsynFunc';
 
 interface route {
   email: string;
@@ -32,7 +30,7 @@ const SetPasswordScreen = () => {
         console.log('PasswordScreen', data);
         if (success) {
           navigation.replace('SignUpIndex', {
-            screen: 'Step' + data.steps,
+            screen: ('Step' + data.steps) as any,
             params: {
               industry: data.industries,
               signUpReasons: data.signUpReasons,

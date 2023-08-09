@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, Image, Modal, Pressable, Alert } from 'react-native';
-import React, { ReactNode, useState } from 'react';
-import tw from 'twrnc';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import React, { ReactNode, useState } from 'react';
+import { Alert, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import tw from 'twrnc';
+import { GenerateSignatureDetail } from '../../../../types';
 import { colors } from '../../../Colors';
 
 interface IRow {
@@ -20,7 +21,13 @@ const Row = ({ title, shortName }: IRow) => {
   );
 };
 
-const SigningOrderModal = ({ senderName, details }) => {
+const SigningOrderModal = ({
+  senderName,
+  details,
+}: {
+  senderName: string | undefined;
+  details: GenerateSignatureDetail[] | undefined;
+}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -77,7 +84,6 @@ const SigningOrderModal = ({ senderName, details }) => {
                 );
               })}
 
-              {/* reciever */}
               <Row
                 title={'Completed'}
                 shortName={<AntDesign name="checkcircle" size={27} color="white" />}

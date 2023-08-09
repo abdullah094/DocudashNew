@@ -1,13 +1,11 @@
-import { StyleSheet, Text, View, Image, Modal, Pressable, Alert } from 'react-native';
-import React, { ReactNode, useState } from 'react';
-import tw from 'twrnc';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { colors } from '../../../Colors';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { Alert, Modal, StyleSheet, Text, View } from 'react-native';
 import { Button, Divider, TextInput } from 'react-native-paper';
+import tw from 'twrnc';
 import { useCounterStore } from '../../../../MobX/TodoStore';
 import { User } from '../../../../types';
-import axios from 'axios';
 
 const NameEditModal = () => {
   const [modalVisible, setModalVisible] = useState(false);

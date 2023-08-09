@@ -1,13 +1,11 @@
-import { StyleSheet, Text, View, Image, Modal, Pressable, Alert, ScrollView } from 'react-native';
-import React, { ReactNode, useState } from 'react';
-import tw from 'twrnc';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { colors } from '../../../Colors';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button, Divider, HelperText, TextInput } from 'react-native-paper';
+import tw from 'twrnc';
 import { useCounterStore } from '../../../../MobX/TodoStore';
 import { User } from '../../../../types';
-import axios from 'axios';
 
 const InfoEditModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -34,38 +32,6 @@ const InfoEditModal = () => {
 
   const onSave = () => {
     setHasErrors({});
-    // if (company.length == 0) {
-    //   Alert.alert("Please enter a company name.");
-    //   return;
-    // }
-    // if (address1.length == 0) {
-    //   Alert.alert("Please enter a address1.");
-    //   return;
-    // }
-    // if (address2.length == 0) {
-    //   Alert.alert("Please enter a address2.");
-    //   return;
-    // }
-    // if (country.length == 0) {
-    //   Alert.alert("Please enter a country.");
-    //   return;
-    // }
-    // if (state.length == 0) {
-    //   Alert.alert("Please enter a state.");
-    //   return;
-    // }
-    // if (city.length == 0) {
-    //   Alert.alert("Please enter a city.");
-    //   return;
-    // }
-    // if (zip_code.length == 0) {
-    //   Alert.alert("Please enter a zip_code.");
-    //   return;
-    // }
-    // if (phone.length == 0) {
-    //   Alert.alert("Please enter a phone.");
-    //   return;
-    // }
     axios
       .post(
         'https://docudash.net/api/profiles',

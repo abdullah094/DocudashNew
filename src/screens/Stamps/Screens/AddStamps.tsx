@@ -1,44 +1,20 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Pressable,
-  Alert,
-  SafeAreaView,
-} from 'react-native';
-import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
-import {
-  Appbar,
-  Avatar,
-  Badge,
-  Button,
-  Checkbox,
-  RadioButton,
-  SegmentedButtons,
-  TextInput,
-} from 'react-native-paper';
-import tw from 'twrnc';
-import { colors } from '../../../Colors';
-import AddSignatureDraw from '../Components/AddStampDraw';
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import { Appbar, Avatar, Badge, Button, TextInput } from 'react-native-paper';
+import tw from 'twrnc';
 import { useCounterStore } from '../../../../MobX/TodoStore';
 
-import { Signature, StampPreview, User } from '../../../../types';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import ChooseSignatureItem from '../Components/ChooseStampItem';
 import FormData from 'form-data';
+import { DashBoardDrawerScreenProps, StampPreview, User } from '../../../../types';
 
 const AddStamp = () => {
   const Mobx = useCounterStore();
   const user = Mobx.user as User;
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'AddStamp'>['navigation']>();
+  const route = useRoute<DashBoardDrawerScreenProps<'AddStamp'>['route']>();
   const StampPreview = route.params as StampPreview;
   const [base64, setBase64] = useState('');
   const [name, setName] = useState('');

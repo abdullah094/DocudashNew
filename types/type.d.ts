@@ -1,30 +1,16 @@
+import type { DrawerScreenProps } from '@react-navigation/drawer';
 import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import type { StackScreenProps } from '@react-navigation/stack';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import type { DrawerScreenProps } from '@react-navigation/drawer';
 import { Industry } from './Step4';
-import { DocumentPickerOptions } from 'expo-document-picker';
-import { ImagePickerSuccessResult } from 'expo-image-picker';
 
 export type RootStackParamList = {
+  DashboardDrawerNavigator: DashBoardDrawerScreenProps<DashBoardDrawerParamList>;
+  ManageDrawer: ManagedDrawerScreenProps<ManagedDrawerParamList>;
   SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
   TabNavigator: NavigatorScreenParams<SignUpStackParamList>;
-  ManageDrawer: NavigatorScreenParams<SignUpStackParamList>;
   LoginIndex: NavigatorScreenParams<LoginStackParamList>;
-  Details: NavigatorScreenParams<SignedInStackParamList>;
   TemplateHistory: undefined;
-  Signatures: undefined;
-  AddSignature: undefined;
-  Edit: {
-    Envelope?: Envelope;
-    files?: DocumentPickerOptions.DocumentResult[];
-    images?: ImagePicker.ImagePickerAsset[];
-  };
-  AddStamp: undefined;
   TestScreen: undefined;
-  DocumentEditor: {
-    Envelope: GenerateSignature;
-  };
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<
@@ -46,15 +32,6 @@ export type SignedInStackParamList = {
   Details: undefined;
 };
 
-export type RootStackParamList = {
-  SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
-  TabNavigator: NavigatorScreenParams<SignUpStackParamList>;
-  ManageDrawer: NavigatorScreenParams<SignUpStackParamList>;
-  Details: NavigatorScreenParams<SignedInStackParamList>;
-  TemplateHistory: undefined;
-  Signatures: undefined;
-};
-
 export type LoginStackParamList = {
   Step1: undefined;
   Step2: { token: string; email: string };
@@ -67,6 +44,29 @@ export type SignedInStackParamList = {
 
 export type ManageDrawerParamList = {
   Inbox: { heading: string };
+  Edit:
+    | undefined
+    | {
+        Envelope?: Envelope;
+        files?: DocumentPickerOptions.DocumentResult[];
+        images?: ImagePicker.ImagePickerAsset[];
+      };
+  DocumentEditor: {
+    Envelope: GenerateSignature;
+  };
+  Details: {
+    Envelope: Envelope;
+  };
+};
+export type DashBoardDrawerParamList = {
+  Dashboard: undefined;
+  Template: undefined;
+  Signatures: undefined;
+  AddSignature: { SignaturePreview?: SignaturePreview };
+  Stamps: undefined;
+  AddStamp: { Stamp?: StampPreview };
+  Profile: undefined;
+  Browser: { url: string };
 };
 
 export type SignUpStackScreenProps<T extends keyof SignUpStackParamList> = CompositeScreenProps<
@@ -86,6 +86,11 @@ export type ManageDrawerScreenProps<T extends keyof ManageDrawerParamList> = Com
   DrawerScreenProps<ManageDrawerParamList, T>,
   RootStackScreenProps<keyof RootStackParamList>
 >;
+export type DashBoardDrawerScreenProps<T extends keyof DashBoardDrawerParamList> =
+  CompositeScreenProps<
+    DrawerScreenProps<DashBoardDrawerParamList, T>,
+    RootStackScreenProps<keyof RootStackParamList>
+  >;
 
 declare global {
   namespace ReactNavigation {
@@ -95,7 +100,7 @@ declare global {
 
 interface Istep5Response {
   token: string;
-  success: boolean | null;
+  success: boolean;
   message: string;
   data: Data;
 }

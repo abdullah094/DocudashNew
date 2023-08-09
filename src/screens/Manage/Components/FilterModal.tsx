@@ -1,11 +1,10 @@
-import { Alert, StyleSheet, View, Modal, Pressable, Platform } from 'react-native';
 import React, { useState } from 'react';
-import { Button, Text, Divider, IconButton, Searchbar } from 'react-native-paper';
+import { Modal, StyleSheet, View } from 'react-native';
+import { Button, Divider, IconButton, Searchbar, Text } from 'react-native-paper';
 import tw from 'twrnc';
 
 import { DateTimePicker } from 'react-native-ui-lib';
 
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 interface IFilter {
   onPress: (name: string, date: Date) => void;
 }

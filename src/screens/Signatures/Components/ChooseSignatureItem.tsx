@@ -1,9 +1,9 @@
-import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
-import React, { useRef } from 'react';
-import tw from 'twrnc';
-import ViewShot, { captureRef } from 'react-native-view-shot';
-import { colors } from '../../../Colors';
 import { useFonts } from 'expo-font';
+import React, { useRef } from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import ViewShot from 'react-native-view-shot';
+import tw from 'twrnc';
+import { colors } from '../../../Colors';
 
 const ChooseSignatureItem = ({
   item,
@@ -14,7 +14,6 @@ const ChooseSignatureItem = ({
   setSetselectedUri,
   setSetselectedInitialUri,
 }: any) => {
-  const [setselected, setSetselected] = React.useState();
   const [fontsLoaded] = useFonts({
     LongCang: require('../../../assets/Fonts/LongCang-Regular.ttf'),
     WalterTurncoat: require('../../../assets/Fonts/WalterTurncoat-Regular.ttf'),
@@ -27,10 +26,11 @@ const ChooseSignatureItem = ({
     Sarina: require('../../../assets/Fonts/Sarina-Regular.ttf'),
   });
   const RenderItem = ({ item, id }: any) => {
-    const ref = useRef();
-    const refInitial = useRef();
+    const ref = useRef(null);
+    const refInitial = useRef(null);
     const onCapture = () => {
-      ref.current.capture().then((uri) => {
+      // @ts-ignore
+      ref.current?.capture().then((uri) => {
         setList((prev) =>
           prev.map((sign, i) =>
             i === id ? { ...sign, selected: true } : { ...sign, selected: false }
@@ -39,7 +39,8 @@ const ChooseSignatureItem = ({
 
         setSetselectedUri(uri);
       });
-      refInitial.current.capture().then((uri) => {
+      // @ts-ignore
+      refInitial.current?.capture().then((uri) => {
         setSetselectedInitialUri(uri);
       });
     };

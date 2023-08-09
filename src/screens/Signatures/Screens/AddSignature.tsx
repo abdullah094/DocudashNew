@@ -1,39 +1,29 @@
+import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   FlatList,
-  StyleSheet,
-  Text,
-  View,
   Image,
   ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
-  Pressable,
-  Alert,
-  SafeAreaView,
+  View,
 } from 'react-native';
-import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
-import {
-  Appbar,
-  Button,
-  Checkbox,
-  RadioButton,
-  SegmentedButtons,
-  TextInput,
-} from 'react-native-paper';
+import { Appbar, Button, SegmentedButtons, TextInput } from 'react-native-paper';
 import tw from 'twrnc';
+import { useCounterStore } from '../../../../MobX/TodoStore';
 import { colors } from '../../../Colors';
 import AddSignatureDraw from '../Components/AddSignauteDraw';
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios';
-import { useCounterStore } from '../../../../MobX/TodoStore';
 
-import { Signature, SignaturePreview, User } from '../../../../types';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { DashBoardDrawerScreenProps, SignaturePreview, User } from '../../../../types';
 import ChooseSignatureItem from '../Components/ChooseSignatureItem';
 
 const AddSignature = () => {
   const Mobx = useCounterStore();
-  const user: User = Mobx.user;
+  const user: User = Mobx.user as User;
   const [fullName, setFullName] = React.useState(user.first_name + ' ' + user.last_name);
 
   const [initials, setInitials] = React.useState(
@@ -49,9 +39,9 @@ const AddSignature = () => {
   const [selectedInitialUri, setSetselectedInitialUri] = useState<string>('');
   const [sign, setSign] = useState<Array<{}> | undefined>();
   const [initial, setInitial] = useState<Array<{}> | undefined>();
-  const navigation = useNavigation();
-  const route = useRoute();
-  const signaturePreview = route.params as SignaturePreview;
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'AddSignature'>['navigation']>();
+  const route = useRoute<DashBoardDrawerScreenProps<'AddSignature'>['route']>();
+  const signaturePreview = route.params?.SignaturePreview as SignaturePreview;
 
   useEffect(() => {
     if (signaturePreview) {
@@ -75,8 +65,11 @@ const AddSignature = () => {
         base64: true,
       });
 
-      if (!result.cancelled) {
-        setSetselectedUri(result.assets[0].base64);
+      if (!result.canceled) {
+        const image = result.assets[0];
+        if (image && image.base64) {
+          setSetselectedUri(image.base64);
+        }
       }
     } catch (err) {
       console.log('err', err);
@@ -134,10 +127,8 @@ const AddSignature = () => {
         if (success) {
           navigation.navigate('Signatures', {});
         } else {
-          Alert.alert('Signature added');
+          Alert.alert(message);
         }
-
-        console.log(data);
       })
       .catch((err) => {
         console.log(err);

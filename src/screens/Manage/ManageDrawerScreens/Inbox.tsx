@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, FlatList, Pressable, SafeAreaView } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import EmailBar from '../Components/EmailBar';
-import tw from 'twrnc';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { observer } from 'mobx-react';
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Appbar, Divider } from 'react-native-paper';
+import tw from 'twrnc';
 import { useCounterStore } from '../../../../MobX/TodoStore';
 import {
   Envelope,
@@ -12,11 +12,8 @@ import {
   LoginStackScreenProps,
   ManageDrawerScreenProps,
 } from '../../../../types/type';
-import { EmailBar as IEmailbar } from '../../../../types';
-import { Appbar, Button, Divider } from 'react-native-paper';
+import EmailBar from '../Components/EmailBar';
 import FilterModal from '../Components/FilterModal';
-import Entypo from '@expo/vector-icons/Entypo';
-import { colors } from '../../../Colors';
 
 const Inbox = observer(() => {
   const [data, setData] = useState<Array<Envelope>>(new Array(5));
@@ -87,9 +84,9 @@ const Inbox = observer(() => {
         }
         onRefresh={onRefresh}
         refreshing={loading}
-        ItemSeparatorComponent={<Divider />}
+        ItemSeparatorComponent={Divider}
         contentContainerStyle={[tw`pb-25 py-5`, { alignSelf: 'stretch' }]}
-        // keyExtractor={(item) => item.id}
+        // keyExtractor={(item) => item.id + '_'}
         renderItem={({ item }) => <EmailBar item={item} loading={loading} heading={heading} />}
       />
     </View>

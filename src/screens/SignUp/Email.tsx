@@ -1,25 +1,14 @@
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  ScrollView,
-  ActivityIndicator,
-  Platform,
-  Alert,
-} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import React, { useState } from 'react';
-import Input from '../../components/Input';
-import { colors } from '../../Colors';
-import GreenButton from '../../components/GreenButton';
+import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 import tw from 'twrnc';
-import { NavigationProp, ThemeProvider, useNavigation } from '@react-navigation/native';
-import { SIGNUP_0 } from '@env';
-import axios from 'axios';
-import { BarIndicator } from 'react-native-indicators';
-import { storeData, getData, storeToken } from './AsynFunc';
-import { RootStackParamList, SignUpAPI, SignUpStackScreenProps } from '../../../types';
+import { SignUpAPI, SignUpStackScreenProps } from '../../../types';
+import { colors } from '../../Colors';
+import GreenButton from '../../components/GreenButton';
+import Input from '../../components/Input';
+import { storeData, storeToken } from './AsynFunc';
 
 const EmailScreen = () => {
   const navigation = useNavigation<SignUpStackScreenProps<'Index'>['navigation']>();
@@ -30,7 +19,7 @@ const EmailScreen = () => {
   const fetchData = () => {
     setLoading(true);
     axios
-      .post(SIGNUP_0, {
+      .post('https://docudash.net/api/sign-up', {
         email: inputVal?.toLowerCase(),
         checkAgree: checked,
       })
@@ -40,7 +29,7 @@ const EmailScreen = () => {
         if (success) {
           if (data.steps === 5) {
             navigation.navigate('SignUpIndex', {
-              screen: 'Step' + data.steps,
+              screen: ('Step' + data.steps) as any,
               params: {
                 api: next,
                 email: data.email,
@@ -48,7 +37,7 @@ const EmailScreen = () => {
             });
           } else {
             navigation.replace('SignUpIndex', {
-              screen: 'Step' + data.steps,
+              screen: ('Step' + data.steps) as any,
               params: {
                 api: next,
                 email: data.email,
@@ -58,6 +47,7 @@ const EmailScreen = () => {
           storeToken(next_access);
           storeData('Step' + data.steps);
         } else {
+          // @ts-ignore
           message.email ? Alert.alert(message.email[0]) : Alert.alert(JSON.stringify(message));
         }
         setLoading(false);

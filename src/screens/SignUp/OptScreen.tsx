@@ -1,32 +1,22 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import React, { useState } from 'react';
 import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
-  ScrollView,
-  TextInput,
-  KeyboardAvoidingView,
-  Alert,
 } from 'react-native';
-import React, { useState } from 'react';
-import axios from 'axios';
-import tw from 'twrnc';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import tw from 'twrnc';
+import { SignUpAPI, SignUpStackScreenProps } from '../../../types';
+import { colors } from '../../Colors';
 import GreenButton from '../../components/GreenButton';
 import Input from '../../components/Input';
-import { colors } from '../../Colors';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { SIGNUP_02 } from '@env';
-import { BarIndicator } from 'react-native-indicators';
 import { getToken, storeData } from './AsynFunc';
-import {
-  SignUpStackScreenProps,
-  Istep3Response,
-  SignUpData,
-  SignUpAPI,
-  SignUpStackParamList,
-} from '../../../types';
-import { log } from 'react-native-reanimated';
 
 const OptScreen = () => {
   const navigation = useNavigation<SignUpStackScreenProps<'Step2'>['navigation']>();
@@ -49,7 +39,7 @@ const OptScreen = () => {
         if (success) {
           setLoading(false),
             navigation.replace('SignUpIndex', {
-              screen: ('Step' + data.steps) as keyof SignUpStackParamList,
+              screen: ('Step' + data.steps) as any,
               params: {
                 api: response.data.next,
               },

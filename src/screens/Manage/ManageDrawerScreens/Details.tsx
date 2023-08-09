@@ -1,16 +1,15 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import tw from 'twrnc';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import SigningOrderModal from '../Components/SigningOrderModal';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackScreenProps, EmailBar, ViewDocument } from '../../../../types';
-import { log } from 'react-native-reanimated';
 import axios from 'axios';
-import { useCounterStore } from '../../../../MobX/TodoStore';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Appbar } from 'react-native-paper';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import tw from 'twrnc';
+import { useCounterStore } from '../../../../MobX/TodoStore';
+import { Envelope, ManageDrawerScreenProps, ViewDocument } from '../../../../types';
 import Loader from '../../MainLoader/Loader';
+import SigningOrderModal from '../Components/SigningOrderModal';
 
 interface IButton {
   text: string;
@@ -32,9 +31,9 @@ const Button = ({ text, onPress, pressed }: IButton) => {
 
 const Details = () => {
   const Mobx = useCounterStore();
-  const navigation = useNavigation<RootStackScreenProps<'Details'>['navigation']>();
-  const route = useRoute<RootStackScreenProps<'Details'>['route']>();
-  const inbox: EmailBar = route.params;
+  const navigation = useNavigation<ManageDrawerScreenProps<'Details'>['navigation']>();
+  const route = useRoute<ManageDrawerScreenProps<'Details'>['route']>();
+  const inbox: Envelope = route.params?.Envelope;
   const [data, setData] = useState<ViewDocument>();
   const [dataLoader, setDataLoader] = useState(true);
 
@@ -75,16 +74,21 @@ const Details = () => {
           <View style={tw`flex-row items-center gap-3`}>
             <Text style={styles.heading}>{data?.generateSignatureDetails[0].emailSubject}</Text>
             <Menu>
-              <MenuTrigger text={<AntDesign name="exclamationcircle" size={24} color="black" />} />
+              <MenuTrigger
+                // @ts-ignore
+                text={<AntDesign name="exclamationcircle" size={24} color="black" />}
+              />
               <MenuOptions>
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
+                  // @ts-ignore
                   text={<Text style={tw`font-bold text-black`}>Details</Text>}
                 />
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
+                  // @ts-ignore
                   text={
                     <View style={tw`gap-1`}>
                       <Text style={tw`font-bold text-black`}>Created At:{}</Text>
@@ -95,6 +99,7 @@ const Details = () => {
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
+                  // @ts-ignore
                   text={
                     <View style={tw`gap-1`}>
                       <Text style={tw`font-bold text-black`}>Modified At</Text>
@@ -105,6 +110,7 @@ const Details = () => {
                 <MenuOption
                   style={styles.menu_block}
                   onSelect={() => alert(`Save`)}
+                  // @ts-ignore
                   text={
                     <View style={tw`gap-1`}>
                       <Text style={tw`font-bold text-black`}>Owner</Text>
@@ -171,6 +177,7 @@ const Details = () => {
               />
               <Menu>
                 <MenuTrigger
+                  // @ts-ignore
                   text={
                     <View
                       style={tw`border-2 justify-center items-center h-10 w-30 rounded-lg flex-row gap-1`}
@@ -270,7 +277,7 @@ const Details = () => {
           <View style={tw`py-2`}>
             <Text style={styles.heading}>Message</Text>
             <View style={tw`m-3 mt-5`}>
-              <Text style={tw`font-thin`}>No message have been enterred</Text>
+              <Text style={tw`font-thin`}>No message have been entered</Text>
             </View>
           </View>
         </View>

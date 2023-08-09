@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, useColorScheme } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import DrawerNavigator from './src/navigators/Drawernavigator';
 import StackNavigator from './src/navigators/StackNavigator';
 import useCachedResources from './src/hooks/useCachedResources';
 import { observer } from 'mobx-react-lite';

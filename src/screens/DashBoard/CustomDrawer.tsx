@@ -1,23 +1,14 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  Pressable,
-  Alert,
-} from 'react-native';
-import React, { useState } from 'react';
-import tw from 'twrnc';
-import { colors } from '../../Colors';
 import { useNavigation } from '@react-navigation/native';
-import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
-import DrawerProfileModal from './Components/DrawerProfileModal';
-import { observer } from 'mobx-react';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { clearToken } from '../../AsyncGlobal';
+import React from 'react';
+import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button, List } from 'react-native-paper';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import tw from 'twrnc';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { DashBoardDrawerScreenProps } from '../../../types';
+import { clearToken } from '../../AsyncGlobal';
+import { colors } from '../../Colors';
+import DrawerProfileModal from './Components/DrawerProfileModal';
 
 const BellTrigger = () => (
   <Image
@@ -29,7 +20,7 @@ const BellTrigger = () => (
 const CustomDrawer = () => {
   type Result = boolean extends true ? 1 : 0;
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'Dashboard'>['navigation']>();
   const Mobx = useCounterStore();
   return (
     <View style={tw`h-full my-4 bg-red-200`}>
@@ -37,16 +28,21 @@ const CustomDrawer = () => {
         <View style={tw`flex-row items-center  mt-5 w-full justify-between px-5`}>
           <Image style={tw`w-30 h-7 `} source={require('../../assets/docudash_pow_logo.png')} />
           <Menu>
+            {/* @ts-ignore */}
             <MenuTrigger text={<BellTrigger />} />
             <MenuOptions>
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() => navigation.navigate('Browser', 'https://docudash.net/pricing')}
+                onSelect={() =>
+                  navigation.navigate('Browser', { url: 'https://docudash.net/pricing' })
+                }
                 text="Get Started"
               />
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() => navigation.navigate('Browser', 'https://docudash.net/contact-us')}
+                onSelect={() =>
+                  navigation.navigate('Browser', { url: 'https://docudash.net/contact-us' })
+                }
                 text="Support"
               />
               <MenuOption
@@ -61,7 +57,9 @@ const CustomDrawer = () => {
               />
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() => navigation.navigate('Browser', 'https://docudash.net/contact-us')}
+                onSelect={() =>
+                  navigation.navigate('Browser', { url: 'https://docudash.net/contact-us' })
+                }
                 text="Contact Us"
               />
             </MenuOptions>
@@ -117,7 +115,7 @@ const CustomDrawer = () => {
         <Button
           mode="contained"
           onPress={() => {
-            navigation.navigate('Browser', 'https://docudash.net/pricing');
+            navigation.navigate('Browser', { url: 'https://docudash.net/pricing' });
           }}
           style={[tw`items-center w-40 rounded-lg  self-center`]}
         >

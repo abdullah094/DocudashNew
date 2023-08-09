@@ -1,28 +1,26 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
+  Alert,
+  Image,
+  Modal,
+  Pressable,
   StyleSheet,
   Text,
-  View,
-  Image,
-  Pressable,
-  Modal,
-  Alert,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import React, { useState } from 'react';
 import tw from 'twrnc';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { colors } from '../../../Colors';
 import { useCounterStore } from '../../../../MobX/TodoStore';
-import { User } from '../../../../types';
-import { useNavigation } from '@react-navigation/native';
+import { DashBoardDrawerScreenProps, User } from '../../../../types';
+import { colors } from '../../../Colors';
 
 const DrawerProfileModal = () => {
   const Mobx = useCounterStore();
   const user: User = Mobx.user as User;
-  console.log(user);
-
   const [modalVisible, setModalVisible] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'Dashboard'>['navigation']>();
   return (
     <>
       {user && (

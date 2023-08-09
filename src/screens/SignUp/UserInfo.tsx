@@ -1,35 +1,28 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import { useFonts } from 'expo-font';
+import React, { useState } from 'react';
 import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Alert,
 } from 'react-native';
-import React, { useState, useEffect, SetStateAction, FC } from 'react';
-import { SIGNUP_1 } from '@env';
-import axios from 'axios';
-import { BarIndicator } from 'react-native-indicators';
 import tw from 'twrnc';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { LoginStackScreenProps, SignUpAPI } from '../../../types';
+import { colors } from '../../Colors';
 import GreenButton from '../../components/GreenButton';
 import Input from '../../components/Input';
-import { colors } from '../../Colors';
-import { useNavigation } from '@react-navigation/native';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { useRoute } from '@react-navigation/native';
-import { storeData, getToken } from './AsynFunc';
-import { observer } from 'mobx-react-lite';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { LoginStackScreenProps, SignUpAPI, SignUpStackScreenProps } from '../../../types';
+import { getToken, storeData } from './AsynFunc';
 
 interface form {
-  first_Name: SetStateAction<string | undefined>;
-  last_Name: SetStateAction<string | undefined>;
-  phone: SetStateAction<string | undefined>;
+  first_Name: string;
+  last_Name: string;
+  phone: string;
 }
 const UserInfoScreen = () => {
   const navigation = useNavigation<LoginStackScreenProps<'Step2'>['navigation']>();
@@ -62,7 +55,7 @@ const UserInfoScreen = () => {
         if (success) {
           setLoading(false),
             navigation.replace('SignUpIndex', {
-              screen: 'Step' + data.steps,
+              screen: ('Step' + data.steps) as any,
               params: {
                 api: next,
               },

@@ -1,3 +1,17 @@
 {
-  "cSpell.words": ["Appbar", "datetimepicker", "Docu", "Docudash", "Finalise", "uniqid"]
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "cSpell.words": [
+    "Appbar",
+    "checkcircle",
+    "datetimepicker",
+    "Docu",
+    "Docudash",
+    "Finalise",
+    "Searchbar",
+    "twrnc",
+    "uniqid"
+  ]
 }

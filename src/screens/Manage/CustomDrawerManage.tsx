@@ -1,53 +1,21 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Pressable,
-  Alert,
-} from 'react-native';
-import React from 'react';
-import tw from 'twrnc';
 import { useNavigation } from '@react-navigation/native';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Ion from '@expo/vector-icons/Ionicons';
-import { colors } from '../../Colors';
-import { SignedInpStackScreenProps } from '../../../types';
-import { Menu, MenuTrigger } from 'react-native-popup-menu';
-import DrawerProfileModal from '../DashBoard/Components/DrawerProfileModal';
-import { Button, IconButton, List } from 'react-native-paper';
+import React from 'react';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, List } from 'react-native-paper';
+import tw from 'twrnc';
 import { useCounterStore } from '../../../MobX/TodoStore';
-import { Ionicons } from '@expo/vector-icons';
-
-interface tabProps {
-  text: string;
-  iconName: string;
-  route: Screen;
-  heading: string;
-}
-const TabButton = ({ text, iconName, route, heading }: tabProps) => {
-  const navigation = useNavigation();
-  return (
-    <TouchableOpacity
-      style={styles.button}
-      onPress={() => navigation.navigate(route, { heading: heading })}
-    >
-      <Text style={styles.button_text}>{text}</Text>
-    </TouchableOpacity>
-  );
-};
+import { ManageDrawerScreenProps } from '../../../types';
+import { colors } from '../../Colors';
+import DrawerProfileModal from '../DashBoard/Components/DrawerProfileModal';
 
 const CustomDrawerManage = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<ManageDrawerScreenProps<'Inbox'>['navigation']>();
   const Mobx = useCounterStore();
 
   return (
     <View style={tw`h-full my-4 bg-red-200`}>
       <View style={tw`flex-1 bg-[${colors.white}]`}>
         <View style={tw`flex-row items-center  mt-5 w-full justify-between px-5`}>
-          {/* <Ionicons name="arrow-back" size={24} color="black" /> */}
           <Image style={tw`w-30 h-7 `} source={require('../../assets/docudash_pow_logo.png')} />
         </View>
         <DrawerProfileModal />
@@ -58,7 +26,10 @@ const CustomDrawerManage = () => {
               left={(props) => <List.Icon {...props} icon="home" />}
               title="Home"
               onPress={() => {
-                navigation.navigate('Home');
+                navigation.navigate('DashboardDrawerNavigator', {
+                  screen: 'Dashboard',
+                  params: {},
+                });
               }}
             />
             <List.Item
@@ -91,14 +62,6 @@ const CustomDrawerManage = () => {
                 navigation.navigate('Inbox', { heading: 'Draft' });
               }}
             />
-            {/* <List.Item
-              left={(props) => <List.Icon {...props} icon="inbox-outline" />}
-              title="Starred"
-              onPress={() => {
-                navigation.navigate("Inbox", { heading: "Starred" });
-              }}
-              
-            /> */}
             <List.Item
               left={(props) => <List.Icon {...props} icon="delete-variant" />}
               title="Trash"

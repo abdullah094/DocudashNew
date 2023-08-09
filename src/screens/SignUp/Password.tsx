@@ -1,14 +1,13 @@
-import { StyleSheet, Text, View, ScrollView, Image, TextInput, Alert } from 'react-native';
-import React, { JSXElementConstructor, useState } from 'react';
-import tw from 'twrnc';
-import Input from '../../components/Input';
-import GreenButton from '../../components/GreenButton';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
-import { LoginStackScreenProps, SignUpStackScreenProps } from '../../../types';
-import { BarIndicator } from 'react-native-indicators';
-import { storeTokenGlobal } from '../../AsyncGlobal';
+import React, { useState } from 'react';
+import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
+import tw from 'twrnc';
 import { useCounterStore } from '../../../MobX/TodoStore';
+import { SignUpStackScreenProps } from '../../../types';
+import { storeTokenGlobal } from '../../AsyncGlobal';
+import GreenButton from '../../components/GreenButton';
+import Input from '../../components/Input';
 
 const PasswordScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);

@@ -1,8 +1,8 @@
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas';
-import { Appbar } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { Appbar } from 'react-native-paper';
+import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas';
 import tw from 'twrnc';
 import { SignaturePreview } from '../../../../types';
 // import { DocumentNavigationProps, DocumentRouteProps } from "../types";
@@ -22,23 +22,23 @@ const Signature = ({ setSetselectedUri, setSetselectedInitialUri }: ISignatureDr
 
   const [sign, setSign] = React.useState<string | null>(null);
   const [initials, setInitials] = useState<string | null>(null);
-  const signatureView = useRef<SignatureViewRef>({} as SignatureViewRef);
-  const signatureViewIni = useRef<SignatureViewRef>({} as SignatureViewRef);
+  const signatureView = useRef<null | SignatureViewRef>(null);
+  const signatureViewIni = useRef<null | SignatureViewRef>(null);
   // signatureView.current.changePenSize(10,20)
 
   const saveSign = () => {
-    signatureView.current.readSignature();
+    signatureView.current?.readSignature();
   };
   const saveInitials = () => {
-    signatureViewIni.current.readSignature();
+    signatureViewIni.current?.readSignature();
   };
 
   const resetSign = () => {
-    signatureView.current.clearSignature();
+    signatureView.current?.clearSignature();
     setSetselectedUri(null);
   };
   const resetInitials = () => {
-    signatureViewIni.current.clearSignature();
+    signatureViewIni.current?.clearSignature();
     setSetselectedInitialUri(null);
   };
   const handleOK = (signature: string) => {

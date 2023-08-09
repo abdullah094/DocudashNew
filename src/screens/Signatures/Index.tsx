@@ -1,32 +1,19 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Modal,
-  Pressable,
-  FlatList,
-} from 'react-native';
-import React from 'react';
-import tw from 'twrnc';
-import { colors } from '../../Colors';
-import { Button, Chip, DataTable, Switch } from 'react-native-paper';
-import DropDown from 'react-native-paper-dropdown';
-import axios from 'axios';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackParamList, SignaturePreview, SignaturesListAPI } from '../../../types';
+import axios from 'axios';
+import React from 'react';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Chip, Switch } from 'react-native-paper';
+import tw from 'twrnc';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { DashBoardDrawerScreenProps, SignaturePreview, SignaturesListAPI } from '../../../types';
+import { colors } from '../../Colors';
 
 const Index = () => {
   const [list, setList] = React.useState<SignaturePreview[]>();
   const [isFetching, setIsFetching] = React.useState(false);
   const Mobx = useCounterStore();
-  const navigation = useNavigation();
-  console.log(Mobx.access_token);
+  const navigation = useNavigation<DashBoardDrawerScreenProps<'Signatures'>['navigation']>();
+
   const route = useRoute();
 
   const fetchList = () => {
@@ -40,7 +27,7 @@ const Index = () => {
       .then((response) => {
         const data: SignaturesListAPI = response.data;
 
-        const changedata = data.data.map((x) => {
+        const changeData = data.data.map((x) => {
           return {
             ...x,
             signature: x.signature.replace(/(\r\n|\n|\r)/gm, ''),
@@ -48,8 +35,7 @@ const Index = () => {
           };
         });
 
-        setList(changedata);
-        // setList(data.data);
+        setList(changeData);
         setIsFetching(false);
       })
       .catch((err) => {
@@ -60,83 +46,6 @@ const Index = () => {
     fetchList();
   }, [route]);
 
-  const DropdownComp = () => {
-    const [action, setAction] = React.useState('');
-    const [showDropDown, setShowDropDown] = React.useState(false);
-    const ActionList = [
-      {
-        label: 'Edit',
-        value: 'edit',
-      },
-      {
-        label: 'Delete',
-        value: 'delete',
-      },
-    ];
-
-    return (
-      <DropDown
-        label={'Action'}
-        mode={'outlied'}
-        visible={showDropDown}
-        showDropDown={() => setShowDropDown(true)}
-        onDismiss={() => setShowDropDown(false)}
-        value={action}
-        setValue={setAction}
-        list={ActionList}
-      />
-    );
-  };
-  const TableRow = () => {
-    const [openModal, setOpenModal] = React.useState(false);
-
-    return (
-      <>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={openModal}
-          onDismiss={() => setOpenModal(false)}
-        >
-          <View style={tw`flex-1 justify-center items-center `}>
-            <View style={tw`border-2  w-70 rounded-lg bg-white p-5 gap-4 pb-25`}>
-              <Pressable style={tw`absolute top-1 right-1 p-1`} onPress={() => setOpenModal(false)}>
-                <MaterialCommunityIcons name="close-circle" size={30} />
-              </Pressable>
-              <Text style={tw`font-bold`}>Status</Text>
-              <SwitchComp />
-              <Text style={tw`font-bold`}>Action</Text>
-              <DropdownComp />
-            </View>
-          </View>
-        </Modal>
-        <DataTable.Row>
-          <DataTable.Cell style={tw`items-center h-35`}>
-            <Image
-              style={tw`w-20 h-4`}
-              resizeMode="contain"
-              source={require('../../assets/docudash_pow_logo.png')}
-            />
-          </DataTable.Cell>
-          <DataTable.Cell style={tw` items-center justify-center h-35`}>
-            <Image
-              style={tw`w-15 h-4`}
-              resizeMode="contain"
-              source={require('../../assets/docudash_pow_logo.png')}
-            />
-          </DataTable.Cell>
-          <DataTable.Cell style={tw` items-center h-35 justify-center`}>
-            <View style={tw`justify-start items-center gap-2 overflow-hidden`}>
-              <Text style={tw`text-3 text-[${colors.gray}]`} numberOfLines={2}>
-                {'5qDXe96-pkhNTj-55211'}
-              </Text>
-              <Button onPress={() => setOpenModal(!openModal)} icon="dots-horizontal"></Button>
-            </View>
-          </DataTable.Cell>
-        </DataTable.Row>
-      </>
-    );
-  };
   const Delete = (id: number) => {
     axios
       .post(
@@ -178,14 +87,12 @@ const Index = () => {
       });
   };
 
-  const RenderItem = ({ item }) => {
-    const [more, setMore] = React.useState(false);
+  const RenderItem = ({ item }: { item: SignaturePreview }) => {
     const [isSwitchOn, setIsSwitchOn] = React.useState(item.status === 1 ? true : false);
     console.log('switchStatus', isSwitchOn);
 
     const onToggleSwitch = () => {
       setIsSwitchOn(!isSwitchOn);
-
       StatusUpdate(item.id, !isSwitchOn ? 1 : 0);
       fetchList();
     };
@@ -223,7 +130,7 @@ const Index = () => {
                 <Chip
                   selectedColor={colors.blue}
                   onPress={() => {
-                    navigation.navigate('AddSignature', item);
+                    navigation.navigate('AddSignature', { SignaturePreview: item });
                     // console.log(item);
                   }}
                 >
@@ -241,12 +148,12 @@ const Index = () => {
   return (
     <View>
       <View style={tw`m-4 gap-1 `}>
-        <Text style={tw`text-black text-5 font-bold `}>Signautres</Text>
+        <Text style={tw`text-black text-5 font-bold `}>Signatures</Text>
         <Text style={tw`text-[${colors.gray}] text-3`}>
           Add or update your name and signature styles.
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('AddSignature')}
+          onPress={() => navigation.navigate('AddSignature', {})}
           style={tw`bg-[${colors.green}] justify-center items-center w-35 h-10 rounded-md self-end m-4`}
         >
           <Text style={tw`text-white`}>Add Signature</Text>
@@ -255,7 +162,7 @@ const Index = () => {
 
       <FlatList
         data={list}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id + '_'}
         onRefresh={fetchList}
         refreshing={isFetching}
         contentContainerStyle={tw`pb-50`}

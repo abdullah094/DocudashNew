@@ -1,50 +1,46 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import FormData from 'form-data';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Alert,
+  FlatList,
+  Image,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-  Image,
-  SafeAreaView,
-  FlatList,
-  Alert,
 } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Appbar,
   Button,
   Divider,
-  Menu,
-  TextInput,
-  Text,
   HelperText,
   IconButton,
   List,
+  Menu,
+  Text,
+  TextInput,
 } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
 import tw from 'twrnc';
-import { colors } from '../../../Colors';
-import axios from 'axios';
-import FormData from 'form-data';
 import { useCounterStore } from '../../../../MobX/TodoStore';
 import {
-  EmailBar,
   Envelope,
   GenerateSignature,
   GenerateSignatureDetailsImage,
-  RootStackParamList,
-  RootStackScreenProps,
+  ManageDrawerScreenProps,
   UploadDocumentAPI,
-  ViewDocument,
 } from '../../../../types';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import * as DocumentPicker from 'expo-document-picker';
-import * as ImagePicker from 'expo-image-picker';
-import BottomSheet, { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { colors } from '../../../Colors';
 
 const Edit = () => {
-  const navigation = useNavigation<RootStackScreenProps<'Edit'>['navigation']>();
-  const route = useRoute<RootStackScreenProps<'Edit'>['route']>();
+  const navigation = useNavigation<ManageDrawerScreenProps<'Edit'>['navigation']>();
+  const route = useRoute<ManageDrawerScreenProps<'Edit'>['route']>();
   const Mobx = useCounterStore();
   const [data, setData] = useState([
     {
@@ -86,7 +82,7 @@ const Edit = () => {
     GenerateSignatureDetailsImage[]
   >([]);
   const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>([]);
-  const envelope: Envelope = route.params?.Envelope;
+  const envelope = route.params?.Envelope as Envelope;
   let files = route.params?.files;
   let images = route.params?.images;
 
@@ -266,10 +262,6 @@ const Edit = () => {
       formData.append('photosID[' + index + ']', '0');
       formData.append('photos[]', image, `image${index + 1}.png`);
     });
-    // documents.forEach((image, index) => {
-    //   formData.append("photosID[" + index + "]", "0");
-    //   formData.append("photos[]", image, `image${index + 1}.png`);
-    // });
     let headers = {
       Authorization: `Bearer ${Mobx.access_token}`,
       'Content-Type': 'multipart/form-data',
@@ -292,9 +284,11 @@ const Edit = () => {
           };
         } = response.data;
         if (status) {
-          // navigation.navigate('Home');
-          navigation.replace('DocumentEditor', {
-            Envelope: generateSignature,
+          navigation.replace('ManageDrawer', {
+            screen: 'DocumentEditor',
+            params: {
+              Envelope: generateSignature,
+            },
           });
         } else {
           for (const [key, value] of Object.entries(message)) {
@@ -697,7 +691,7 @@ const Edit = () => {
           />
           <Divider />
           <List.Item
-            onPress={() => bottomSheetRef.current.close()}
+            onPress={() => bottomSheetRef.current?.close()}
             title="Cancel"
             left={(props) => <List.Icon {...props} icon="close" />}
           />

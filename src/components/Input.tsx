@@ -1,20 +1,10 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TextInputProps,
-  KeyboardAvoidingView,
-  StyleProp,
-  ViewStyle,
-  KeyboardTypeOptions,
-} from 'react-native';
-import React, { SetStateAction, Dispatch, FC, FunctionComponent } from 'react';
-import { colors } from '../Colors';
+import React, { Dispatch, SetStateAction } from 'react';
+import { KeyboardTypeOptions, StyleProp, StyleSheet, TextInput, ViewStyle } from 'react-native';
 import tw from 'twrnc';
+import { colors } from '../Colors';
 interface props {
   state: string | number | undefined | SetStateAction<string | undefined>;
-  setState: Dispatch<React.SetStateAction<string>>;
+  setState: Dispatch<React.SetStateAction<string>> | string;
   placeholder: string;
   style?: StyleProp<ViewStyle> | object;
   secureTextEntry?: boolean;

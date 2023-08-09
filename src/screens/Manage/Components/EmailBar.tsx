@@ -1,22 +1,26 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
-import tw from 'twrnc';
-import { colors } from '../../../Colors';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import SkeletonLoader from 'expo-skeleton-loader';
-import { Envelope, EmailBar as IEmailBar } from '../../../../types';
-import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import tw from 'twrnc';
+import { Envelope, ManageDrawerScreenProps } from '../../../../types';
+import { colors } from '../../../Colors';
 
 const Skeleton = () => {
   return (
     <SkeletonLoader boneColor={'#D3D3D3'}>
       <SkeletonLoader.Container style={tw`my-2`}>
         <SkeletonLoader.Container style={tw`flex-row overflow-hidden gap-2 items-center px-5 `}>
+          {/*  @ts-ignore */}
           <SkeletonLoader.Item style={tw`w-10 h-10 rounded-full`} />
           <SkeletonLoader.Container style={tw`overflow-hidden w-70`}>
+            {/*  @ts-ignore */}
             <SkeletonLoader.Item style={tw`flex-1 h-5 my-1`} />
+            {/*  @ts-ignore */}
             <SkeletonLoader.Item style={tw`w-100 h-2`} />
           </SkeletonLoader.Container>
         </SkeletonLoader.Container>
+        {/*  @ts-ignore */}
         <SkeletonLoader.Item style={tw`w-80 h-5 self-center mt-5`} />
       </SkeletonLoader.Container>
     </SkeletonLoader>
@@ -32,7 +36,8 @@ const EmailBar = ({
   loading: boolean;
   heading: string;
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<ManageDrawerScreenProps<'Inbox'>['navigation']>();
+  const route = useRoute<ManageDrawerScreenProps<'Inbox'>['route']>();
   console.log(heading);
   if (loading) return <Skeleton />;
 
@@ -44,7 +49,7 @@ const EmailBar = ({
         style={tw`p-4 px-5 gap-3 bg-[${colors.white}]`}
         onPress={() =>
           heading == 'Inbox'
-            ? navigation.navigate('Details', item)
+            ? navigation.navigate('Details', { Envelope: item })
             : navigation.navigate('Edit', { Envelope: item })
         }
       >
