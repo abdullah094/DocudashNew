@@ -1,9 +1,9 @@
-import { StyleSheet, Modal, View, Text } from "react-native";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import tw from "twrnc";
+import { StyleSheet, Modal, View, Text } from 'react-native';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import tw from 'twrnc';
 
-import { colors } from "../Colors";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { colors } from '../Colors';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface IPopup {
   heading: string | null;
@@ -29,9 +29,7 @@ export const Popup = ({ heading, alert, description, setAlert }: IPopup) => {
       // panDirection={PanningProvider.Directions.DOWN}
     >
       <View style={tw`bg-[${colors.green}] p-3 pt-5 rounded-xl `}>
-        <Text style={tw`text-[${colors.white}] text-5 font-bold`}>
-          {heading}
-        </Text>
+        <Text style={tw`text-[${colors.white}] text-5 font-bold`}>{heading}</Text>
 
         <View style={tw`mt-2`}>
           <Text style={tw`text-[${colors.white}] text-4`}>{description}</Text>

@@ -1,18 +1,10 @@
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import SignatureScreen, {
-  SignatureViewRef,
-} from "react-native-signature-canvas";
-import { Appbar } from "react-native-paper";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import tw from "twrnc";
-import { SignaturePreview } from "../../../../types";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas';
+import { Appbar } from 'react-native-paper';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import tw from 'twrnc';
+import { SignaturePreview } from '../../../../types';
 // import { DocumentNavigationProps, DocumentRouteProps } from "../types";
 
 interface ISignatureDraw {
@@ -20,15 +12,12 @@ interface ISignatureDraw {
   setSetselectedInitialUri: Dispatch<SetStateAction<string | undefined | null>>;
 }
 
-const Signature = ({
-  setSetselectedUri,
-  setSetselectedInitialUri,
-}: ISignatureDraw) => {
+const Signature = ({ setSetselectedUri, setSetselectedInitialUri }: ISignatureDraw) => {
   const navigation = useNavigation();
   const route = useRoute();
   const signaturePreview = route.params as SignaturePreview;
-  const windowWidth = Dimensions.get("window").width;
-  const windowHeight = Dimensions.get("window").height;
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
   const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const [sign, setSign] = React.useState<string | null>(null);
@@ -53,11 +42,11 @@ const Signature = ({
     setSetselectedInitialUri(null);
   };
   const handleOK = (signature: string) => {
-    const base64 = signature.replace("data:image/png;base64,", "");
+    const base64 = signature.replace('data:image/png;base64,', '');
     setSetselectedUri(base64);
   };
   const handleOKIni = (signature: string) => {
-    const base64 = signature.replace("data:image/png;base64,", "");
+    const base64 = signature.replace('data:image/png;base64,', '');
     setSetselectedInitialUri(base64);
   };
 
@@ -70,10 +59,7 @@ const Signature = ({
     width: 380px; height: 200px;
       .m-signature-pad--footer {display: none; margin: 0px;}`;
   return (
-    <ScrollView
-      scrollEnabled={scrollEnabled}
-      contentContainerStyle={{ paddingBottom: 30 }}
-    >
+    <ScrollView scrollEnabled={scrollEnabled} contentContainerStyle={{ paddingBottom: 30 }}>
       <View style={[{ flex: 1 }, tw`gap-3`]}>
         <Appbar mode="small">
           <Appbar.Content title="Signature" />

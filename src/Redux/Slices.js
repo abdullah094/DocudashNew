@@ -1,9 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export const accessToken = createSlice({
-  name: "counter",
+  name: 'counter',
   initialState: {
-    accessToken: "",
+    accessToken: '',
   },
   // `createSlice` will infer the state type from the `initialState` argument
 
@@ -22,17 +22,12 @@ export const accessToken = createSlice({
       state.accessToken = action.payload;
     },
     removeAccessToken: (state, action) => {
-      state.accessToken = "";
+      state.accessToken = '';
     },
   },
 });
 
-export const {
-  increment,
-  decrement,
-  incrementByAmount,
-  addAccessToken,
-  removeAccessToken,
-} = accessToken.actions;
+export const { increment, decrement, incrementByAmount, addAccessToken, removeAccessToken } =
+  accessToken.actions;
 
 export default accessToken.reducer;

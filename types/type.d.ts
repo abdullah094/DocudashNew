@@ -1,13 +1,10 @@
-import type {
-  CompositeScreenProps,
-  NavigatorScreenParams,
-} from "@react-navigation/native";
-import type { StackScreenProps } from "@react-navigation/stack";
-import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import type { DrawerScreenProps } from "@react-navigation/drawer";
-import { Industry } from "./Step4";
-import { DocumentPickerOptions } from "expo-document-picker";
-import { ImagePickerSuccessResult } from "expo-image-picker";
+import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
+import type { StackScreenProps } from '@react-navigation/stack';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import type { DrawerScreenProps } from '@react-navigation/drawer';
+import { Industry } from './Step4';
+import { DocumentPickerOptions } from 'expo-document-picker';
+import { ImagePickerSuccessResult } from 'expo-image-picker';
 
 export type RootStackParamList = {
   SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
@@ -30,8 +27,10 @@ export type RootStackParamList = {
   };
 };
 
-export type RootStackScreenProps<T extends keyof RootStackParamList> =
-  StackScreenProps<RootStackParamList, T>;
+export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<
+  RootStackParamList,
+  T
+>;
 
 export type SignUpStackParamList = {
   Index: undefined;
@@ -70,26 +69,23 @@ export type ManageDrawerParamList = {
   Inbox: { heading: string };
 };
 
-export type SignUpStackScreenProps<T extends keyof SignUpStackParamList> =
-  CompositeScreenProps<
-    StackScreenProps<SignUpStackParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
-  >;
-export type LoginStackScreenProps<T extends keyof LoginStackParamList> =
-  CompositeScreenProps<
-    StackScreenProps<LoginStackParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
-  >;
+export type SignUpStackScreenProps<T extends keyof SignUpStackParamList> = CompositeScreenProps<
+  StackScreenProps<SignUpStackParamList, T>,
+  RootStackScreenProps<keyof RootStackParamList>
+>;
+export type LoginStackScreenProps<T extends keyof LoginStackParamList> = CompositeScreenProps<
+  StackScreenProps<LoginStackParamList, T>,
+  RootStackScreenProps<keyof RootStackParamList>
+>;
 export type SignedInpStackScreenProps<T extends keyof SignedInStackParamList> =
   CompositeScreenProps<
     StackScreenProps<SignedInStackParamList, T>,
     RootStackScreenProps<keyof RootStackParamList>
   >;
-export type ManageDrawerScreenProps<T extends keyof ManageDrawerParamList> =
-  CompositeScreenProps<
-    DrawerScreenProps<ManageDrawerParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
-  >;
+export type ManageDrawerScreenProps<T extends keyof ManageDrawerParamList> = CompositeScreenProps<
+  DrawerScreenProps<ManageDrawerParamList, T>,
+  RootStackScreenProps<keyof RootStackParamList>
+>;
 
 declare global {
   namespace ReactNavigation {

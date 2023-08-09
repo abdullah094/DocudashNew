@@ -1,14 +1,14 @@
-import { StyleSheet, View } from "react-native";
-import React, { useEffect } from "react";
-import { Text } from "react-native-paper";
-import tw from "twrnc";
+import { StyleSheet, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text } from 'react-native-paper';
+import tw from 'twrnc';
 
 const Index = () => {
   const [time, setTime] = React.useState({
-    days: "",
-    hours: "",
-    minutes: "",
-    seconds: "",
+    days: '',
+    hours: '',
+    minutes: '',
+    seconds: '',
   });
 
   function calculateTimeLeft() {

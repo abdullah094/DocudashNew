@@ -1,39 +1,22 @@
-import {
-  Alert,
-  StyleSheet,
-  View,
-  Modal,
-  Pressable,
-  Platform,
-} from "react-native";
-import React, { useState } from "react";
-import {
-  Button,
-  Text,
-  Divider,
-  IconButton,
-  Searchbar,
-} from "react-native-paper";
-import tw from "twrnc";
+import { Alert, StyleSheet, View, Modal, Pressable, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { Button, Text, Divider, IconButton, Searchbar } from 'react-native-paper';
+import tw from 'twrnc';
 
-import { DateTimePicker } from "react-native-ui-lib";
+import { DateTimePicker } from 'react-native-ui-lib';
 
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 interface IFilter {
   onPress: (name: string, date: Date) => void;
 }
 
 const FilterModal = ({ onPress }: IFilter) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [tempNameList, setTempNameList] = useState("");
+  const [tempNameList, setTempNameList] = useState('');
   const [SelectedDate, setSelectedDate] = useState<Date>(new Date());
   return (
     <>
-      <Button
-        icon="filter"
-        mode="contained"
-        onPress={() => setModalVisible(true)}
-      >
+      <Button icon="filter" mode="contained" onPress={() => setModalVisible(true)}>
         Filter
       </Button>
       <Modal
@@ -50,7 +33,7 @@ const FilterModal = ({ onPress }: IFilter) => {
               <View style={tw`flex-row items-center  justify-between `}>
                 <Text variant="titleLarge">Filter</Text>
                 <IconButton
-                  icon={"close-circle"}
+                  icon={'close-circle'}
                   onPress={() => setModalVisible(false)}
                 ></IconButton>
               </View>
@@ -95,7 +78,7 @@ const FilterModal = ({ onPress }: IFilter) => {
                 <Button
                   onPress={() => {
                     setSelectedDate(new Date());
-                    setTempNameList("");
+                    setTempNameList('');
                   }}
                 >
                   Reset

@@ -8,28 +8,18 @@ import {
   Modal,
   Pressable,
   FlatList,
-} from "react-native";
-import React from "react";
-import tw from "twrnc";
-import { colors } from "../../Colors";
-import { Button, Chip, DataTable, Switch } from "react-native-paper";
-import DropDown from "react-native-paper-dropdown";
-import axios from "axios";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useCounterStore } from "../../../MobX/TodoStore";
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from "react-native-popup-menu";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import {
-  RootStackParamList,
-  StampPreview,
-  SignaturesListAPI,
-  StampListAPI,
-} from "../../../types";
+} from 'react-native';
+import React from 'react';
+import tw from 'twrnc';
+import { colors } from '../../Colors';
+import { Button, Chip, DataTable, Switch } from 'react-native-paper';
+import DropDown from 'react-native-paper-dropdown';
+import axios from 'axios';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RootStackParamList, StampPreview, SignaturesListAPI, StampListAPI } from '../../../types';
 
 const Index = () => {
   const [list, setList] = React.useState<StampPreview[]>();
@@ -42,7 +32,7 @@ const Index = () => {
   const fetchList = () => {
     setIsFetching(true);
     axios
-      .get("https://docudash.net/api/stamps", {
+      .get('https://docudash.net/api/stamps', {
         headers: {
           Authorization: `Bearer ${Mobx.access_token}`,
         },
@@ -67,7 +57,7 @@ const Index = () => {
   const Delete = (id: number) => {
     axios
       .post(
-        "https://docudash.net/api/stamps/delete",
+        'https://docudash.net/api/stamps/delete',
         {
           deleteId: id,
         },
@@ -88,7 +78,7 @@ const Index = () => {
 
     axios
       .post(
-        "https://docudash.net/api/stamps/statusUpdate",
+        'https://docudash.net/api/stamps/statusUpdate',
         {
           id: id,
           status: status,
@@ -107,10 +97,8 @@ const Index = () => {
 
   const RenderItem = ({ item }) => {
     const [more, setMore] = React.useState(false);
-    const [isSwitchOn, setIsSwitchOn] = React.useState(
-      item.status === 1 ? true : false
-    );
-    console.log("switchStatus", isSwitchOn);
+    const [isSwitchOn, setIsSwitchOn] = React.useState(item.status === 1 ? true : false);
+    console.log('switchStatus', isSwitchOn);
 
     const onToggleSwitch = () => {
       setIsSwitchOn(!isSwitchOn);
@@ -133,9 +121,7 @@ const Index = () => {
 
             <Text style={tw`font-medium`}>{item.title}</Text>
 
-            <Text style={tw`font-medium overflow-hidden`}>
-              {item.stamp_code}
-            </Text>
+            <Text style={tw`font-medium overflow-hidden`}>{item.stamp_code}</Text>
           </View>
           <View style={tw` p-2 justify-between`}>
             <View style={tw`gap-2`}>
@@ -147,7 +133,7 @@ const Index = () => {
                 <Chip
                   selectedColor={colors.blue}
                   onPress={() => {
-                    navigation.navigate("AddStamp", item);
+                    navigation.navigate('AddStamp', item);
                     // console.log(item);
                   }}
                 >
@@ -166,11 +152,9 @@ const Index = () => {
     <View>
       <View style={tw`m-4 gap-1 `}>
         <Text style={tw`text-black text-5 font-bold `}>Stamps</Text>
-        <Text style={tw`text-[${colors.gray}] text-3`}>
-          Add or update your name and stamps.
-        </Text>
+        <Text style={tw`text-[${colors.gray}] text-3`}>Add or update your name and stamps.</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate("AddStamp")}
+          onPress={() => navigation.navigate('AddStamp')}
           style={tw`bg-[${colors.green}] justify-center items-center w-35 h-10 rounded-md self-end m-4`}
         >
           <Text style={tw`text-white`}>Add Stamp</Text>

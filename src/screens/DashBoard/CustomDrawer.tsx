@@ -7,27 +7,22 @@ import {
   TouchableOpacity,
   Pressable,
   Alert,
-} from "react-native";
-import React, { useState } from "react";
-import tw from "twrnc";
-import { colors } from "../../Colors";
-import { useNavigation } from "@react-navigation/native";
-import {
-  Menu,
-  MenuOptions,
-  MenuOption,
-  MenuTrigger,
-} from "react-native-popup-menu";
-import DrawerProfileModal from "./Components/DrawerProfileModal";
-import { observer } from "mobx-react";
-import { useCounterStore } from "../../../MobX/TodoStore";
-import { clearToken } from "../../AsyncGlobal";
-import { Button, List } from "react-native-paper";
+} from 'react-native';
+import React, { useState } from 'react';
+import tw from 'twrnc';
+import { colors } from '../../Colors';
+import { useNavigation } from '@react-navigation/native';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import DrawerProfileModal from './Components/DrawerProfileModal';
+import { observer } from 'mobx-react';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { clearToken } from '../../AsyncGlobal';
+import { Button, List } from 'react-native-paper';
 
 const BellTrigger = () => (
   <Image
     style={[tw`h-5 w-5 `, { tintColor: colors.blue }]}
-    source={require("../../assets/bell.png")}
+    source={require('../../assets/bell.png')}
   />
 );
 
@@ -39,31 +34,19 @@ const CustomDrawer = () => {
   return (
     <View style={tw`h-full my-4 bg-red-200`}>
       <View style={tw`flex-1 bg-[${colors.white}]`}>
-        <View
-          style={tw`flex-row items-center  mt-5 w-full justify-between px-5`}
-        >
-          <Image
-            style={tw`w-30 h-7 `}
-            source={require("../../assets/docudash_pow_logo.png")}
-          />
+        <View style={tw`flex-row items-center  mt-5 w-full justify-between px-5`}>
+          <Image style={tw`w-30 h-7 `} source={require('../../assets/docudash_pow_logo.png')} />
           <Menu>
             <MenuTrigger text={<BellTrigger />} />
             <MenuOptions>
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() =>
-                  navigation.navigate("Browser", "https://docudash.net/pricing")
-                }
+                onSelect={() => navigation.navigate('Browser', 'https://docudash.net/pricing')}
                 text="Get Started"
               />
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() =>
-                  navigation.navigate(
-                    "Browser",
-                    "https://docudash.net/contact-us"
-                  )
-                }
+                onSelect={() => navigation.navigate('Browser', 'https://docudash.net/contact-us')}
                 text="Support"
               />
               <MenuOption
@@ -78,12 +61,7 @@ const CustomDrawer = () => {
               />
               <MenuOption
                 style={styles.menu_block}
-                onSelect={() =>
-                  navigation.navigate(
-                    "Browser",
-                    "https://docudash.net/contact-us"
-                  )
-                }
+                onSelect={() => navigation.navigate('Browser', 'https://docudash.net/contact-us')}
                 text="Contact Us"
               />
             </MenuOptions>
@@ -96,38 +74,38 @@ const CustomDrawer = () => {
             <List.Item
               title="Dashboard"
               onPress={() => {
-                navigation.navigate("Dashboard");
+                navigation.navigate('Dashboard');
               }}
             />
 
             <List.Item
               title="Manage"
               onPress={() => {
-                navigation.navigate("ManageDrawer");
+                navigation.navigate('ManageDrawer');
               }}
             />
             <List.Item
               title="Template"
               onPress={() => {
-                navigation.navigate("Template");
+                navigation.navigate('Template');
               }}
             />
             <List.Item
               title="Signatures"
               onPress={() => {
-                navigation.navigate("Signatures");
+                navigation.navigate('Signatures');
               }}
             />
             <List.Item
               title="Stamps"
               onPress={() => {
-                navigation.navigate("Stamps");
+                navigation.navigate('Stamps');
               }}
             />
             <List.Item
               title="Signout"
               onPress={() => {
-                Alert.alert("Signout Successfull");
+                Alert.alert('Signout Successfull');
                 Mobx.deleteAccessToken();
                 clearToken();
               }}
@@ -139,15 +117,13 @@ const CustomDrawer = () => {
         <Button
           mode="contained"
           onPress={() => {
-            navigation.navigate("Browser", "https://docudash.net/pricing");
+            navigation.navigate('Browser', 'https://docudash.net/pricing');
           }}
           style={[tw`items-center w-40 rounded-lg  self-center`]}
         >
           View Plans
         </Button>
-        <Text style={tw`text-black text-3 text-center mt-3 font-semibold`}>
-          © 2023 DocuDash
-        </Text>
+        <Text style={tw`text-black text-3 text-center mt-3 font-semibold`}>© 2023 DocuDash</Text>
       </View>
     </View>
   );

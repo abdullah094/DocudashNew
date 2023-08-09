@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { WebView } from "react-native-webview";
-import tw from "twrnc";
-import { useRoute } from "@react-navigation/native";
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { WebView } from 'react-native-webview';
+import tw from 'twrnc';
+import { useRoute } from '@react-navigation/native';
 
 const Browser = () => {
   const route = useRoute();

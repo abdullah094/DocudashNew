@@ -1,15 +1,15 @@
-import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
-import React, { useState } from "react";
-import tw from "twrnc";
-import { colors } from "../../Colors";
-import { Avatar, Button, Chip, Text } from "react-native-paper";
-import { useCounterStore } from "../../../MobX/TodoStore";
-import { DashboardAPI, User } from "../../../types";
-import NameEditModal from "./Components/NameEditModel";
-import InfoEditModal from "./Components/InfoEditModel";
-import * as ImagePicker from "expo-image-picker";
-import FormData from "form-data";
-import axios from "axios";
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import tw from 'twrnc';
+import { colors } from '../../Colors';
+import { Avatar, Button, Chip, Text } from 'react-native-paper';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { DashboardAPI, User } from '../../../types';
+import NameEditModal from './Components/NameEditModel';
+import InfoEditModal from './Components/InfoEditModel';
+import * as ImagePicker from 'expo-image-picker';
+import FormData from 'form-data';
+import axios from 'axios';
 
 const Profile = () => {
   const user = useCounterStore().user as User;
@@ -47,13 +47,13 @@ const Profile = () => {
         type: image.type,
       };
 
-      formData.append("photo", imageToUpload);
+      formData.append('photo', imageToUpload);
       let headers = {
         Authorization: `Bearer ${Mobx.access_token}`,
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       };
       axios
-        .post("https://docudash.net/api/upload-image", formData, { headers })
+        .post('https://docudash.net/api/upload-image', formData, { headers })
         .then((response) => {
           setLoading(false);
           const {
@@ -75,37 +75,33 @@ const Profile = () => {
         })
         .catch((error) => {
           setLoading(false);
-          console.log("error", error);
+          console.log('error', error);
         });
       // setImage(result.assets[0].uri);
     }
   };
   const fetchDashData = () => {
     axios
-      .get("https://docudash.net/api/dashboard", {
+      .get('https://docudash.net/api/dashboard', {
         headers: {
           Authorization: `Bearer ${Mobx.access_token}`,
         },
       })
       .then((response) => {
         const data: DashboardAPI = response.data;
-        console.log("DashboardAPI", data);
+        console.log('DashboardAPI', data);
         Mobx.AddUser(data.user);
         onRefresh();
       });
   };
   return (
     <View style={tw`flex-1`}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View style={tw`m-4 gap-1 `}>
           <Text style={tw`text-black text-5 font-bold `}>Profile</Text>
           <Text style={tw`text-[${colors.gray}] text-3`}>
-            Manage your personal profile information to control what details are
-            shared with other Docudash users.
+            Manage your personal profile information to control what details are shared with other
+            Docudash users.
           </Text>
         </View>
         <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
@@ -116,11 +112,7 @@ const Profile = () => {
             </Button>
           </View>
 
-          <Avatar.Image
-            size={60}
-            style={tw`m-2`}
-            source={{ uri: user.profile_photo }}
-          />
+          <Avatar.Image size={60} style={tw`m-2`} source={{ uri: user.profile_photo }} />
         </View>
         <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
           <View style={tw`flex-row justify-between`}>
@@ -138,7 +130,7 @@ const Profile = () => {
               mode="contained"
               style={tw`rounded-lg`}
               onPress={() => {
-                alert("You Cannot Change Your Email");
+                alert('You Cannot Change Your Email');
               }}
             >
               Update

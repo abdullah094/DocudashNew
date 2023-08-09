@@ -7,8 +7,8 @@ import {
   SafeAreaView,
   FlatList,
   Alert,
-} from "react-native";
-import React, { useEffect, useState } from "react";
+} from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Appbar,
   Button,
@@ -19,13 +19,13 @@ import {
   HelperText,
   IconButton,
   List,
-} from "react-native-paper";
-import DropDown from "react-native-paper-dropdown";
-import tw from "twrnc";
-import { colors } from "../../../Colors";
-import axios from "axios";
-import FormData from "form-data";
-import { useCounterStore } from "../../../../MobX/TodoStore";
+} from 'react-native-paper';
+import DropDown from 'react-native-paper-dropdown';
+import tw from 'twrnc';
+import { colors } from '../../../Colors';
+import axios from 'axios';
+import FormData from 'form-data';
+import { useCounterStore } from '../../../../MobX/TodoStore';
 import {
   EmailBar,
   Envelope,
@@ -35,31 +35,27 @@ import {
   RootStackScreenProps,
   UploadDocumentAPI,
   ViewDocument,
-} from "../../../../types";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as DocumentPicker from "expo-document-picker";
-import * as ImagePicker from "expo-image-picker";
-import BottomSheet, {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
+} from '../../../../types';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import BottomSheet, { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 const Edit = () => {
-  const navigation =
-    useNavigation<RootStackScreenProps<"Edit">["navigation"]>();
-  const route = useRoute<RootStackScreenProps<"Edit">["route"]>();
+  const navigation = useNavigation<RootStackScreenProps<'Edit'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'Edit'>['route']>();
   const Mobx = useCounterStore();
   const [data, setData] = useState([
     {
-      recName: "",
-      recEmail: "",
-      sign_type: "1",
-      hostName: "",
-      hostEmail: "",
-      access_code: "",
-      private_message: "",
-      recipients_update_id: "0",
+      recName: '',
+      recEmail: '',
+      sign_type: '1',
+      hostName: '',
+      hostEmail: '',
+      access_code: '',
+      private_message: '',
+      recipients_update_id: '0',
       showDropDown: false,
       visible: false,
       showAccessCode: false,
@@ -67,13 +63,13 @@ const Edit = () => {
     },
   ]);
 
-  const [emailSubject, setEmailSubject] = React.useState("");
-  const [emailMessage, setEmailMessage] = React.useState("");
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
   // bottom sheets
-  const bottomSheetRef = React.useRef(null);
-  const snapPoints = React.useMemo(() => ["35%", "45%"], []);
-  const handleSheetChanges = React.useCallback((index: number) => {}, []);
-  const handlePresentModalPress = React.useCallback(() => {
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['35%', '45%'], []);
+  const handleSheetChanges = useCallback((index: number) => {}, []);
+  const handlePresentModalPress = useCallback(() => {
     bottomSheetRef.current?.present();
   }, []);
 
@@ -81,17 +77,15 @@ const Edit = () => {
     {
       uri: string;
       name: string;
-      type: "image" | "video" | undefined;
+      type: 'image' | 'video' | undefined;
     }[]
   >(new Array());
   const [loading, setLoading] = useState(false);
-  const [generateSignature, setGenerateSignature] =
-    useState<GenerateSignature>();
-  const [generateSignatureDetailsImages, setGenerateSignatureDetailsImages] =
-    useState<GenerateSignatureDetailsImage[]>([]);
-  const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
-    []
-  );
+  const [generateSignature, setGenerateSignature] = useState<GenerateSignature>();
+  const [generateSignatureDetailsImages, setGenerateSignatureDetailsImages] = useState<
+    GenerateSignatureDetailsImage[]
+  >([]);
+  const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>([]);
   const envelope: Envelope = route.params?.Envelope;
   let files = route.params?.files;
   let images = route.params?.images;
@@ -101,15 +95,15 @@ const Edit = () => {
   const uploadFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["image/*", "application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+        type: ['image/*', 'application/pdf'], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
-      if (result.type !== "cancel") setDocuments((prev) => [...prev, result]);
+      if (result.type !== 'cancel') setDocuments((prev) => [...prev, result]);
     } catch (err) {
-      console.log("err");
+      console.log('err');
     }
   };
   const uploadImage1 = async () => {
-    bottomSheetRef.current.close();
+    bottomSheetRef.current?.close();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -135,14 +129,14 @@ const Edit = () => {
     setData([
       ...data,
       {
-        recName: "",
-        recEmail: "",
-        sign_type: "1",
-        hostName: "",
-        hostEmail: "",
-        access_code: "",
-        private_message: "",
-        recipients_update_id: "0",
+        recName: '',
+        recEmail: '',
+        sign_type: '1',
+        hostName: '',
+        hostEmail: '',
+        access_code: '',
+        private_message: '',
+        recipients_update_id: '0',
         showDropDown: false,
         visible: false,
         showAccessCode: false,
@@ -153,20 +147,20 @@ const Edit = () => {
 
   const actionList = [
     {
-      label: "Needs to Sign",
-      value: "1",
+      label: 'Needs to Sign',
+      value: '1',
     },
     {
-      label: "In Person Signer",
-      value: "2",
+      label: 'In Person Signer',
+      value: '2',
     },
     {
-      label: "Receives a Copy",
-      value: "3",
+      label: 'Receives a Copy',
+      value: '3',
     },
     {
-      label: "Needs to View",
-      value: "4",
+      label: 'Needs to View',
+      value: '4',
     },
   ];
   useEffect(() => {
@@ -179,9 +173,9 @@ const Edit = () => {
     if (envelope) {
       axios
         .get(
-          "https://docudash.net/api/generate-signature/upload-document/" +
+          'https://docudash.net/api/generate-signature/upload-document/' +
             envelope.uniqid +
-            "/" +
+            '/' +
             envelope.id,
           {
             headers: {
@@ -212,15 +206,13 @@ const Edit = () => {
           };
           setGenerateSignature(generate);
           if (data.generateSignatureDetailsImages.length > 0) {
-            setGenerateSignatureDetailsImages(
-              data.generateSignatureDetailsImages
-            );
+            setGenerateSignatureDetailsImages(data.generateSignatureDetailsImages);
           }
 
-          console.log("data", data);
+          console.log('data', data);
         });
     } else {
-      const url = "https://docudash.net/api/generate-signature/create";
+      const url = 'https://docudash.net/api/generate-signature/create';
       axios
         .post(
           url,
@@ -234,48 +226,45 @@ const Edit = () => {
         .then((response) => {
           const data: GenerateSignature = response.data;
           setGenerateSignature(data);
-          console.log("Data----", data);
+          console.log('Data----', data);
         })
         .catch((error) => {
-          console.log("Error----", error);
+          console.log('Error----', error);
         });
     }
   }, []);
   const save = () => {
     if (!generateSignature) return;
-    if (emailSubject == "") {
-      Alert.alert("Please enter email subject");
+    if (emailSubject == '') {
+      Alert.alert('Please enter email subject');
       return;
     }
-    if (emailMessage == "") {
-      Alert.alert("Please enter email message");
+    if (emailMessage == '') {
+      Alert.alert('Please enter email message');
       return;
     }
     setLoading(true);
     let formData = new FormData();
-    formData.append("uniqid", generateSignature.uniqid);
-    formData.append("signature_id", generateSignature.signature_id);
+    formData.append('uniqid', generateSignature.uniqid);
+    formData.append('signature_id', generateSignature.signature_id);
     data.forEach((item, index) => {
       {
-        formData.append(
-          "recipients_update_id[" + index + "]",
-          item.recipients_update_id
-        );
-        formData.append("recName[" + index + "]", item.recName);
-        formData.append("recEmail[" + index + "]", item.recEmail);
-        formData.append("sign_type[" + index + "]", item.sign_type);
-        formData.append("hostName[" + index + "]", item.hostName);
-        formData.append("hostEmail[" + index + "]", item.hostEmail);
-        formData.append("access_code[" + index + "]", item.access_code);
-        formData.append("private_message[" + index + "]", item.private_message);
+        formData.append('recipients_update_id[' + index + ']', item.recipients_update_id);
+        formData.append('recName[' + index + ']', item.recName);
+        formData.append('recEmail[' + index + ']', item.recEmail);
+        formData.append('sign_type[' + index + ']', item.sign_type);
+        formData.append('hostName[' + index + ']', item.hostName);
+        formData.append('hostEmail[' + index + ']', item.hostEmail);
+        formData.append('access_code[' + index + ']', item.access_code);
+        formData.append('private_message[' + index + ']', item.private_message);
       }
     });
-    formData.append("emailSubject", emailSubject);
-    formData.append("emailMessage", emailMessage);
+    formData.append('emailSubject', emailSubject);
+    formData.append('emailMessage', emailMessage);
 
     [...documents, ...uploadImage].forEach((image, index) => {
-      formData.append("photosID[" + index + "]", "0");
-      formData.append("photos[]", image, `image${index + 1}.png`);
+      formData.append('photosID[' + index + ']', '0');
+      formData.append('photos[]', image, `image${index + 1}.png`);
     });
     // documents.forEach((image, index) => {
     //   formData.append("photosID[" + index + "]", "0");
@@ -283,15 +272,11 @@ const Edit = () => {
     // });
     let headers = {
       Authorization: `Bearer ${Mobx.access_token}`,
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     };
-    console.log("formData", JSON.stringify(formData));
+    console.log('formData', JSON.stringify(formData));
     axios
-      .post(
-        "https://docudash.net/api/generate-signature/upload-document",
-        formData,
-        { headers }
-      )
+      .post('https://docudash.net/api/generate-signature/upload-document', formData, { headers })
       .then((response) => {
         setLoading(false);
         const {
@@ -302,13 +287,13 @@ const Edit = () => {
           message: {
             emailSubject: string[];
             emailMessage: string[];
-            "recName.0": string[];
-            "photos.0": string[];
+            'recName.0': string[];
+            'photos.0': string[];
           };
         } = response.data;
         if (status) {
           // navigation.navigate('Home');
-          navigation.replace("DocumentEditor", {
+          navigation.replace('DocumentEditor', {
             Envelope: generateSignature,
           });
         } else {
@@ -320,19 +305,19 @@ const Edit = () => {
       })
       .catch((error) => {
         setLoading(false);
-        console.log("error", error);
+        console.log('error', error);
       });
   };
 
   const deleteRecipient = (index: number) => {
     const item = data[index];
-    if (item.recipients_update_id == "0") {
+    if (item.recipients_update_id == '0') {
       setData(data.filter((_, i) => i !== index));
       return;
     }
     axios
       .post(
-        "https://docudash.net/api/generate-signature/deleteReceipent",
+        'https://docudash.net/api/generate-signature/deleteReceipent',
         { deleteId: item.recipients_update_id },
         {
           headers: {
@@ -352,66 +337,52 @@ const Edit = () => {
         } else {
           alert(apiData.message);
         }
-        console.log("data", response.data);
+        console.log('data', response.data);
       })
       .catch((error) => {
-        console.log("Error----", error);
+        console.log('Error----', error);
       });
   };
   return (
     <View style={tw`flex-1`}>
       <Appbar.Header mode="small">
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content
-          title={envelope ? "Editing Envelope" : "Creating New Envelope"}
-        />
+        <Appbar.Content title={envelope ? 'Editing Envelope' : 'Creating New Envelope'} />
       </Appbar.Header>
       <ScrollView>
-        <View
-          style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}
-        >
+        <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
           <Text variant="headlineSmall">Add Recipient</Text>
 
           {data.map((recipient, index) => (
             <View
-              id={index + ""}
+              id={index + ''}
               style={tw`flex-1 gap-2 p-2 border border-gray-500 my-2 rounded-lg`}
             >
               <View style={tw`flex-row justify-between items-center`}>
                 <Text variant="headlineSmall">Recipient {index + 1}</Text>
                 {index !== 0 && (
-                  <IconButton
-                    icon="close"
-                    size={20}
-                    onPress={() => deleteRecipient(index)}
-                  />
+                  <IconButton icon="close" size={20} onPress={() => deleteRecipient(index)} />
                 )}
               </View>
 
               <DropDown
-                label={"Actions"}
-                mode={"outlined"}
+                label={'Actions'}
+                mode={'outlined'}
                 visible={recipient.showDropDown}
                 showDropDown={() =>
                   setData((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? { ...item, showDropDown: true } : item
-                    )
+                    prev.map((item, i) => (i === index ? { ...item, showDropDown: true } : item))
                   )
                 }
                 onDismiss={() =>
                   setData((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? { ...item, showDropDown: false } : item
-                    )
+                    prev.map((item, i) => (i === index ? { ...item, showDropDown: false } : item))
                   )
                 }
                 value={String(recipient.sign_type)}
                 setValue={(value) => {
                   setData((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? { ...item, sign_type: value } : item
-                    )
+                    prev.map((item, i) => (i === index ? { ...item, sign_type: value } : item))
                   );
                 }}
                 list={actionList}
@@ -422,13 +393,11 @@ const Edit = () => {
                 value={recipient.recName}
                 onChangeText={(text) => {
                   setData((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? { ...item, recName: text } : item
-                    )
+                    prev.map((item, i) => (i === index ? { ...item, recName: text } : item))
                   );
                 }}
               />
-              {recipient.sign_type == "2" ? (
+              {recipient.sign_type == '2' ? (
                 <>
                   <TextInput
                     mode="outlined"
@@ -436,9 +405,7 @@ const Edit = () => {
                     value={recipient.hostName}
                     onChangeText={(text) => {
                       setData((prev) =>
-                        prev.map((item, i) =>
-                          i === index ? { ...item, hostName: text } : item
-                        )
+                        prev.map((item, i) => (i === index ? { ...item, hostName: text } : item))
                       );
                     }}
                   />
@@ -448,9 +415,7 @@ const Edit = () => {
                     value={recipient.hostEmail}
                     onChangeText={(text) => {
                       setData((prev) =>
-                        prev.map((item, i) =>
-                          i === index ? { ...item, hostEmail: text } : item
-                        )
+                        prev.map((item, i) => (i === index ? { ...item, hostEmail: text } : item))
                       );
                     }}
                   />
@@ -462,9 +427,7 @@ const Edit = () => {
                   value={recipient.recEmail}
                   onChangeText={(text) => {
                     setData((prev) =>
-                      prev.map((item, i) =>
-                        i === index ? { ...item, recEmail: text } : item
-                      )
+                      prev.map((item, i) => (i === index ? { ...item, recEmail: text } : item))
                     );
                   }}
                 />
@@ -474,18 +437,14 @@ const Edit = () => {
                 visible={recipient.visible}
                 onDismiss={() => {
                   setData((prev) =>
-                    prev.map((item, i) =>
-                      i === index ? { ...item, visible: false } : item
-                    )
+                    prev.map((item, i) => (i === index ? { ...item, visible: false } : item))
                   );
                 }}
                 anchor={
                   <Button
                     onPress={() => {
                       setData((prev) =>
-                        prev.map((item, i) =>
-                          i === index ? { ...item, visible: true } : item
-                        )
+                        prev.map((item, i) => (i === index ? { ...item, visible: true } : item))
                       );
                     }}
                   >
@@ -536,9 +495,7 @@ const Edit = () => {
                   title={
                     <View>
                       <Text variant="titleSmall">Add private message</Text>
-                      <Text variant="bodySmall">
-                        Include a personal note with this recipient.
-                      </Text>
+                      <Text variant="bodySmall">Include a personal note with this recipient.</Text>
                     </View>
                   }
                 />
@@ -554,16 +511,13 @@ const Edit = () => {
                     value={recipient.access_code}
                     onChangeText={(text) => {
                       setData((prev) =>
-                        prev.map((item, i) =>
-                          i === index ? { ...item, access_code: text } : item
-                        )
+                        prev.map((item, i) => (i === index ? { ...item, access_code: text } : item))
                       );
                     }}
                   />
                   <HelperText type="info">
-                    Codes are not case-sensitive. You must provide this code to
-                    the signer. This code is available for you to review on the
-                    Envelope Details page.
+                    Codes are not case-sensitive. You must provide this code to the signer. This
+                    code is available for you to review on the Envelope Details page.
                   </HelperText>
                 </View>
               )}
@@ -578,22 +532,15 @@ const Edit = () => {
                     onChangeText={(text) => {
                       setData((prev) =>
                         prev.map((item, i) =>
-                          i === index
-                            ? { ...item, private_message: text }
-                            : item
+                          i === index ? { ...item, private_message: text } : item
                         )
                       );
                     }}
                   />
                   <HelperText
-                    type={
-                      1000 - recipient.private_message.length >= 0
-                        ? "info"
-                        : "error"
-                    }
+                    type={1000 - recipient.private_message.length >= 0 ? 'info' : 'error'}
                   >
-                    Characters remaining:{" "}
-                    {1000 - recipient.private_message.length}
+                    Characters remaining: {1000 - recipient.private_message.length}
                   </HelperText>
                 </View>
               )}
@@ -609,9 +556,7 @@ const Edit = () => {
             Add Recipient
           </Button>
         </View>
-        <View
-          style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}
-        >
+        <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
           <Text variant="headlineSmall">Add Message</Text>
           <View>
             <TextInput
@@ -620,7 +565,7 @@ const Edit = () => {
               value={emailSubject}
               onChangeText={(text) => setEmailSubject(text)}
             />
-            <HelperText type={80 - emailSubject.length >= 0 ? "info" : "error"}>
+            <HelperText type={80 - emailSubject.length >= 0 ? 'info' : 'error'}>
               Characters remaining: {80 - emailSubject.length}
             </HelperText>
           </View>
@@ -633,32 +578,23 @@ const Edit = () => {
               numberOfLines={4}
               onChangeText={(text) => setEmailMessage(text)}
             />
-            <HelperText
-              type={1000 - emailMessage.length >= 0 ? "info" : "error"}
-            >
+            <HelperText type={1000 - emailMessage.length >= 0 ? 'info' : 'error'}>
               Characters remaining: {1000 - emailMessage.length}
             </HelperText>
           </View>
         </View>
-        <View
-          style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}
-        >
+        <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
           <Text variant="headlineSmall">Add Documents</Text>
           <View style={tw`bg-white px-8 py-8`}>
             <View
               style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
             >
-              <TouchableOpacity
-                style={tw`p-1`}
-                onPress={handlePresentModalPress}
-              >
+              <TouchableOpacity style={tw`p-1`} onPress={handlePresentModalPress}>
                 <Image
                   style={tw`h-10 w-10 self-center`}
-                  source={require("../../../assets/Upload.png")}
+                  source={require('../../../assets/Upload.png')}
                 />
-                <Text style={tw`text-[${colors.blue}] mt-2`}>
-                  Drop additional documents if any
-                </Text>
+                <Text style={tw`text-[${colors.blue}] mt-2`}>Drop additional documents if any</Text>
               </TouchableOpacity>
             </View>
             <View style={tw`py-5 my-2`}>
@@ -667,17 +603,16 @@ const Edit = () => {
                 showsHorizontalScrollIndicator={false}
                 data={generateSignatureDetailsImages}
                 renderItem={({ item }) => {
-                  let imageUrl = "";
-                  if (item.image?.includes("pdf")) {
-                    item.image.split(".")[0] + "-1.jpg";
+                  let imageUrl = '';
+                  if (item.image?.includes('pdf')) {
+                    item.image.split('.')[0] + '-1.jpg';
                     imageUrl =
-                      "https://docudash.net/public/uploads/generateSignature/photos/converted/" +
-                      item.image.split(".")[0] +
-                      "-1.jpg";
+                      'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+                      item.image.split('.')[0] +
+                      '-1.jpg';
                   } else {
                     imageUrl =
-                      "https://docudash.net/public/uploads/generateSignature/photos/" +
-                      item.image;
+                      'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
                   }
                   return (
                     <Image
@@ -694,12 +629,10 @@ const Edit = () => {
                 showsHorizontalScrollIndicator={false}
                 data={[...documents, ...uploadImage]}
                 renderItem={({ item }) => (
-                  <View
-                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
-                  >
-                    {item.type === "image" ||
-                    item.mimeType === "image/png" ||
-                    item.mimeType === "image/jpeg" ? (
+                  <View style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}>
+                    {item.type === 'image' ||
+                    item.mimeType === 'image/png' ||
+                    item.mimeType === 'image/jpeg' ? (
                       <Image
                         source={{ uri: item.uri }}
                         style={tw`w-20 h-20`}
@@ -709,11 +642,11 @@ const Edit = () => {
                       <>
                         <MaterialCommunityIcons
                           name={
-                            item.mimeType === "application/pdf"
-                              ? "file-pdf-box"
-                              : item.mimeType === "image/png"
-                              ? "file-image"
-                              : "file-question-outline"
+                            item.mimeType === 'application/pdf'
+                              ? 'file-pdf-box'
+                              : item.mimeType === 'image/png'
+                              ? 'file-image'
+                              : 'file-question-outline'
                           }
                           size={40}
                         />

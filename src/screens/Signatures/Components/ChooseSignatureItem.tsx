@@ -1,9 +1,9 @@
-import { Pressable, StyleSheet, Text, View, Image } from "react-native";
-import React, { useRef } from "react";
-import tw from "twrnc";
-import ViewShot, { captureRef } from "react-native-view-shot";
-import { colors } from "../../../Colors";
-import { useFonts } from "expo-font";
+import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
+import React, { useRef } from 'react';
+import tw from 'twrnc';
+import ViewShot, { captureRef } from 'react-native-view-shot';
+import { colors } from '../../../Colors';
+import { useFonts } from 'expo-font';
 
 const ChooseSignatureItem = ({
   item,
@@ -16,15 +16,15 @@ const ChooseSignatureItem = ({
 }: any) => {
   const [setselected, setSetselected] = React.useState();
   const [fontsLoaded] = useFonts({
-    LongCang: require("../../../assets/Fonts/LongCang-Regular.ttf"),
-    WalterTurncoat: require("../../../assets/Fonts/WalterTurncoat-Regular.ttf"),
-    ShadowsIntoLight: require("../../../assets/Fonts/ShadowsIntoLight-Regular.ttf"),
-    MonsieurLaDoulaise: require("../../../assets/Fonts/MonsieurLaDoulaise-Regular.ttf"),
-    MrDafoe: require("../../../assets/Fonts/MrDafoe-Regular.ttf"),
-    MrsSaintDelafield: require("../../../assets/Fonts/MrsSaintDelafield-Regular.ttf"),
-    PatrickHand: require("../../../assets/Fonts/PatrickHand-Regular.ttf"),
-    RockSalt: require("../../../assets/Fonts/RockSalt-Regular.ttf"),
-    Sarina: require("../../../assets/Fonts/Sarina-Regular.ttf"),
+    LongCang: require('../../../assets/Fonts/LongCang-Regular.ttf'),
+    WalterTurncoat: require('../../../assets/Fonts/WalterTurncoat-Regular.ttf'),
+    ShadowsIntoLight: require('../../../assets/Fonts/ShadowsIntoLight-Regular.ttf'),
+    MonsieurLaDoulaise: require('../../../assets/Fonts/MonsieurLaDoulaise-Regular.ttf'),
+    MrDafoe: require('../../../assets/Fonts/MrDafoe-Regular.ttf'),
+    MrsSaintDelafield: require('../../../assets/Fonts/MrsSaintDelafield-Regular.ttf'),
+    PatrickHand: require('../../../assets/Fonts/PatrickHand-Regular.ttf'),
+    RockSalt: require('../../../assets/Fonts/RockSalt-Regular.ttf'),
+    Sarina: require('../../../assets/Fonts/Sarina-Regular.ttf'),
   });
   const RenderItem = ({ item, id }: any) => {
     const ref = useRef();
@@ -33,9 +33,7 @@ const ChooseSignatureItem = ({
       ref.current.capture().then((uri) => {
         setList((prev) =>
           prev.map((sign, i) =>
-            i === id
-              ? { ...sign, selected: true }
-              : { ...sign, selected: false }
+            i === id ? { ...sign, selected: true } : { ...sign, selected: false }
           )
         );
 
@@ -58,43 +56,43 @@ const ChooseSignatureItem = ({
           <Image
             style={[tw`h-25 w-3`, { tintColor: colors.green }]}
             resizeMode="contain"
-            source={require("../../../assets/WhiteLine.png")}
+            source={require('../../../assets/WhiteLine.png')}
           />
           <View style={tw`h-full justify-between  flex-1`}>
             <Text style={styles.h2}>Sign by</Text>
             <ViewShot
               ref={ref}
               options={{
-                fileName: "Your-Signature",
-                format: "png",
+                fileName: 'Your-Signature',
+                format: 'png',
                 quality: 0.9,
-                result: "base64",
+                result: 'base64',
               }}
             >
               <Text
                 style={[
                   id === 0
-                    ? { fontFamily: "LongCang" }
+                    ? { fontFamily: 'LongCang' }
                     : id === 1
-                    ? { fontFamily: "WalterTurncoat" }
+                    ? { fontFamily: 'WalterTurncoat' }
                     : id === 2
-                    ? { fontFamily: "ShadowsIntoLight" }
+                    ? { fontFamily: 'ShadowsIntoLight' }
                     : id === 3
-                    ? { fontFamily: "MonsieurLaDoulaise" }
+                    ? { fontFamily: 'MonsieurLaDoulaise' }
                     : id === 4
                     ? {
-                        fontFamily: "MrDafoe",
+                        fontFamily: 'MrDafoe',
                       }
                     : id === 5
-                    ? { fontFamily: "MrsSaintDelafield" }
+                    ? { fontFamily: 'MrsSaintDelafield' }
                     : id === 6
                     ? {
-                        fontFamily: "PatrickHand",
+                        fontFamily: 'PatrickHand',
                       }
                     : id === 7
-                    ? { fontFamily: "RockSalt" }
+                    ? { fontFamily: 'RockSalt' }
                     : id === 9
-                    ? { fontFamily: "Sarina" }
+                    ? { fontFamily: 'Sarina' }
                     : {},
                   tw`text-6`,
                 ]}
@@ -109,43 +107,43 @@ const ChooseSignatureItem = ({
           <Image
             style={[tw`h-25 w-3`, { tintColor: colors.green }]}
             resizeMode="contain"
-            source={require("../../../assets/WhiteLine.png")}
+            source={require('../../../assets/WhiteLine.png')}
           />
           <View style={tw`h-full justify-between flex-1`}>
             <Text style={styles.h2}>Sign by</Text>
             <ViewShot
               ref={refInitial}
               options={{
-                fileName: "Your-Signature",
-                format: "png",
+                fileName: 'Your-Signature',
+                format: 'png',
                 quality: 0.9,
-                result: "base64",
+                result: 'base64',
               }}
             >
               <Text
                 style={[
                   id === 0
-                    ? { fontFamily: "LongCang" }
+                    ? { fontFamily: 'LongCang' }
                     : id === 1
-                    ? { fontFamily: "WalterTurncoat" }
+                    ? { fontFamily: 'WalterTurncoat' }
                     : id === 2
-                    ? { fontFamily: "ShadowsIntoLight" }
+                    ? { fontFamily: 'ShadowsIntoLight' }
                     : id === 3
-                    ? { fontFamily: "MonsieurLaDoulaise" }
+                    ? { fontFamily: 'MonsieurLaDoulaise' }
                     : id === 4
                     ? {
-                        fontFamily: "MrDafoe",
+                        fontFamily: 'MrDafoe',
                       }
                     : id === 5
-                    ? { fontFamily: "MrsSaintDelafield" }
+                    ? { fontFamily: 'MrsSaintDelafield' }
                     : id === 6
                     ? {
-                        fontFamily: "PatrickHand",
+                        fontFamily: 'PatrickHand',
                       }
                     : id === 7
-                    ? { fontFamily: "RockSalt" }
+                    ? { fontFamily: 'RockSalt' }
                     : id === 9
-                    ? { fontFamily: "Sarina" }
+                    ? { fontFamily: 'Sarina' }
                     : {},
                   tw`text-5`,
                 ]}

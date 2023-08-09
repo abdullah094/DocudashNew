@@ -1,35 +1,26 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Modal,
-  Pressable,
-  Alert,
-  ScrollView,
-} from "react-native";
-import React, { ReactNode, useState } from "react";
-import tw from "twrnc";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { colors } from "../../../Colors";
-import { Button, Divider, HelperText, TextInput } from "react-native-paper";
-import { useCounterStore } from "../../../../MobX/TodoStore";
-import { User } from "../../../../types";
-import axios from "axios";
+import { StyleSheet, Text, View, Image, Modal, Pressable, Alert, ScrollView } from 'react-native';
+import React, { ReactNode, useState } from 'react';
+import tw from 'twrnc';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { colors } from '../../../Colors';
+import { Button, Divider, HelperText, TextInput } from 'react-native-paper';
+import { useCounterStore } from '../../../../MobX/TodoStore';
+import { User } from '../../../../types';
+import axios from 'axios';
 
 const InfoEditModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const Mobx = useCounterStore();
   const user = useCounterStore().user as User;
-  const [company, setCompany] = useState(user.company ?? "");
-  const [address1, setAddress1] = useState(user.address1 ?? "");
-  const [address2, setAddress2] = useState(user.address2 ?? "");
-  const [country, setCountry] = useState(user.country ?? "");
-  const [state, setState] = useState(user.state ?? "");
-  const [city, setCity] = useState(user.city ?? "");
-  const [zip_code, setZip_code] = useState(user.zip_code ?? "");
-  const [phone, setPhone] = useState(user.phone ?? "");
+  const [company, setCompany] = useState(user.company ?? '');
+  const [address1, setAddress1] = useState(user.address1 ?? '');
+  const [address2, setAddress2] = useState(user.address2 ?? '');
+  const [country, setCountry] = useState(user.country ?? '');
+  const [state, setState] = useState(user.state ?? '');
+  const [city, setCity] = useState(user.city ?? '');
+  const [zip_code, setZip_code] = useState(user.zip_code ?? '');
+  const [phone, setPhone] = useState(user.phone ?? '');
   const [hasErrors, setHasErrors] = useState<{
     company?: string[];
     address1?: string[];
@@ -77,9 +68,9 @@ const InfoEditModal = () => {
     // }
     axios
       .post(
-        "https://docudash.net/api/profiles",
+        'https://docudash.net/api/profiles',
         {
-          action_type: "ContactInformation",
+          action_type: 'ContactInformation',
           company: company,
           address1: address1,
           address2: address2,
@@ -166,9 +157,7 @@ const InfoEditModal = () => {
             <Divider></Divider>
             <ScrollView>
               <View style={tw`gap-2`}>
-                <Text style={tw`text-gray-500`}>
-                  Enter your new info below.
-                </Text>
+                <Text style={tw`text-gray-500`}>Enter your new info below.</Text>
                 <TextInput
                   label="Company"
                   value={company}
@@ -202,19 +191,11 @@ const InfoEditModal = () => {
                 {hasErrors?.country != undefined && (
                   <HelperText type="error">{hasErrors.country[0]}</HelperText>
                 )}
-                <TextInput
-                  label="State"
-                  value={state}
-                  onChangeText={(text) => setState(text)}
-                />
+                <TextInput label="State" value={state} onChangeText={(text) => setState(text)} />
                 {hasErrors?.state != undefined && (
                   <HelperText type="error">{hasErrors.state[0]}</HelperText>
                 )}
-                <TextInput
-                  label="City"
-                  value={city}
-                  onChangeText={(text) => setCity(text)}
-                />
+                <TextInput label="City" value={city} onChangeText={(text) => setCity(text)} />
                 {hasErrors?.city != undefined && (
                   <HelperText type="error">{hasErrors.city[0]}</HelperText>
                 )}
@@ -226,11 +207,7 @@ const InfoEditModal = () => {
                 {hasErrors?.zip_code != undefined && (
                   <HelperText type="error">{hasErrors.zip_code[0]}</HelperText>
                 )}
-                <TextInput
-                  label="phone"
-                  value={phone}
-                  onChangeText={(text) => setPhone(text)}
-                />
+                <TextInput label="phone" value={phone} onChangeText={(text) => setPhone(text)} />
                 {hasErrors?.phone != undefined && (
                   <HelperText type="error">{hasErrors.phone[0]}</HelperText>
                 )}
@@ -242,11 +219,7 @@ const InfoEditModal = () => {
               <Button style={tw`rounded-lg`} mode="contained" onPress={onSave}>
                 Update
               </Button>
-              <Button
-                style={tw`rounded-lg`}
-                mode="outlined"
-                onPress={() => setModalVisible(false)}
-              >
+              <Button style={tw`rounded-lg`} mode="outlined" onPress={() => setModalVisible(false)}>
                 Cancel
               </Button>
             </View>

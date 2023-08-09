@@ -1,10 +1,10 @@
 // counter.store.js
-import React from "react";
-import { makeObservable, action, observable } from "mobx";
+import React from 'react';
+import { makeObservable, action, observable } from 'mobx';
 
 class CounterStore {
   count = 0; // count is now persistent.
-  access_token = "";
+  access_token = '';
   user = {};
   step = 0;
   constructor() {
@@ -24,7 +24,7 @@ class CounterStore {
     this.access_token = action;
   }
   deleteAccessToken() {
-    this.access_token = "";
+    this.access_token = '';
   }
   increment() {
     this.count += 1;

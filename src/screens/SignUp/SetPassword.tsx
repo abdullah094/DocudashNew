@@ -1,52 +1,44 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ScrollView,
-  TextInput,
-} from "react-native";
-import React, { useState } from "react";
-import { getToken, storeData } from "./AsynFunc";
-import tw from "twrnc";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import GreenButton from "../../components/GreenButton";
-import Input from "../../components/Input";
-import { colors } from "../../Colors";
-import axios from "axios";
-import { BarIndicator } from "react-native-indicators";
-import { SignUpStackScreenProps, iStep4 } from "../../../types";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { StyleSheet, Text, View, Image, ScrollView, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { getToken, storeData } from './AsynFunc';
+import tw from 'twrnc';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import GreenButton from '../../components/GreenButton';
+import Input from '../../components/Input';
+import { colors } from '../../Colors';
+import axios from 'axios';
+import { BarIndicator } from 'react-native-indicators';
+import { SignUpStackScreenProps, iStep4 } from '../../../types';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 interface route {
   email: string;
 }
 const SetPasswordScreen = () => {
-  const navigation =
-    useNavigation<SignUpStackScreenProps<"Step3">["navigation"]>();
-  const route = useRoute<SignUpStackScreenProps<"Step3">["route"]>();
+  const navigation = useNavigation<SignUpStackScreenProps<'Step3'>['navigation']>();
+  const route = useRoute<SignUpStackScreenProps<'Step3'>['route']>();
 
-  const [password, setPassword] = useState<string>("");
+  const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const fetchData = async () => {
     setLoading(true);
     const token = await getToken();
     axios
-      .post("https://docudash.net/api/sign-up-3/" + token, {
+      .post('https://docudash.net/api/sign-up-3/' + token, {
         password: password,
       })
       .then((response) => {
         const { data, success, message }: iStep4 = response.data;
-        console.log("PasswordScreen", data);
+        console.log('PasswordScreen', data);
         if (success) {
-          navigation.replace("SignUpIndex", {
-            screen: "Step" + data.steps,
+          navigation.replace('SignUpIndex', {
+            screen: 'Step' + data.steps,
             params: {
               industry: data.industries,
               signUpReasons: data.signUpReasons,
             },
           });
-          storeData("Step" + data.steps);
+          storeData('Step' + data.steps);
           setLoading(false);
         } else {
           alert(message.password[0]), setLoading(false);
@@ -63,21 +55,21 @@ const SetPasswordScreen = () => {
         <Image
           style={tw`w-75 h-35 self-center`}
           resizeMode="contain"
-          source={require("../../assets/logo.png")}
+          source={require('../../assets/logo.png')}
         />
         <Text
           style={{
-            fontFamily: "nunito-SemiBold",
+            fontFamily: 'nunito-SemiBold',
             color: colors.blue,
             fontSize: 25,
-            alignSelf: "center",
+            alignSelf: 'center',
           }}
         >
           Set you password
         </Text>
         <Text
           style={[
-            { fontFamily: "nunito-SemiBold" },
+            { fontFamily: 'nunito-SemiBold' },
             tw`text-center text-[${colors.blue}] text-base`,
           ]}
         >
@@ -87,20 +79,14 @@ const SetPasswordScreen = () => {
         <Input
           state={password}
           setState={(val) => setPassword(val)}
-          placeholder={"Enter your password"}
+          placeholder={'Enter your password'}
           style={{}}
           keyboardType={undefined}
         />
         <Text style={tw`text-gray-400`}>
-          * Must be at least 6 characters long. Must not contain the characters
-          or spaces
+          * Must be at least 6 characters long. Must not contain the characters or spaces
         </Text>
-        <GreenButton
-          loading={loading}
-          text={"Next"}
-          onPress={fetchData}
-          styles={{}}
-        />
+        <GreenButton loading={loading} text={'Next'} onPress={fetchData} styles={{}} />
       </View>
     </ScrollView>
   );

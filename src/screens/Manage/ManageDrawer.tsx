@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import Inbox from "./ManageDrawerScreens/Inbox";
-import CustomDrawerManage from "./CustomDrawerManage";
-import { ManageDrawerParamList, ManageDrawerScreenProps } from "../../../types";
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import Inbox from './ManageDrawerScreens/Inbox';
+import CustomDrawerManage from './CustomDrawerManage';
+import { ManageDrawerParamList, ManageDrawerScreenProps } from '../../../types';
 
 const Drawer = createDrawerNavigator<ManageDrawerParamList>();
 const ManageDrawer = () => {

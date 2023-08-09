@@ -9,14 +9,8 @@ import {
   Pressable,
   Alert,
   SafeAreaView,
-} from "react-native";
-import React, {
-  useRef,
-  useCallback,
-  useState,
-  useMemo,
-  useEffect,
-} from "react";
+} from 'react-native';
+import React, { useRef, useCallback, useState, useMemo, useEffect } from 'react';
 import {
   Appbar,
   Avatar,
@@ -26,19 +20,19 @@ import {
   RadioButton,
   SegmentedButtons,
   TextInput,
-} from "react-native-paper";
-import tw from "twrnc";
-import { colors } from "../../../Colors";
-import AddSignatureDraw from "../Components/AddStampDraw";
-import * as DocumentPicker from "expo-document-picker";
-import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
-import { useCounterStore } from "../../../../MobX/TodoStore";
+} from 'react-native-paper';
+import tw from 'twrnc';
+import { colors } from '../../../Colors';
+import AddSignatureDraw from '../Components/AddStampDraw';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
+import { useCounterStore } from '../../../../MobX/TodoStore';
 
-import { Signature, StampPreview, User } from "../../../../types";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import ChooseSignatureItem from "../Components/ChooseStampItem";
-import FormData from "form-data";
+import { Signature, StampPreview, User } from '../../../../types';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import ChooseSignatureItem from '../Components/ChooseStampItem';
+import FormData from 'form-data';
 
 const AddStamp = () => {
   const Mobx = useCounterStore();
@@ -46,22 +40,20 @@ const AddStamp = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const StampPreview = route.params as StampPreview;
-  const [base64, setBase64] = useState("");
-  const [name, setName] = useState("");
-  const [stampId, setStampId] = useState("0");
+  const [base64, setBase64] = useState('');
+  const [name, setName] = useState('');
+  const [stampId, setStampId] = useState('0');
   const [loading, setLoading] = useState(false);
 
   const [image, setImage] = useState<{
     uri: string;
     name: string;
-    type: "image" | "video" | undefined;
+    type: 'image' | 'video' | undefined;
   }>();
 
   useEffect(() => {
     if (StampPreview) {
-      setBase64(
-        StampPreview.image_base64.replace("data:image/png;base64,", "")
-      );
+      setBase64(StampPreview.image_base64.replace('data:image/png;base64,', ''));
       setStampId(String(StampPreview.id));
       setName(StampPreview.title);
       console.log(StampPreview.id);
@@ -92,18 +84,18 @@ const AddStamp = () => {
         }
       }
     } catch (err) {
-      console.log("err", err);
+      console.log('err', err);
     }
   };
 
   const create = () => {
     if (name.length < 0 || name.length > 20) {
-      Alert.alert("Name length should be between 0 and 20");
+      Alert.alert('Name length should be between 0 and 20');
       return;
     }
     let formData = new FormData();
     if (image == undefined) {
-      Alert.alert("Please select an image");
+      Alert.alert('Please select an image');
       return;
     }
     // const imageToUpload = {
@@ -112,23 +104,22 @@ const AddStamp = () => {
     //   type: image.type,
     // };
 
-    formData.append("updateID", stampId);
-    formData.append("title", name);
-    formData.append("imageName", image.name);
-    formData.append("stampCroppedImg", "data:image/png;base64," + base64);
+    formData.append('updateID', stampId);
+    formData.append('title', name);
+    formData.append('imageName', image.name);
+    formData.append('stampCroppedImg', 'data:image/png;base64,' + base64);
     let headers = {
       Authorization: `Bearer ${Mobx.access_token}`,
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     };
     setLoading(true);
 
     axios
-      .post("https://docudash.net/api/stamps/create", formData, { headers })
+      .post('https://docudash.net/api/stamps/create', formData, { headers })
       .then((response) => {
-        const { status, message }: { status: boolean; message: string } =
-          response.data;
+        const { status, message }: { status: boolean; message: string } = response.data;
         if (status) {
-          navigation.navigate("Stamps", {});
+          navigation.navigate('Stamps', {});
         } else {
           if (message.stamp_photo) {
             Alert.alert(message.stamp_photo[0]);
@@ -148,7 +139,7 @@ const AddStamp = () => {
     <View style={tw`h-full`}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title={StampPreview ? "Edit Stamp" : "Add Stamp"} />
+        <Appbar.Content title={StampPreview ? 'Edit Stamp' : 'Add Stamp'} />
       </Appbar.Header>
       {/* Create sign button */}
       <View style={tw`flex-1 items-center justify-center p-5 gap-4`}>
@@ -158,15 +149,12 @@ const AddStamp = () => {
               <Badge
                 style={tw`absolute z-1 right-1`}
                 onPress={() => {
-                  setBase64("");
+                  setBase64('');
                 }}
               >
                 X
               </Badge>
-              <Avatar.Image
-                size={100}
-                source={{ uri: "data:image/png;base64," + base64 }}
-              />
+              <Avatar.Image size={100} source={{ uri: 'data:image/png;base64,' + base64 }} />
             </View>
             <TextInput
               mode="outlined"
@@ -178,30 +166,22 @@ const AddStamp = () => {
           </View>
         ) : (
           <View style={tw`items-center gap-5 py-5 `}>
-            <Image
-              style={tw`h-15 w-15 `}
-              source={require("../../../assets/Stamp-drop-icon.png")}
-            />
+            <Image style={tw`h-15 w-15 `} source={require('../../../assets/Stamp-drop-icon.png')} />
             <Text style={tw`font-bold text-4 text-center`}>
-              Drag & drop your stamp image or stamp data file here, or hit
-              browse.
+              Drag & drop your stamp image or stamp data file here, or hit browse.
             </Text>
             <Text style={tw`font-bold text-4 text-center`}>
-              Formats supported:{" "}
+              Formats supported:{' '}
               <Text style={tw`font-normal`}>
-                jpg, jpeg, gif, png, bmp, x-ms-bmp, x-bmp, ipx Note: Stamp image
-                must be no larger than 200KB.
+                jpg, jpeg, gif, png, bmp, x-ms-bmp, x-bmp, ipx Note: Stamp image must be no larger
+                than 200KB.
               </Text>
             </Text>
           </View>
         )}
         <View style={tw`flex-row items-center gap-2`}>
-          <Button
-            loading={loading}
-            onPress={base64 ? create : uploadStamp}
-            mode="contained"
-          >
-            {base64 ? "Upload" : "Browse"}
+          <Button loading={loading} onPress={base64 ? create : uploadStamp} mode="contained">
+            {base64 ? 'Upload' : 'Browse'}
           </Button>
         </View>
       </View>

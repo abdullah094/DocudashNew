@@ -10,41 +10,24 @@ import {
   Alert,
   Modal,
   TouchableWithoutFeedback,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import { getTokenGlobal } from "../../AsyncGlobal";
-import * as Progress from "react-native-progress";
-import tw from "twrnc";
-import { colors } from "../../Colors";
-import ProgressModal from "../DashBoard/ProgressModal";
-import ImageUploadModal from "../DashBoard/Components/ImageUploadModal";
-import axios from "axios";
-import { useCounterStore } from "../../../MobX/TodoStore";
-import { Popup } from "../../components/Popup";
-import {
-  DashboardAPI,
-  HeaderAPI,
-  HeaderOption,
-  IUserData,
-  User,
-} from "../../../types";
-import * as DocumentPicker from "expo-document-picker";
-import { useNavigation } from "@react-navigation/native";
-import {
-  ActivityIndicator,
-  Avatar,
-  Chip,
-  Divider,
-  Button,
-  List,
-} from "react-native-paper";
-import * as ImagePicker from "expo-image-picker";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import BottomSheet, {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
-import Loader from "../MainLoader/Loader";
+} from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { getTokenGlobal } from '../../AsyncGlobal';
+import * as Progress from 'react-native-progress';
+import tw from 'twrnc';
+import { colors } from '../../Colors';
+import ProgressModal from '../DashBoard/ProgressModal';
+import axios from 'axios';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { Popup } from '../../components/Popup';
+import { DashboardAPI, HeaderAPI, HeaderOption, IUserData, User } from '../../../types';
+import * as DocumentPicker from 'expo-document-picker';
+import { useNavigation } from '@react-navigation/native';
+import { ActivityIndicator, Avatar, Chip, Divider, Button, List } from 'react-native-paper';
+import * as ImagePicker from 'expo-image-picker';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import BottomSheet, { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import Loader from '../MainLoader/Loader';
 
 interface box {
   text: string;
@@ -62,23 +45,21 @@ const Box = ({ text, num }: box) => {
   );
 };
 const Dashboard = () => {
-  const bottomSheetRef = React.useRef();
-  const snapPoints = React.useMemo(() => ["35%", "45%"], []);
-  const handleSheetChanges = React.useCallback((index: number) => {}, []);
-  const handlePresentModalPress = React.useCallback(() => {
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['35%', '45%'], []);
+  const handleSheetChanges = useCallback((index: number) => {}, []);
+  const handlePresentModalPress = useCallback(() => {
     bottomSheetRef.current?.present();
   }, []);
 
   const [userData, setUserData] = useState<User>();
   const [signature, setSignature] = useState<any>();
-  const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(
-    new Array()
-  );
+  const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(new Array());
   const [imagesUpload, setImagesUpload] = useState<
     {
       uri: string;
       name: string;
-      type: "image" | "video" | undefined;
+      type: 'image' | 'video' | undefined;
     }[]
   >(new Array());
   const [progressBar, setProgressBar] = useState<number>(0);
@@ -99,14 +80,14 @@ const Dashboard = () => {
 
   const fetchDashData = () => {
     axios
-      .get("https://docudash.net/api/dashboard", {
+      .get('https://docudash.net/api/dashboard', {
         headers: {
           Authorization: `Bearer ${Mobx.access_token}`,
         },
       })
       .then((response) => {
         const data: DashboardAPI = response.data;
-        console.log("DashboardAPI", data);
+        console.log('DashboardAPI', data);
         setDashNumber({
           ...dashNumber,
           waitingForOthers: data.WaitingForOthers,
@@ -118,7 +99,7 @@ const Dashboard = () => {
         if (data.signature?.signature) {
           setSignature(data.signature);
         } else {
-          setSignature("");
+          setSignature('');
         }
       });
   };
@@ -128,10 +109,10 @@ const Dashboard = () => {
   }, [navigation]);
 
   const fetchData = () => {
-    console.log("Fetch data");
+    console.log('Fetch data');
 
     axios
-      .get("https://docudash.net/api/getStartedWithDocudash", {
+      .get('https://docudash.net/api/getStartedWithDocudash', {
         headers: { Authorization: `Bearer ${Mobx.access_token}` },
       })
       .then((response) => {
@@ -169,21 +150,21 @@ const Dashboard = () => {
     fetchData();
   }, [imageRef]);
 
-  const uploadFile = async (selected: string) => {
-    bottomSheetRef.current.close();
+  const uploadFile = async () => {
+    bottomSheetRef.current?.close();
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: ["image/*", "application/pdf"], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
+        type: ['image/*', 'application/pdf'], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
-      if (result.type !== "cancel") setDocuments((prev) => [...prev, result]);
+      if (result.type !== 'cancel') setDocuments((prev) => [...prev, result]);
     } catch (err) {
-      console.log("err", err);
+      console.log('err', err);
     }
   };
-  console.log("docs", imagesUpload);
+  console.log('docs', imagesUpload);
 
   const uploadImage = async () => {
-    bottomSheetRef.current.close();
+    bottomSheetRef.current?.close();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -227,13 +208,13 @@ const Dashboard = () => {
         type: image.type,
       };
 
-      formData.append("photo", imageToUpload);
+      formData.append('photo', imageToUpload);
       let headers = {
         Authorization: `Bearer ${Mobx.access_token}`,
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       };
       axios
-        .post("https://docudash.net/api/upload-image", formData, { headers })
+        .post('https://docudash.net/api/upload-image', formData, { headers })
         .then((response) => {
           setLoading(false);
           const {
@@ -257,7 +238,7 @@ const Dashboard = () => {
         })
         .catch((error) => {
           setLoading(false);
-          console.log("error", error);
+          console.log('error', error);
         });
       // setImage(result.assets[0].uri);
     }
@@ -270,29 +251,21 @@ const Dashboard = () => {
       <ScrollView contentContainerStyle={tw`pb-20`}>
         <View style={tw` py-10 items-center px-5 justify-center`}>
           <View>
-            <View
-              style={tw`flex-row items-center justify-between w-80 overflow-hidden py-2`}
-            >
-              <Text style={tw`text-[${colors.black}] font-bold`}>
-                Get Started with Docudash
-              </Text>
+            <View style={tw`flex-row items-center justify-between w-80 overflow-hidden py-2`}>
+              <Text style={tw`text-[${colors.black}] font-bold`}>Get Started with Docudash</Text>
               <Text style={tw`text-[${colors.black}] font-bold`}>
                 {` ${completeNumber}/6 Completed`}
               </Text>
             </View>
             <Progress.Bar
               progress={progressBar}
-              color={"#6FAC46"}
-              unfilledColor={"#D9D9D9"}
+              color={'#6FAC46'}
+              unfilledColor={'#D9D9D9'}
               width={null}
-              borderColor={"#D9D9D9"}
+              borderColor={'#D9D9D9'}
             />
           </View>
-          <ProgressModal
-            progress={progressBar}
-            obj={Headers}
-            steps={completeNumber}
-          />
+          <ProgressModal progress={progressBar} obj={Headers} steps={completeNumber} />
         </View>
         {/* 2nd */}
         <View style={tw`items-center bg-[${colors.green}] py-10 gap-2`}>
@@ -311,47 +284,38 @@ const Dashboard = () => {
 
             <Image
               style={tw`w-2.1 h-24 rounded-full mt-5 top--2 mx-2`}
-              source={require("../../assets/WhiteLine.png")}
+              source={require('../../assets/WhiteLine.png')}
             />
             <View style={tw`h-full justify-between  px-1  items-start `}>
-              <Text style={[styles.white_text, tw`font-semibold`]}>
-                Signed by:
-              </Text>
+              <Text style={[styles.white_text, tw`font-semibold`]}>Signed by:</Text>
 
               {signature ? (
                 <>
                   <Image
-                    style={[tw`h-12 w-full `, { tintColor: "white" }]}
+                    style={[tw`h-12 w-full `, { tintColor: 'white' }]}
                     source={{
-                      uri: signature?.signature.replace(/(\r\n|\n|\r)/gm, ""),
+                      uri: signature?.signature.replace(/(\r\n|\n|\r)/gm, ''),
                     }}
                     resizeMode="contain"
                   />
 
-                  <Text style={styles.white_text}>
-                    {signature.signature_code}
-                  </Text>
+                  <Text style={styles.white_text}>{signature.signature_code}</Text>
                 </>
               ) : (
                 <>
                   <Text style={styles.white_text}>Needs to sign</Text>
-                  <Text style={styles.white_text}>
-                    Sign id will generate after signature
-                  </Text>
+                  <Text style={styles.white_text}>Sign id will generate after signature</Text>
                 </>
               )}
             </View>
           </View>
           <View style={tw`flex-row items-center mt-6`}>
-            <Box text={"Action Required"} num={0} />
-            <Box
-              text={"Waiting for Others"}
-              num={dashNumber.waitingForOthers}
-            />
+            <Box text={'Action Required'} num={0} />
+            <Box text={'Waiting for Others'} num={dashNumber.waitingForOthers} />
           </View>
           <View style={tw`flex-row items-center`}>
-            <Box text={"Expiring Soon"} num={0} />
-            <Box text={"Completed"} num={dashNumber.completed} />
+            <Box text={'Expiring Soon'} num={0} />
+            <Box text={'Completed'} num={dashNumber.completed} />
           </View>
         </View>
 
@@ -363,11 +327,9 @@ const Dashboard = () => {
             <View style={tw`p-1`}>
               <Image
                 style={tw`h-10 w-10 self-center`}
-                source={require("../../assets/Upload.png")}
+                source={require('../../assets/Upload.png')}
               />
-              <Text style={tw`text-[${colors.blue}] mt-2`}>
-                Drop documents here to get started
-              </Text>
+              <Text style={tw`text-[${colors.blue}] mt-2`}>Drop documents here to get started</Text>
             </View>
           </Pressable>
 
@@ -378,9 +340,7 @@ const Dashboard = () => {
               data={[...documents, ...imagesUpload]}
               renderItem={({ item, index }) => (
                 <>
-                  <View
-                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
-                  >
+                  <View style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}>
                     <Pressable
                       onPress={() => {
                         setDocuments(
@@ -391,24 +351,20 @@ const Dashboard = () => {
                       }}
                       style={tw` top--5 right--11`}
                     >
-                      <MaterialCommunityIcons
-                        name="close-circle"
-                        color={"red"}
-                        size={25}
-                      />
+                      <MaterialCommunityIcons name="close-circle" color={'red'} size={25} />
                     </Pressable>
                     <MaterialCommunityIcons
                       name={
-                        item.mimeType === "application/pdf"
-                          ? "file-pdf-box"
-                          : item.mimeType === "image/png"
-                          ? "file-image"
-                          : "file-question-outline"
+                        item.mimeType === 'application/pdf'
+                          ? 'file-pdf-box'
+                          : item.mimeType === 'image/png'
+                          ? 'file-image'
+                          : 'file-question-outline'
                       }
                       size={40}
                     />
                     <Text style={tw`w-25 text-center text-3`} numberOfLines={2}>
-                      {item.name ? item.name : "Untitled file"}
+                      {item.name ? item.name : 'Untitled file'}
                     </Text>
                   </View>
                 </>
@@ -419,7 +375,7 @@ const Dashboard = () => {
             <Button
               mode="contained"
               onPress={() =>
-                navigation.navigate("Edit", {
+                navigation.navigate('Edit', {
                   files: documents,
                   images: imagesUpload,
                 })
@@ -431,7 +387,7 @@ const Dashboard = () => {
             <Button
               mode="contained"
               onPress={() =>
-                navigation.navigate("Edit", {
+                navigation.navigate('Edit', {
                   files: documents,
                   images: imagesUpload,
                 })
@@ -466,7 +422,7 @@ const Dashboard = () => {
           />
           <Divider />
           <List.Item
-            onPress={() => bottomSheetRef.current.close()}
+            onPress={() => bottomSheetRef.current?.close()}
             title="Cancel"
             left={(props) => <List.Icon {...props} icon="close" />}
           />
@@ -474,8 +430,8 @@ const Dashboard = () => {
       </BottomSheetModal>
 
       <Popup
-        heading={"Alert"}
-        description={"Upload a document"}
+        heading={'Alert'}
+        description={'Upload a document'}
         alert={alert}
         setAlert={setAlert}
       />

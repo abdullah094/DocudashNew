@@ -1,21 +1,13 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Modal,
-  Pressable,
-  Alert,
-} from "react-native";
-import React, { ReactNode, useState } from "react";
-import tw from "twrnc";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { colors } from "../../../Colors";
-import { Button, Divider, TextInput } from "react-native-paper";
-import { useCounterStore } from "../../../../MobX/TodoStore";
-import { User } from "../../../../types";
-import axios from "axios";
+import { StyleSheet, Text, View, Image, Modal, Pressable, Alert } from 'react-native';
+import React, { ReactNode, useState } from 'react';
+import tw from 'twrnc';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { colors } from '../../../Colors';
+import { Button, Divider, TextInput } from 'react-native-paper';
+import { useCounterStore } from '../../../../MobX/TodoStore';
+import { User } from '../../../../types';
+import axios from 'axios';
 
 const NameEditModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,14 +18,14 @@ const NameEditModal = () => {
 
   const onSave = () => {
     if (firstName.length < 0 && lastName.length < 0) {
-      alert("Please enter a valid name");
+      alert('Please enter a valid name');
       return;
     }
     axios
       .post(
-        "https://docudash.net/api/profiles",
+        'https://docudash.net/api/profiles',
         {
-          action_type: "names",
+          action_type: 'names',
           first_name: firstName,
           last_name: lastName,
         },
@@ -44,8 +36,7 @@ const NameEditModal = () => {
         }
       )
       .then((response) => {
-        const { status, message }: { status: boolean; message: string } =
-          response.data;
+        const { status, message }: { status: boolean; message: string } = response.data;
         if (status) {
           Mobx.AddUser({
             ...user,
@@ -109,11 +100,7 @@ const NameEditModal = () => {
               <Button style={tw`rounded-lg`} mode="contained" onPress={onSave}>
                 Update
               </Button>
-              <Button
-                style={tw`rounded-lg`}
-                mode="outlined"
-                onPress={() => setModalVisible(false)}
-              >
+              <Button style={tw`rounded-lg`} mode="outlined" onPress={() => setModalVisible(false)}>
                 Cancel
               </Button>
             </View>

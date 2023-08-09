@@ -8,27 +8,18 @@ import {
   Modal,
   Pressable,
   FlatList,
-} from "react-native";
-import React from "react";
-import tw from "twrnc";
-import { colors } from "../../Colors";
-import { Button, Chip, DataTable, Switch } from "react-native-paper";
-import DropDown from "react-native-paper-dropdown";
-import axios from "axios";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useCounterStore } from "../../../MobX/TodoStore";
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from "react-native-popup-menu";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import {
-  RootStackParamList,
-  SignaturePreview,
-  SignaturesListAPI,
-} from "../../../types";
+} from 'react-native';
+import React from 'react';
+import tw from 'twrnc';
+import { colors } from '../../Colors';
+import { Button, Chip, DataTable, Switch } from 'react-native-paper';
+import DropDown from 'react-native-paper-dropdown';
+import axios from 'axios';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RootStackParamList, SignaturePreview, SignaturesListAPI } from '../../../types';
 
 const Index = () => {
   const [list, setList] = React.useState<SignaturePreview[]>();
@@ -41,7 +32,7 @@ const Index = () => {
   const fetchList = () => {
     setIsFetching(true);
     axios
-      .get("https://docudash.net/api/signatures/list", {
+      .get('https://docudash.net/api/signatures/list', {
         headers: {
           Authorization: `Bearer ${Mobx.access_token}`,
         },
@@ -52,8 +43,8 @@ const Index = () => {
         const changedata = data.data.map((x) => {
           return {
             ...x,
-            signature: x.signature.replace(/(\r\n|\n|\r)/gm, ""),
-            initial: x.initial.replace(/(\r\n|\n|\r)/gm, ""),
+            signature: x.signature.replace(/(\r\n|\n|\r)/gm, ''),
+            initial: x.initial.replace(/(\r\n|\n|\r)/gm, ''),
           };
         });
 
@@ -70,23 +61,23 @@ const Index = () => {
   }, [route]);
 
   const DropdownComp = () => {
-    const [action, setAction] = React.useState("");
+    const [action, setAction] = React.useState('');
     const [showDropDown, setShowDropDown] = React.useState(false);
     const ActionList = [
       {
-        label: "Edit",
-        value: "edit",
+        label: 'Edit',
+        value: 'edit',
       },
       {
-        label: "Delete",
-        value: "delete",
+        label: 'Delete',
+        value: 'delete',
       },
     ];
 
     return (
       <DropDown
-        label={"Action"}
-        mode={"outlied"}
+        label={'Action'}
+        mode={'outlied'}
         visible={showDropDown}
         showDropDown={() => setShowDropDown(true)}
         onDismiss={() => setShowDropDown(false)}
@@ -108,13 +99,8 @@ const Index = () => {
           onDismiss={() => setOpenModal(false)}
         >
           <View style={tw`flex-1 justify-center items-center `}>
-            <View
-              style={tw`border-2  w-70 rounded-lg bg-white p-5 gap-4 pb-25`}
-            >
-              <Pressable
-                style={tw`absolute top-1 right-1 p-1`}
-                onPress={() => setOpenModal(false)}
-              >
+            <View style={tw`border-2  w-70 rounded-lg bg-white p-5 gap-4 pb-25`}>
+              <Pressable style={tw`absolute top-1 right-1 p-1`} onPress={() => setOpenModal(false)}>
                 <MaterialCommunityIcons name="close-circle" size={30} />
               </Pressable>
               <Text style={tw`font-bold`}>Status</Text>
@@ -129,25 +115,22 @@ const Index = () => {
             <Image
               style={tw`w-20 h-4`}
               resizeMode="contain"
-              source={require("../../assets/docudash_pow_logo.png")}
+              source={require('../../assets/docudash_pow_logo.png')}
             />
           </DataTable.Cell>
           <DataTable.Cell style={tw` items-center justify-center h-35`}>
             <Image
               style={tw`w-15 h-4`}
               resizeMode="contain"
-              source={require("../../assets/docudash_pow_logo.png")}
+              source={require('../../assets/docudash_pow_logo.png')}
             />
           </DataTable.Cell>
           <DataTable.Cell style={tw` items-center h-35 justify-center`}>
             <View style={tw`justify-start items-center gap-2 overflow-hidden`}>
               <Text style={tw`text-3 text-[${colors.gray}]`} numberOfLines={2}>
-                {"5qDXe96-pkhNTj-55211"}
+                {'5qDXe96-pkhNTj-55211'}
               </Text>
-              <Button
-                onPress={() => setOpenModal(!openModal)}
-                icon="dots-horizontal"
-              ></Button>
+              <Button onPress={() => setOpenModal(!openModal)} icon="dots-horizontal"></Button>
             </View>
           </DataTable.Cell>
         </DataTable.Row>
@@ -157,7 +140,7 @@ const Index = () => {
   const Delete = (id: number) => {
     axios
       .post(
-        "https://docudash.net/api/signatures/delete",
+        'https://docudash.net/api/signatures/delete',
         {
           deleteId: id,
         },
@@ -178,7 +161,7 @@ const Index = () => {
 
     axios
       .post(
-        "https://docudash.net/api/signatures/statusUpdate",
+        'https://docudash.net/api/signatures/statusUpdate',
         {
           id: id,
           status: status,
@@ -197,10 +180,8 @@ const Index = () => {
 
   const RenderItem = ({ item }) => {
     const [more, setMore] = React.useState(false);
-    const [isSwitchOn, setIsSwitchOn] = React.useState(
-      item.status === 1 ? true : false
-    );
-    console.log("switchStatus", isSwitchOn);
+    const [isSwitchOn, setIsSwitchOn] = React.useState(item.status === 1 ? true : false);
+    console.log('switchStatus', isSwitchOn);
 
     const onToggleSwitch = () => {
       setIsSwitchOn(!isSwitchOn);
@@ -225,16 +206,10 @@ const Index = () => {
             </View>
             <View>
               <Text style={tw`font-medium`}>Initials</Text>
-              <Image
-                style={tw`w-full h-20`}
-                resizeMode="contain"
-                source={{ uri: item.initial }}
-              />
+              <Image style={tw`w-full h-20`} resizeMode="contain" source={{ uri: item.initial }} />
             </View>
             <View style={tw`gap-4  `}>
-              <Text style={tw`font-medium overflow-hidden`}>
-                Signature Code
-              </Text>
+              <Text style={tw`font-medium overflow-hidden`}>Signature Code</Text>
               <Text>{item.signature_code}</Text>
             </View>
           </View>
@@ -248,7 +223,7 @@ const Index = () => {
                 <Chip
                   selectedColor={colors.blue}
                   onPress={() => {
-                    navigation.navigate("AddSignature", item);
+                    navigation.navigate('AddSignature', item);
                     // console.log(item);
                   }}
                 >
@@ -271,7 +246,7 @@ const Index = () => {
           Add or update your name and signature styles.
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate("AddSignature")}
+          onPress={() => navigation.navigate('AddSignature')}
           style={tw`bg-[${colors.green}] justify-center items-center w-35 h-10 rounded-md self-end m-4`}
         >
           <Text style={tw`text-white`}>Add Signature</Text>

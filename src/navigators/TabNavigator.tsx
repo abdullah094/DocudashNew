@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Dashboard from "../screens/DashboardDrawerScreens/Dashboard";
-import Drawernavigator from "./Drawernavigator";
-import { useNavigation } from "@react-navigation/native";
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Dashboard from '../screens/DashboardDrawerScreens/Dashboard';
+import Drawernavigator from './Drawernavigator';
+import { useNavigation } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 

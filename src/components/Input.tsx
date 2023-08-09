@@ -8,10 +8,10 @@ import {
   StyleProp,
   ViewStyle,
   KeyboardTypeOptions,
-} from "react-native";
-import React, { SetStateAction, Dispatch, FC, FunctionComponent } from "react";
-import { colors } from "../Colors";
-import tw from "twrnc";
+} from 'react-native';
+import React, { SetStateAction, Dispatch, FC, FunctionComponent } from 'react';
+import { colors } from '../Colors';
+import tw from 'twrnc';
 interface props {
   state: string | number | undefined | SetStateAction<string | undefined>;
   setState: Dispatch<React.SetStateAction<string>>;
@@ -26,7 +26,7 @@ const Input = (props: props) => {
     setState,
     placeholder,
     style = {},
-    keyboardType = "default",
+    keyboardType = 'default',
     secureTextEntry = false,
   } = props;
 
@@ -45,8 +45,8 @@ const Input = (props: props) => {
           paddingHorizontal: 15,
           height: 45,
           marginTop: 20,
-          color: "black",
-          backgroundColor: "#F6F6F6",
+          color: 'black',
+          backgroundColor: '#F6F6F6',
           ...style,
         },
         tw`h-11`,

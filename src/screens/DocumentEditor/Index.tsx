@@ -8,20 +8,13 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import {
-  Appbar,
-  Avatar,
-  Badge,
-  Button,
-  Text,
-  IconButton,
-} from "react-native-paper";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import tw from "twrnc";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import axios from "axios";
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Appbar, Avatar, Badge, Button, Text, IconButton } from 'react-native-paper';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import tw from 'twrnc';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 import {
   DraggedElArr,
   DraggedElement,
@@ -31,61 +24,60 @@ import {
   GenerateSignatureDetails,
   HtmlEditorAPI,
   RootStackScreenProps,
-} from "../../../types";
-import { useCounterStore } from "../../../MobX/TodoStore";
-import Draggable from "react-native-draggable";
-import FormData from "form-data";
+} from '../../../types';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import Draggable from 'react-native-draggable';
+import FormData from 'form-data';
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 const color = [
   {
-    primary: "rgb(9, 131, 55)",
-    bg: "rgba(180, 255, 175, 0.88)",
-    border: "#098337",
-    background: "#b4ffafe0",
+    primary: 'rgb(9, 131, 55)',
+    bg: 'rgba(180, 255, 175, 0.88)',
+    border: '#098337',
+    background: '#b4ffafe0',
   },
   {
-    primary: "rgb(83 107 158)",
-    bg: "rgb(210 223 255 / 92%)",
-    border: "#536b9e",
-    background: "#d2e9ffeb",
+    primary: 'rgb(83 107 158)',
+    bg: 'rgb(210 223 255 / 92%)',
+    border: '#536b9e',
+    background: '#d2e9ffeb',
   },
   {
-    primary: "rgb(167 108 0)",
-    bg: "rgb(255 237 161 / 92%)",
-    border: "#a76c00",
-    background: "#ffeda1eb",
+    primary: 'rgb(167 108 0)',
+    bg: 'rgb(255 237 161 / 92%)',
+    border: '#a76c00',
+    background: '#ffeda1eb',
   },
   {
-    primary: "rgb(161 67 178)",
-    bg: "rgb(255 183 247 / 92%)",
-    border: "#974b4b",
-    background: "#ffb7f7eb",
+    primary: 'rgb(161 67 178)',
+    bg: 'rgb(255 183 247 / 92%)',
+    border: '#974b4b',
+    background: '#ffb7f7eb',
   },
   {
-    primary: "rgb(151 75 75)",
-    bg: "rgb(255 188 188 / 92%)",
-    border: "#974b4b",
-    background: "#ffbcbceb",
+    primary: 'rgb(151 75 75)',
+    bg: 'rgb(255 188 188 / 92%)',
+    border: '#974b4b',
+    background: '#ffbcbceb',
   },
   {
-    primary: "rgb(151 75 75)",
-    bg: "rgb(255 188 188 / 92%)",
-    border: "#974b4b",
-    background: "#ffbcbceb",
+    primary: 'rgb(151 75 75)',
+    bg: 'rgb(255 188 188 / 92%)',
+    border: '#974b4b',
+    background: '#ffbcbceb',
   },
   {
-    primary: "rgb(151 75 75)",
-    bg: "rgb(255 188 188 / 92%)",
-    border: "#974b4b",
-    background: "#ffbcbceb",
+    primary: 'rgb(151 75 75)',
+    bg: 'rgb(255 188 188 / 92%)',
+    border: '#974b4b',
+    background: '#ffbcbceb',
   },
 ];
 const Index = () => {
-  const navigation =
-    useNavigation<RootStackScreenProps<"DocumentEditor">["navigation"]>();
-  const route = useRoute<RootStackScreenProps<"DocumentEditor">["route"]>();
+  const navigation = useNavigation<RootStackScreenProps<'DocumentEditor'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'DocumentEditor'>['route']>();
   const [draggedElArr, setDraggedElArr] = useState<DraggedElArr>({
     signature: [],
     initial: [],
@@ -108,18 +100,18 @@ const Index = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const url = "https://docudash.net/api/generate-signature/html-editor/";
-    console.log(url + envelope.uniqid + "/" + envelope.signature_id);
+    const url = 'https://docudash.net/api/generate-signature/html-editor/';
+    console.log(url + envelope.uniqid + '/' + envelope.signature_id);
 
     axios
-      .get(url + envelope.uniqid + "/" + envelope.signature_id, {
+      .get(url + envelope.uniqid + '/' + envelope.signature_id, {
         headers: {
           Authorization: `Bearer ${Mobx.access_token}`,
         },
       })
       .then((response) => {
         setLoading(false);
-        console.log("html-editor", response.data);
+        console.log('html-editor', response.data);
         const {
           status,
           message,
@@ -129,25 +121,19 @@ const Index = () => {
         }: HtmlEditorAPI = response.data;
 
         if (status) {
-          if (
-            generateSignatureDetailsFinalise &&
-            generateSignatureDetailsFinalise.draggedElArr
-          ) {
+          if (generateSignatureDetailsFinalise && generateSignatureDetailsFinalise.draggedElArr) {
             const draggable = {
-              signature:
-                generateSignatureDetailsFinalise.draggedElArr.signature ?? [],
-              initial:
-                generateSignatureDetailsFinalise.draggedElArr.initial ?? [],
+              signature: generateSignatureDetailsFinalise.draggedElArr.signature ?? [],
+              initial: generateSignatureDetailsFinalise.draggedElArr.initial ?? [],
               stamp: generateSignatureDetailsFinalise.draggedElArr.stamp ?? [],
               date: generateSignatureDetailsFinalise.draggedElArr.date ?? [],
               name: generateSignatureDetailsFinalise.draggedElArr.name ?? [],
               email: generateSignatureDetailsFinalise.draggedElArr.email ?? [],
-              company:
-                generateSignatureDetailsFinalise.draggedElArr.company ?? [],
+              company: generateSignatureDetailsFinalise.draggedElArr.company ?? [],
               title: generateSignatureDetailsFinalise.draggedElArr.title ?? [],
             };
             setDraggedElArr(draggable);
-            console.log("draggedElArr", draggedElArr);
+            console.log('draggedElArr', draggedElArr);
           }
           setRecipients(generateSignatureDetails);
           setImages(generateSignatureDetailsImages);
@@ -157,7 +143,7 @@ const Index = () => {
       })
       .catch((error) => {
         setLoading(false);
-        console.log("Error----", error);
+        console.log('Error----', error);
       });
   };
   useEffect(() => {
@@ -167,39 +153,38 @@ const Index = () => {
   }, []);
 
   const save = () => {
-    const url = "https://docudash.net/api/generate-signature/html-editor/";
+    const url = 'https://docudash.net/api/generate-signature/html-editor/';
     console.log(`Bearer ${Mobx.access_token}`);
-    console.log("post", url + envelope.uniqid + "/" + envelope.signature_id);
+    console.log('post', url + envelope.uniqid + '/' + envelope.signature_id);
     const data = new FormData();
-    data.append("uniqid", envelope.uniqid);
-    data.append("signature_id", envelope.signature_id);
-    data.append("draggedElArr", JSON.stringify(draggedElArr));
-    data.append("save_type", "0");
+    data.append('uniqid', envelope.uniqid);
+    data.append('signature_id', envelope.signature_id);
+    data.append('draggedElArr', JSON.stringify(draggedElArr));
+    data.append('save_type', '0');
 
     console.log(JSON.stringify(data));
     axios
-      .post(url + envelope.uniqid + "/" + envelope.signature_id, data, {
+      .post(url + envelope.uniqid + '/' + envelope.signature_id, data, {
         headers: {
           Authorization: `Bearer ${Mobx.access_token}`,
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       })
       .then((response) => {
-        const { status, message }: { status: boolean; message: string } =
-          response.data;
+        const { status, message }: { status: boolean; message: string } = response.data;
         if (status) {
           alert(message);
 
-          navigation.navigate("ManageDrawer", {
-            screen: "Inbox",
-            params: { heading: "Sent" },
+          navigation.navigate('ManageDrawer', {
+            screen: 'Inbox',
+            params: { heading: 'Sent' },
           });
         } else {
           alert(message);
         }
       })
       .catch((err) => {
-        console.log("error", err);
+        console.log('error', err);
       });
   };
 
@@ -220,7 +205,7 @@ const Index = () => {
       <SafeAreaView style={tw`flex-1 `}>
         <View style={tw` bg-white bottom-0 `}>
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
             horizontal
             showsHorizontalScrollIndicator={false}
           >
@@ -241,9 +226,9 @@ const Index = () => {
                       style={tw`bg-[${color[index].background}]`}
                       // color={color[index].background}
                       label={item.recName
-                        .replace(/\b(\w)\w+/g, "$1.")
-                        .replace(/\s/g, "")
-                        .replace(/\.$/, "")
+                        .replace(/\b(\w)\w+/g, '$1.')
+                        .replace(/\s/g, '')
+                        .replace(/\.$/, '')
                         .toUpperCase()}
                     />
                   </TouchableOpacity>
@@ -257,17 +242,16 @@ const Index = () => {
           <FlatList
             data={images}
             renderItem={({ item, index }) => {
-              let imageUrl = "";
-              if (item.image?.includes("pdf")) {
-                item.image.split(".")[0] + "-1.jpg";
+              let imageUrl = '';
+              if (item.image?.includes('pdf')) {
+                item.image.split('.')[0] + '-1.jpg';
                 imageUrl =
-                  "https://docudash.net/public/uploads/generateSignature/photos/converted/" +
-                  item.image.split(".")[0] +
-                  "-1.jpg";
+                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+                  item.image.split('.')[0] +
+                  '-1.jpg';
               } else {
                 imageUrl =
-                  "https://docudash.net/public/uploads/generateSignature/photos/" +
-                  item.image;
+                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
               }
               console.log(imageUrl);
               return (
@@ -275,10 +259,10 @@ const Index = () => {
                   // id={index + "_"}
                   onLayout={(event) => {
                     const layout = event.nativeEvent.layout;
-                    console.log("height:", layout.height);
-                    console.log("width:", layout.width);
-                    console.log("x:", layout.x);
-                    console.log("y:", layout.y);
+                    console.log('height:', layout.height);
+                    console.log('width:', layout.width);
+                    console.log('x:', layout.x);
+                    console.log('y:', layout.y);
                   }}
                 >
                   <Image
@@ -291,8 +275,7 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, index) => {
                       // console.log(
@@ -326,8 +309,7 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, index) => {
                       // console.log(
@@ -361,8 +343,7 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, index) => {
                       // console.log(
@@ -396,8 +377,7 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, index) => {
                       // console.log(
@@ -431,8 +411,7 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, index) => {
                       // console.log(
@@ -466,15 +445,14 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item) => {
                       // console.log(
                       //   ((Number.parseInt(item.left) * 100) / width) * 15,
                       //   ((Number.parseInt(item.top) * 100) / width) * 15
                       // );
-                      console.log("rerender", `bg-[${color[index].bg}]`);
+                      console.log('rerender', `bg-[${color[index].bg}]`);
 
                       return (
                         <Draggable
@@ -501,8 +479,7 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item) => {
                       // console.log(
@@ -536,8 +513,7 @@ const Index = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id ==
-                          String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item) => {
                       // console.log(
@@ -576,22 +552,17 @@ const Index = () => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* draw */}
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="draw"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "signature",
+                      type: 'signature',
                       element_container_id: `canvasInner-${index}`,
-                      left: "10%",
-                      top: "10%",
-                      icon: "fa fa-user-circle-o",
-                      name: "Signature",
+                      left: '10%',
+                      top: '10%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'Signature',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -609,22 +580,17 @@ const Index = () => {
             </View>
             {/* Initials */}
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="signature-text"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "initial",
+                      type: 'initial',
                       element_container_id: `canvasInner-${index}`,
-                      left: "20%",
-                      top: "20%",
-                      icon: "fa fa-user-circle-o",
-                      name: "initial",
+                      left: '20%',
+                      top: '20%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'initial',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -641,22 +607,17 @@ const Index = () => {
               <Text style={styles.yellow_round_text}>Initials</Text>
             </View>
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="stamper"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "stamp",
+                      type: 'stamp',
                       element_container_id: `canvasInner-${index}`,
-                      left: "30%",
-                      top: "30%",
-                      icon: "fa fa-user-circle-o",
-                      name: "stamp",
+                      left: '30%',
+                      top: '30%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'stamp',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -674,22 +635,17 @@ const Index = () => {
             </View>
             {/* Date */}
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="calendar"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "date",
+                      type: 'date',
                       element_container_id: `canvasInner-${index}`,
-                      left: "40%",
-                      top: "40%",
-                      icon: "fa fa-user-circle-o",
-                      name: "date",
+                      left: '40%',
+                      top: '40%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'date',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -706,22 +662,17 @@ const Index = () => {
               <Text style={styles.yellow_round_text}>Date</Text>
             </View>
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="face-man"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "name",
+                      type: 'name',
                       element_container_id: `canvasInner-${index}`,
-                      left: "40%",
-                      top: "40%",
-                      icon: "fa fa-user-circle-o",
-                      name: "name",
+                      left: '40%',
+                      top: '40%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'name',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -739,22 +690,17 @@ const Index = () => {
             </View>
             {/* Text box */}
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="email"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "email",
+                      type: 'email',
                       element_container_id: `canvasInner-${index}`,
-                      left: "40%",
-                      top: "40%",
-                      icon: "fa fa-user-circle-o",
-                      name: "email",
+                      left: '40%',
+                      top: '40%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'email',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -772,22 +718,17 @@ const Index = () => {
             </View>
             {/* Name */}
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="office-building"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "company",
+                      type: 'company',
                       element_container_id: `canvasInner-${index}`,
-                      left: "40%",
-                      top: "40%",
-                      icon: "fa fa-user-circle-o",
-                      name: "company",
+                      left: '40%',
+                      top: '40%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'company',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -804,22 +745,17 @@ const Index = () => {
               <Text style={styles.yellow_round_text}>Company</Text>
             </View>
             <View style={styles.botton_view_buttons}>
-              <View
-                style={[
-                  styles.yellow_round,
-                  tw`bg-[${color[selectedRecipient].background}]`,
-                ]}
-              >
+              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
                 <IconButton
                   icon="briefcase"
                   onPress={() => {
                     const newData: DraggedElement = {
-                      type: "title",
+                      type: 'title',
                       element_container_id: `canvasInner-${index}`,
-                      left: "40%",
-                      top: "40%",
-                      icon: "fa fa-user-circle-o",
-                      name: "title",
+                      left: '40%',
+                      top: '40%',
+                      icon: 'fa fa-user-circle-o',
+                      name: 'title',
                       uuid: 0,
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
@@ -851,10 +787,7 @@ const Index = () => {
               <IconButton icon="magnify" onPress={() => {}}></IconButton>
             </TouchableOpacity>
             <TouchableOpacity>
-              <IconButton
-                icon="dots-horizontal"
-                onPress={() => {}}
-              ></IconButton>
+              <IconButton icon="dots-horizontal" onPress={() => {}}></IconButton>
             </TouchableOpacity>
           </View>
         </View>
