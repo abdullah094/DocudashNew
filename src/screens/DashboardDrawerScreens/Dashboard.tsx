@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
@@ -36,6 +36,11 @@ interface box {
   text: string;
   num: number | null;
 }
+interface uploadType {
+  uri: string;
+  name: string;
+  type: 'image' | 'video' | undefined | string;
+}
 
 const Box = ({ text, num }: box) => {
   return (
@@ -48,23 +53,18 @@ const Box = ({ text, num }: box) => {
   );
 };
 const Dashboard = () => {
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ['35%', '45%'], []);
   const handleSheetChanges = useCallback((index: number) => {}, []);
   const handlePresentModalPress = useCallback(() => {
+    // @ts-ignore
     bottomSheetRef.current?.present();
   }, []);
 
   const [userData, setUserData] = useState<User>();
   const [signature, setSignature] = useState<any>();
-  const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>(new Array());
-  const [imagesUpload, setImagesUpload] = useState<
-    {
-      uri: string;
-      name: string;
-      type: 'image' | 'video' | undefined;
-    }[]
-  >(new Array());
+  const [documents, setDocuments] = useState<uploadType[]>(new Array());
+  const [imagesUpload, setImagesUpload] = useState<uploadType[]>(new Array());
   const [progressBar, setProgressBar] = useState<number>(0);
   const [completeNumber, setCompleteNumber] = useState<number>(0);
   const [Headers, setHeaders] = useState<HeaderOption>();
@@ -154,12 +154,20 @@ const Dashboard = () => {
   }, [imageRef]);
 
   const uploadFile = async () => {
+    // @ts-ignore
     bottomSheetRef.current?.close();
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: ['image/*', 'application/pdf'], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
-      if (result.type !== 'cancel') setDocuments((prev) => [...prev, result]);
+      if (result.type !== 'cancel') {
+        const fileToUpload = {
+          uri: result.uri,
+          name: result.name || result.uri,
+          type: result.mimeType || result.type,
+        };
+        setDocuments((prev) => [...prev, fileToUpload]);
+      }
     } catch (err) {
       console.log('err', err);
     }
@@ -167,6 +175,7 @@ const Dashboard = () => {
   console.log('docs', imagesUpload);
 
   const uploadImage = async () => {
+    // @ts-ignore
     bottomSheetRef.current?.close();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -207,7 +216,7 @@ const Dashboard = () => {
         name: image.fileName || image.uri,
         type: image.type,
       };
-
+      // @ts-ignore
       formData.append('photo', imageToUpload);
       let headers = {
         Authorization: `Bearer ${Mobx.access_token}`,
@@ -339,35 +348,36 @@ const Dashboard = () => {
               showsHorizontalScrollIndicator={false}
               data={[...documents, ...imagesUpload]}
               renderItem={({ item, index }) => (
-                <>
-                  <View style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}>
-                    <Pressable
-                      onPress={() => {
-                        setDocuments(
-                          documents.filter((x, i) => {
-                            return index != i;
-                          })
-                        );
-                      }}
-                      style={tw` top--5 right--11`}
-                    >
-                      <MaterialCommunityIcons name="close-circle" color={'red'} size={25} />
-                    </Pressable>
-                    <MaterialCommunityIcons
-                      name={
-                        item.mimeType === 'application/pdf'
-                          ? 'file-pdf-box'
-                          : item.mimeType === 'image/png'
-                          ? 'file-image'
-                          : 'file-question-outline'
-                      }
-                      size={40}
-                    />
-                    <Text style={tw`w-25 text-center text-3`} numberOfLines={2}>
-                      {item.name ? item.name : 'Untitled file'}
-                    </Text>
-                  </View>
-                </>
+                <View
+                  style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
+                  id={index + '_'}
+                >
+                  {item.type === 'image' ||
+                  item.type === 'image/png' ||
+                  item.type === 'image/jpeg' ? (
+                    <Image
+                      source={{ uri: item.uri }}
+                      style={tw`w-20 h-20`}
+                      resizeMode="contain"
+                    ></Image>
+                  ) : (
+                    <>
+                      <MaterialCommunityIcons
+                        name={
+                          item.type === 'application/pdf'
+                            ? 'file-pdf-box'
+                            : item.type === 'image/png'
+                            ? 'file-image'
+                            : 'file-question-outline'
+                        }
+                        size={40}
+                      />
+                      <Text style={tw`w-25 text-center`} numberOfLines={2}>
+                        {item.name}
+                      </Text>
+                    </>
+                  )}
+                </View>
               )}
             />
           </View>
@@ -422,7 +432,10 @@ const Dashboard = () => {
           />
           <Divider />
           <List.Item
-            onPress={() => bottomSheetRef.current?.close()}
+            onPress={() => {
+              // @ts-ignore
+              bottomSheetRef.current?.close();
+            }}
             title="Cancel"
             left={(props) => <List.Icon {...props} icon="close" />}
           />

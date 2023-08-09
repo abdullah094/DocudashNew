@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
@@ -30,13 +30,18 @@ import DropDown from 'react-native-paper-dropdown';
 import tw from 'twrnc';
 import { useCounterStore } from '../../../../MobX/TodoStore';
 import {
-  Envelope,
   GenerateSignature,
   GenerateSignatureDetailsImage,
   ManageDrawerScreenProps,
   UploadDocumentAPI,
 } from '../../../../types';
 import { colors } from '../../../Colors';
+
+interface uploadType {
+  uri: string;
+  name: string;
+  type: 'image' | 'video' | undefined | string;
+}
 
 const Edit = () => {
   const navigation = useNavigation<ManageDrawerScreenProps<'Edit'>['navigation']>();
@@ -62,43 +67,47 @@ const Edit = () => {
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
   // bottom sheets
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ['35%', '45%'], []);
   const handleSheetChanges = useCallback((index: number) => {}, []);
   const handlePresentModalPress = useCallback(() => {
+    // @ts-ignore
     bottomSheetRef.current?.present();
   }, []);
 
-  const [uploadImage, setUploadImage] = useState<
-    {
-      uri: string;
-      name: string;
-      type: 'image' | 'video' | undefined;
-    }[]
-  >(new Array());
+  const [uploadImage, setUploadImage] = useState<uploadType[]>(new Array());
+  const [documents, setDocuments] = useState<uploadType[]>(new Array());
   const [loading, setLoading] = useState(false);
   const [generateSignature, setGenerateSignature] = useState<GenerateSignature>();
   const [generateSignatureDetailsImages, setGenerateSignatureDetailsImages] = useState<
     GenerateSignatureDetailsImage[]
   >([]);
-  const [documents, setDocuments] = useState<DocumentPicker.DocumentResult[]>([]);
-  const envelope = route.params?.Envelope as Envelope;
-  let files = route.params?.files;
-  let images = route.params?.images;
 
-  console.log(files);
+  const envelope = route.params?.Envelope;
+  const files = route.params?.files;
+  const images = route.params?.images;
+
+  console.log(envelope);
 
   const uploadFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: ['image/*', 'application/pdf'], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
       });
-      if (result.type !== 'cancel') setDocuments((prev) => [...prev, result]);
+      if (result.type !== 'cancel') {
+        const fileToUpload = {
+          uri: result.uri,
+          name: result.name || result.uri,
+          type: result.mimeType || result.type,
+        };
+        setDocuments((prev) => [...prev, fileToUpload]);
+      }
     } catch (err) {
       console.log('err');
     }
   };
   const uploadImage1 = async () => {
+    // @ts-ignore
     bottomSheetRef.current?.close();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -181,6 +190,7 @@ const Edit = () => {
         )
         .then((response) => {
           const data: UploadDocumentAPI = response.data;
+          console.log('', response.data);
           if (data.generateSignatureDetails.length > 0) {
             const fixData = data.generateSignatureDetails.map((x) => {
               return {
@@ -205,7 +215,7 @@ const Edit = () => {
             setGenerateSignatureDetailsImages(data.generateSignatureDetailsImages);
           }
 
-          console.log('data', data);
+          console.log('getting already Existing envelope', data);
         });
     } else {
       const url = 'https://docudash.net/api/generate-signature/create';
@@ -228,7 +238,9 @@ const Edit = () => {
           console.log('Error----', error);
         });
     }
-  }, []);
+  }, [route]);
+  console.log([...documents, ...uploadImage]);
+
   const save = () => {
     if (!generateSignature) return;
     if (emailSubject == '') {
@@ -622,11 +634,14 @@ const Edit = () => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 data={[...documents, ...uploadImage]}
-                renderItem={({ item }) => (
-                  <View style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}>
+                renderItem={({ item, index }) => (
+                  <View
+                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
+                    id={index + '_'}
+                  >
                     {item.type === 'image' ||
-                    item.mimeType === 'image/png' ||
-                    item.mimeType === 'image/jpeg' ? (
+                    item.type === 'image/png' ||
+                    item.type === 'image/jpeg' ? (
                       <Image
                         source={{ uri: item.uri }}
                         style={tw`w-20 h-20`}
@@ -636,9 +651,9 @@ const Edit = () => {
                       <>
                         <MaterialCommunityIcons
                           name={
-                            item.mimeType === 'application/pdf'
+                            item.type === 'application/pdf'
                               ? 'file-pdf-box'
-                              : item.mimeType === 'image/png'
+                              : item.type === 'image/png'
                               ? 'file-image'
                               : 'file-question-outline'
                           }
@@ -691,7 +706,10 @@ const Edit = () => {
           />
           <Divider />
           <List.Item
-            onPress={() => bottomSheetRef.current?.close()}
+            onPress={() => {
+              // @ts-ignore
+              bottomSheetRef.current?.close();
+            }}
             title="Cancel"
             left={(props) => <List.Icon {...props} icon="close" />}
           />

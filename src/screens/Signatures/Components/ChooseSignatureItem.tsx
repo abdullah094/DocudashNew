@@ -11,9 +11,23 @@ const ChooseSignatureItem = ({
   setList,
   fullName,
   initials,
-  setSetselectedUri,
-  setSetselectedInitialUri,
-}: any) => {
+  setSelectedUri,
+  setSelectedInitialUri,
+}: {
+  item: { selected: boolean };
+  id: number;
+  setList: React.Dispatch<
+    React.SetStateAction<
+      {
+        selected: boolean;
+      }[]
+    >
+  >;
+  fullName: string;
+  initials: string;
+  setSelectedUri: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedInitialUri: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   const [fontsLoaded] = useFonts({
     LongCang: require('../../../assets/Fonts/LongCang-Regular.ttf'),
     WalterTurncoat: require('../../../assets/Fonts/WalterTurncoat-Regular.ttf'),
@@ -37,11 +51,11 @@ const ChooseSignatureItem = ({
           )
         );
 
-        setSetselectedUri(uri);
+        setSelectedUri(uri);
       });
       // @ts-ignore
       refInitial.current?.capture().then((uri) => {
-        setSetselectedInitialUri(uri);
+        setSelectedInitialUri(uri);
       });
     };
     return (

@@ -27,6 +27,7 @@ const CustomDrawerManage = () => {
               title="Home"
               onPress={() => {
                 navigation.navigate('DashboardDrawerNavigator', {
+                  // @ts-ignore
                   screen: 'Dashboard',
                   params: {},
                 });

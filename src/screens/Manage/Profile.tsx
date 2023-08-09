@@ -1,15 +1,15 @@
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
-import tw from 'twrnc';
-import { colors } from '../../Colors';
-import { Avatar, Button, Chip, Text } from 'react-native-paper';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { DashboardAPI, User } from '../../../types';
-import NameEditModal from './Components/NameEditModel';
-import InfoEditModal from './Components/InfoEditModel';
+import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Avatar, Button, Text } from 'react-native-paper';
+import tw from 'twrnc';
+import { useCounterStore } from '../../../MobX/TodoStore';
+import { DashboardAPI, User } from '../../../types';
+import { colors } from '../../Colors';
+import InfoEditModal from './Components/InfoEditModel';
+import NameEditModal from './Components/NameEditModel';
 
 const Profile = () => {
   const user = useCounterStore().user as User;

@@ -34,9 +34,11 @@ const AddSignature = () => {
       .toUpperCase()
   );
   const [value, setValue] = React.useState('choose');
-  const [list, setList] = React.useState(new Array(6).fill({ selected: false }));
-  const [selectedUri, setSetselectedUri] = useState<string>('');
-  const [selectedInitialUri, setSetselectedInitialUri] = useState<string>('');
+  const [list, setList] = React.useState<{ selected: boolean }[]>(
+    new Array(6).fill({ selected: false })
+  );
+  const [selectedUri, setSelectedUri] = useState<string>('');
+  const [selectedInitialUri, setSelectedInitialUri] = useState<string>('');
   const [sign, setSign] = useState<Array<{}> | undefined>();
   const [initial, setInitial] = useState<Array<{}> | undefined>();
   const navigation = useNavigation<DashBoardDrawerScreenProps<'AddSignature'>['navigation']>();
@@ -68,7 +70,7 @@ const AddSignature = () => {
       if (!result.canceled) {
         const image = result.assets[0];
         if (image && image.base64) {
-          setSetselectedUri(image.base64);
+          setSelectedUri(image.base64);
         }
       }
     } catch (err) {
@@ -88,7 +90,7 @@ const AddSignature = () => {
       if (!result.canceled) {
         const image = result.assets[0];
         if (image && image.base64) {
-          setSetselectedInitialUri(image.base64);
+          setSelectedInitialUri(image.base64);
         }
       }
     } catch (err) {
@@ -180,16 +182,16 @@ const AddSignature = () => {
                 setList={setList}
                 fullName={fullName}
                 initials={initials}
-                setSetselectedUri={setSetselectedUri}
-                setSetselectedInitialUri={setSetselectedInitialUri}
+                setSelectedUri={setSelectedUri}
+                setSelectedInitialUri={setSelectedInitialUri}
               />
             )}
           />
         ) : null}
         {value === 'draw' ? (
           <AddSignatureDraw
-            setSetselectedUri={setSetselectedUri}
-            setSetselectedInitialUri={setSetselectedInitialUri}
+            setSelectedUri={setSelectedUri}
+            setSelectedInitialUri={setSelectedInitialUri}
           />
         ) : null}
         {value === 'upload' ? (

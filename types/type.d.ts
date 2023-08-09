@@ -61,7 +61,7 @@ export type ManageDrawerParamList = {
 export type DashBoardDrawerParamList = {
   Dashboard: undefined;
   Template: undefined;
-  Signatures: undefined;
+  Signatures: {} | undefined;
   AddSignature: { SignaturePreview?: SignaturePreview };
   Stamps: undefined;
   AddStamp: { Stamp?: StampPreview };

@@ -1,18 +1,17 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas';
 import tw from 'twrnc';
 import { SignaturePreview } from '../../../../types';
-// import { DocumentNavigationProps, DocumentRouteProps } from "../types";
 
 interface ISignatureDraw {
-  setSetselectedUri: Dispatch<SetStateAction<string | null>>;
-  setSetselectedInitialUri: Dispatch<SetStateAction<string | undefined | null>>;
+  setSelectedUri: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedInitialUri: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Signature = ({ setSetselectedUri, setSetselectedInitialUri }: ISignatureDraw) => {
+const Signature = ({ setSelectedUri, setSelectedInitialUri }: ISignatureDraw) => {
   const navigation = useNavigation();
   const route = useRoute();
   const signaturePreview = route.params as SignaturePreview;
@@ -35,19 +34,19 @@ const Signature = ({ setSetselectedUri, setSetselectedInitialUri }: ISignatureDr
 
   const resetSign = () => {
     signatureView.current?.clearSignature();
-    setSetselectedUri(null);
+    setSelectedUri('');
   };
   const resetInitials = () => {
     signatureViewIni.current?.clearSignature();
-    setSetselectedInitialUri(null);
+    setSelectedInitialUri('');
   };
   const handleOK = (signature: string) => {
     const base64 = signature.replace('data:image/png;base64,', '');
-    setSetselectedUri(base64);
+    setSelectedUri(base64);
   };
   const handleOKIni = (signature: string) => {
     const base64 = signature.replace('data:image/png;base64,', '');
-    setSetselectedInitialUri(base64);
+    setSelectedInitialUri(base64);
   };
 
   const style = `
