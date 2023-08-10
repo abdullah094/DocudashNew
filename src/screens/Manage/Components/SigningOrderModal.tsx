@@ -85,7 +85,7 @@ const SigningOrderModal = ({
               })}
 
               <Row
-                title={'Completed'}
+                title={'Pending'}
                 shortName={<AntDesign name="checkcircle" size={27} color="white" />}
               />
             </View>

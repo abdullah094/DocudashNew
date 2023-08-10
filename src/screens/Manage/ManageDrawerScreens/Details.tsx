@@ -60,7 +60,32 @@ const Details = () => {
         console.log('Error----', error);
       });
   }, []);
+  const voidEnvelope = () => {
+    if (inbox.signature_id == undefined) return;
 
+    const url = 'https://docudash.net/api/generate-signature/deleteEmailInbox';
+    axios
+      .post(
+        url,
+        { id: inbox.signature_id },
+        {
+          headers: {
+            Authorization: `Bearer ${Mobx.access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const { status, message }: { status: boolean; message: string } = response.data;
+        console.log(response.data);
+        if (status) navigation.navigate('Inbox', { heading: 'Inbox' });
+        else {
+          alert(message);
+        }
+      })
+      .catch((error) => {
+        console.log('Error----', error);
+      });
+  };
   if (dataLoader) return <Loader />;
 
   return (
@@ -198,11 +223,7 @@ const Details = () => {
                     onSelect={() => alert(`Save`)}
                     text="Save as Template"
                   />
-                  <MenuOption
-                    style={styles.menu_block}
-                    onSelect={() => alert(`Save`)}
-                    text="Void"
-                  />
+                  <MenuOption style={styles.menu_block} onSelect={voidEnvelope} text="Void" />
                   <MenuOption
                     style={styles.menu_block}
                     onSelect={() => navigation.navigate('TemplateHistory')}

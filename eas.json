@@ -1,0 +1,24 @@
+{
+  "cli": {
+    "version": ">= 3.13.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "GOOGLE_MAPS_APIKEY": "AIzaSyClYAkI28o4JC8de56LH0xpNWtX-TWIKr4"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "GOOGLE_MAPS_APIKEY": "AIzaSyClYAkI28o4JC8de56LH0xpNWtX-TWIKr4"
+      }
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}

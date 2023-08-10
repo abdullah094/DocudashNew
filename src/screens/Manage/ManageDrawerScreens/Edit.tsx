@@ -801,11 +801,57 @@ const Edit = () => {
       </View>
     </View>
   );
+  const [visible, setVisible] = React.useState(false);
+
+  const openMenu = () => setVisible(true);
+
+  const closeMenu = () => setVisible(false);
+
+  const voidEnvelope = () => {
+    if (generateSignature == undefined) return;
+
+    const url = 'https://docudash.net/api/generate-signature/deleteDraftEmail';
+    axios
+      .post(
+        url,
+        { id: generateSignature.signature_id },
+        {
+          headers: {
+            Authorization: `Bearer ${Mobx.access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const { status, message }: { status: boolean; message: string } = response.data;
+        console.log(response.data);
+        if (status) navigation.navigate('Inbox', { heading: 'draft' });
+        else {
+          alert(message);
+        }
+      })
+      .catch((error) => {
+        console.log('Error----', error);
+      });
+  };
   return (
     <View style={tw`flex-1`}>
       <Appbar.Header mode="small">
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title={envelope ? 'Editing Envelope' : 'Creating New Envelope'} />
+        <Menu
+          anchorPosition="bottom"
+          visible={visible}
+          onDismiss={closeMenu}
+          anchor={<Appbar.Action icon="dots-vertical" onPress={openMenu} />}
+        >
+          <Menu.Item
+            onPress={() => {
+              closeMenu();
+              voidEnvelope();
+            }}
+            title="Void"
+          />
+        </Menu>
       </Appbar.Header>
       <Wizard activeIndex={state.activeIndex} onActiveIndexChanged={onActiveIndexChanged}>
         <Wizard.Step
