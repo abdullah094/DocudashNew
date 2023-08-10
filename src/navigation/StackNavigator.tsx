@@ -9,6 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser, selectAccessToken, setAccessToken } from '@stores/Slices';
 import LoginStackNavigator from './LoginStackNavigator';
 import { getTokenGlobal } from '@utils/AsyncGlobal';
+import AddSignature from '@screens/Signatures/AddSignature';
+import Signatures from '@screens/Signatures/List';
+import AddStamp from '@screens/Stamp/AddStamps';
+import Stamps from '@screens/Stamp/List';
+import Browser from '@screens/Browser';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
@@ -31,7 +36,13 @@ export default function StackNavigator() {
       {user ? (
         <Stack.Group>
           <Stack.Screen name="Home" component={DrawerNavigator} />
-          <Stack.Screen name="DetailsScreen" component={DetailsScreen} />
+          <Stack.Screen name="Signatures" component={Signatures} />
+          <Stack.Screen name="AddSignature" component={AddSignature} />
+          <Stack.Screen name="Stamps" component={Stamps} />
+          <Stack.Screen name="AddStamp" component={AddStamp} />
+          <Stack.Screen name="Browser" component={Browser} />
+          {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
+          {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}
         </Stack.Group>
       ) : (
         <Stack.Screen name="SignUpIndex" component={LoginStackNavigator} />

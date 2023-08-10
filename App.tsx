@@ -10,6 +10,7 @@ import { Provider as StoreProvider } from 'react-redux';
 import store from '@stores/index';
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 import useCachedResources from './src/hooks/useCachedResources';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
@@ -26,9 +27,11 @@ export default function App() {
   return (
     <StoreProvider store={store}>
       <PaperProvider theme={paperTheme}>
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
+        <BottomSheetModalProvider>
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </BottomSheetModalProvider>
       </PaperProvider>
     </StoreProvider>
   );

@@ -10,6 +10,7 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import COLORS from '../constants/colors';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
@@ -19,16 +20,25 @@ import { useNavigation } from '@react-navigation/native';
 const { height } = Dimensions.get('window');
 import { LogBox } from 'react-native';
 import { HomeDrawerScreenProps, RootStackScreenProps, pet, User, DashboardAPI } from '@types/index';
-import { ActivityIndicator, Button, Checkbox } from 'react-native-paper';
+import { ActivityIndicator, Avatar, Button, Checkbox } from 'react-native-paper';
 import axios from 'axios';
 import { selectAccessToken, setProfileData } from '@stores/Slices';
 import { useDispatch, useSelector } from 'react-redux';
 import GettingStarted from '@components/GettingStarted';
 import tw from 'twrnc';
 import { colors } from '@utils/Colors';
+import UploadView from '@components/UploadView';
+import * as ImagePicker from 'expo-image-picker';
 
+interface uploadType {
+  uri: string;
+  name: string;
+  type: 'image' | 'video' | undefined | string;
+}
 const HomeScreen = () => {
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();
+  const [documents, setDocuments] = useState<uploadType[]>(new Array());
+  const [imagesUpload, setImagesUpload] = useState<uploadType[]>(new Array());
   const dispatch = useDispatch();
   const [dashNumber, setDashNumber] = useState({
     actionRequired: 0,
@@ -65,12 +75,82 @@ const HomeScreen = () => {
         }
       });
   };
+  const Box = ({ text, num }: box) => {
+    return (
+      <View style={tw`border-2 border-white p-2  rounded-lg w-[40%] h-22`}>
+        <Text style={tw`text-10 text-white`}>{num}</Text>
+        <Text style={tw`text-white text-4`} numberOfLines={1}>
+          {text}
+        </Text>
+      </View>
+    );
+  };
 
   useEffect(() => {
     fetchDashData();
   }, [navigation]);
 
-  const [checked, setChecked] = React.useState(false);
+  const pickImage = async () => {
+    if (loading) return;
+
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      selectionLimit: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+    setLoading(true);
+    if (!result.canceled) {
+      const image = result.assets[0];
+      let formData = new FormData();
+      const imageToUpload = {
+        uri: image.uri,
+        name: image.fileName || image.uri,
+        type: image.type,
+      };
+      // @ts-ignore
+      formData.append('photo', imageToUpload);
+      let headers = {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'multipart/form-data',
+      };
+      axios
+        .post('https://docudash.net/api/upload-image', formData, { headers })
+        .then((response) => {
+          setLoading(false);
+          const {
+            success,
+            message,
+          }: {
+            success: false;
+            message: {
+              photo: string[];
+            };
+          } = response.data;
+          if (success) {
+            // @ts-ignore
+            Alert.alert(message);
+            fetchDashData();
+          } else {
+            if (message.photo) {
+              message.photo.map((x) => Alert.alert(x));
+            }
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log('error', error);
+        });
+      // setImage(result.assets[0].uri);
+    } else {
+      setLoading(false);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <View style={style.header}>
@@ -86,6 +166,78 @@ const HomeScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={style.mainContainer}>
           <GettingStarted />
+          <View style={tw`-mx-5 items-center mt-10 bg-[${colors.green}] py-10 gap-2`}>
+            <View style={tw`flex-row items-center h-25`}>
+              {loading ? (
+                <ActivityIndicator size={100} animating={true} />
+              ) : (
+                <TouchableOpacity onPress={pickImage}>
+                  <Avatar.Image
+                    size={100}
+                    style={tw`m-2`}
+                    source={{ uri: userData?.profile_photo }}
+                  />
+                </TouchableOpacity>
+              )}
+
+              <Image
+                style={tw`w-2.1 h-24 rounded-full mt-5 top--2 mx-2`}
+                source={require('@assets/WhiteLine.png')}
+              />
+              <View style={tw`h-full justify-between  px-1  items-start `}>
+                <Text style={tw`font-semibold text-white text-4 w-50`}>Signed by:</Text>
+
+                {signature ? (
+                  <>
+                    <Image
+                      style={[tw`h-12 w-full`, { tintColor: 'white' }]}
+                      source={{
+                        uri: signature?.signature.replace(/(\r\n|\n|\r)/gm, ''),
+                      }}
+                      resizeMode="contain"
+                    />
+
+                    <Text style={tw`text-white text-4 w-50`}>{signature.signature_code}</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={tw`text-white text-4 w-50`}>Needs to sign</Text>
+                    <Text style={tw`text-white text-4 w-50`}>
+                      Sign id will generate after signature
+                    </Text>
+                  </>
+                )}
+              </View>
+            </View>
+            <View
+              style={tw`flex-row  p-4 bg-[${colors.green}] flex-wrap justify-center items-center gap-6`}
+            >
+              <Box text={'Action Required'} num={0} />
+              <Box text={'Waiting for Others'} num={dashNumber.waitingForOthers} />
+              <Box text={'Expiring Soon'} num={0} />
+              <Box text={'Completed'} num={dashNumber.completed} />
+            </View>
+          </View>
+
+          <UploadView
+            documents={documents}
+            setDocuments={setDocuments}
+            imagesUpload={imagesUpload}
+            setImagesUpload={setImagesUpload}
+          />
+          {[...documents, ...imagesUpload].length > 0 ? (
+            <Button
+              mode="contained"
+              onPress={() =>
+                navigation.navigate('ManageDrawer', {
+                  screen: 'Edit',
+                  params: { files: documents, images: imagesUpload },
+                })
+              }
+            >
+              Start Now
+            </Button>
+          ) : null}
         </View>
       </ScrollView>
     </SafeAreaView>
