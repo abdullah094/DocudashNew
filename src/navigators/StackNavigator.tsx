@@ -1,7 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { useCounterStore } from '../../MobX/TodoStore';
 import { RootStackParamList } from '../../types';
 
@@ -9,8 +8,11 @@ import ManageDrawer from '../screens/Manage/ManageDrawer';
 import TemplateHistory from '../screens/Manage/ManageDrawerScreens/TemplateHistory';
 import SignUpIndex from '../screens/SignUp/Index';
 import DrawerNavigator from './DrawerNavigator';
-const Stack = createStackNavigator<RootStackParamList>();
 
+import AddSignature from '../screens/Signatures/Screens/AddSignature';
+
+import AddStamp from '../screens/Stamps/Screens/AddStamps';
+const Stack = createStackNavigator<RootStackParamList>();
 const StackNavigator = observer(() => {
   // clearToken();
 
@@ -22,6 +24,8 @@ const StackNavigator = observer(() => {
       {Mobx.access_token ? (
         <Stack.Group>
           <Stack.Screen name="DashboardDrawerNavigator" component={DrawerNavigator} />
+          <Stack.Screen name="AddSignature" component={AddSignature} />
+          <Stack.Screen name="AddStamp" component={AddStamp} />
           <Stack.Screen name="ManageDrawer" component={ManageDrawer} />
           <Stack.Screen name="TemplateHistory" component={TemplateHistory} />
         </Stack.Group>
@@ -35,5 +39,3 @@ const StackNavigator = observer(() => {
 });
 
 export default StackNavigator;
-
-const styles = StyleSheet.create({});

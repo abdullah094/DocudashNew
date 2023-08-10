@@ -8,14 +8,14 @@ import { useCounterStore } from '../../../../MobX/TodoStore';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import FormData from 'form-data';
-import { DashBoardDrawerScreenProps, StampPreview, User } from '../../../../types';
+import { RootStackScreenProps, StampPreview, User } from '../../../../types';
 
 const AddStamp = () => {
   const Mobx = useCounterStore();
   const user = Mobx.user as User;
-  const navigation = useNavigation<DashBoardDrawerScreenProps<'AddStamp'>['navigation']>();
-  const route = useRoute<DashBoardDrawerScreenProps<'AddStamp'>['route']>();
-  const StampPreview = route.params as StampPreview;
+  const navigation = useNavigation<RootStackScreenProps<'AddStamp'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'AddStamp'>['route']>();
+  const StampPreview = route.params.Stamp as StampPreview;
   const [base64, setBase64] = useState('');
   const [name, setName] = useState('');
   const [stampId, setStampId] = useState('0');

@@ -1,5 +1,3 @@
-import { string } from 'mobx-state-tree/dist/internal';
-
 export const colors = {
   green: '#6FAC46',
   offwhite: '#F6F6F6',

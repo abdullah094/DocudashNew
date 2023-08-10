@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import tw from 'twrnc';
 import { useCounterStore } from '../../../MobX/TodoStore';
-import { LoginStackScreenProps, SignUpAPI } from '../../../types';
+import { SignUpAPI, SignUpStackScreenProps } from '../../../types';
 import { colors } from '../../Colors';
 import GreenButton from '../../components/GreenButton';
 import Input from '../../components/Input';
@@ -25,8 +25,8 @@ interface form {
   phone: string;
 }
 const UserInfoScreen = () => {
-  const navigation = useNavigation<LoginStackScreenProps<'Step2'>['navigation']>();
-  const route = useRoute<LoginStackScreenProps<'Step2'>['route']>();
+  const navigation = useNavigation<SignUpStackScreenProps<'Step2'>['navigation']>();
+  const route = useRoute<SignUpStackScreenProps<'Step2'>['route']>();
   const { count, increment, decrement, access_token } = useCounterStore();
   const [fontsLoaded] = useFonts({
     Signature: require('../../assets/Fonts/Creattion.otf'),

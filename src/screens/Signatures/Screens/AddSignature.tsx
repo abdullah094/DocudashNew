@@ -18,7 +18,7 @@ import { colors } from '../../../Colors';
 import AddSignatureDraw from '../Components/AddSignauteDraw';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { DashBoardDrawerScreenProps, SignaturePreview, User } from '../../../../types';
+import { RootStackScreenProps, SignaturePreview, User } from '../../../../types';
 import ChooseSignatureItem from '../Components/ChooseSignatureItem';
 
 const AddSignature = () => {
@@ -41,8 +41,8 @@ const AddSignature = () => {
   const [selectedInitialUri, setSelectedInitialUri] = useState<string>('');
   const [sign, setSign] = useState<Array<{}> | undefined>();
   const [initial, setInitial] = useState<Array<{}> | undefined>();
-  const navigation = useNavigation<DashBoardDrawerScreenProps<'AddSignature'>['navigation']>();
-  const route = useRoute<DashBoardDrawerScreenProps<'AddSignature'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'AddSignature'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'AddSignature'>['route']>();
   const signaturePreview = route.params?.SignaturePreview as SignaturePreview;
 
   useEffect(() => {

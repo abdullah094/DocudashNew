@@ -5,9 +5,11 @@ import { Industry } from './Step4';
 
 export type RootStackParamList = {
   DashboardDrawerNavigator: DashBoardDrawerScreenProps<DashBoardDrawerParamList>;
-  ManageDrawer: ManagedDrawerScreenProps<ManagedDrawerParamList>;
+  ManageDrawer: ManageDrawerScreenProps<ManageDrawerParamList>;
   SignUpIndex: NavigatorScreenParams<SignUpStackParamList>;
   TemplateHistory: undefined;
+  AddSignature: { SignaturePreview?: SignaturePreview };
+  AddStamp: { Stamp?: StampPreview };
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<
@@ -44,9 +46,7 @@ export type DashBoardDrawerParamList = {
   Dashboard: undefined;
   Template: undefined;
   Signatures: {} | undefined;
-  AddSignature: { SignaturePreview?: SignaturePreview };
   Stamps: {} | undefined;
-  AddStamp: { Stamp?: StampPreview };
   Profile: undefined;
   Browser: { url: string };
 };

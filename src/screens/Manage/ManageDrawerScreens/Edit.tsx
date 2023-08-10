@@ -27,6 +27,7 @@ import {
   TextInput,
 } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
+import { Wizard } from 'react-native-ui-lib';
 import tw from 'twrnc';
 import { useCounterStore } from '../../../../MobX/TodoStore';
 import {
@@ -42,11 +43,30 @@ interface uploadType {
   name: string;
   type: 'image' | 'video' | undefined | string;
 }
+interface State {
+  activeIndex: number;
+  completedStepIndex?: number;
+  allTypesIndex: number;
+  selectedFlavor: string;
+  customerName?: string;
+  toastMessage?: string;
+}
 
 const Edit = () => {
+  const flavors = ['Chocolate', 'Vanilla'];
+  const initialFlavor = flavors[0];
+
   const navigation = useNavigation<ManageDrawerScreenProps<'Edit'>['navigation']>();
   const route = useRoute<ManageDrawerScreenProps<'Edit'>['route']>();
   const Mobx = useCounterStore();
+  const [state, setState] = useState<State>({
+    activeIndex: 0,
+    completedStepIndex: undefined,
+    allTypesIndex: 0,
+    selectedFlavor: initialFlavor,
+    customerName: undefined,
+    toastMessage: undefined,
+  });
   const [data, setData] = useState([
     {
       recName: '',
@@ -169,6 +189,14 @@ const Edit = () => {
     },
   ];
   useEffect(() => {
+    setState({
+      activeIndex: 0,
+      completedStepIndex: undefined,
+      allTypesIndex: 0,
+      selectedFlavor: initialFlavor,
+      customerName: undefined,
+      toastMessage: undefined,
+    });
     if (files) {
       setDocuments(files);
     }
@@ -351,340 +379,453 @@ const Edit = () => {
         console.log('Error----', error);
       });
   };
+  const onActiveIndexChanged = (activeIndex: number) => {
+    setState((prev) => ({ ...prev, activeIndex }));
+  };
+
+  const getStepState = (index: number) => {
+    const { activeIndex, completedStepIndex } = state;
+    let currentState = Wizard.States.DISABLED;
+    if (completedStepIndex && completedStepIndex > index - 1) {
+      currentState = Wizard.States.COMPLETED;
+    } else if (activeIndex === index || completedStepIndex === index - 1) {
+      currentState = Wizard.States.ENABLED;
+    }
+
+    return state;
+  };
+  const renderCurrentStep = () => {
+    const { activeIndex } = state;
+
+    switch (activeIndex) {
+      case 0:
+      default:
+        return renderAddRecipient();
+      case 1:
+        return renderAddMessage();
+      case 2:
+        return renderAddDocument();
+    }
+  };
+  const resetThis = () => {
+    const { customerName, selectedFlavor } = state;
+
+    setState((prev) => ({
+      ...prev,
+      activeIndex: 0,
+      completedStepIndex: undefined,
+      selectedFlavor: initialFlavor,
+      customerName: undefined,
+      toastMessage: `${customerName}, you bought some ${selectedFlavor.toLowerCase()}`,
+    }));
+  };
+  const goToPrevStep = () => {
+    const { activeIndex: prevActiveIndex } = state;
+    const activeIndex = prevActiveIndex === 0 ? 0 : prevActiveIndex - 1;
+
+    setState((prev) => ({ ...prev, activeIndex }));
+  };
+  const renderPrevButton = () => {
+    return (
+      <Button mode="outlined" style={tw`w-30`} icon="arrow-left" onPress={goToPrevStep}>
+        Back
+      </Button>
+    );
+  };
+  const goToNextStep = () => {
+    const { activeIndex: prevActiveIndex, completedStepIndex: prevCompletedStepIndex } = state;
+    const reset = prevActiveIndex === 2;
+    if (reset) {
+      resetThis();
+      return;
+    }
+
+    const activeIndex = prevActiveIndex + 1;
+    let completedStepIndex: number | undefined = prevCompletedStepIndex;
+    if (!prevCompletedStepIndex || prevCompletedStepIndex < prevActiveIndex) {
+      completedStepIndex = prevActiveIndex;
+    }
+
+    if (activeIndex !== prevActiveIndex || completedStepIndex !== prevCompletedStepIndex) {
+      setState((prev) => ({ ...prev, activeIndex, completedStepIndex }));
+    }
+  };
+
+  const renderNextButton = (disabled?: boolean) => {
+    const { activeIndex } = state;
+    const label = activeIndex === 2 ? 'Done & Reset' : 'Next';
+
+    return (
+      <Button
+        style={tw`w-30`}
+        contentStyle={tw`flex-row-reverse`}
+        mode="outlined"
+        icon="arrow-right"
+        onPress={goToNextStep}
+        disabled={disabled}
+      >
+        {label}
+      </Button>
+    );
+  };
+  const renderAddRecipient = () => (
+    <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
+      <Text variant="headlineSmall">Add Recipient</Text>
+
+      {data.map((recipient, index) => (
+        <View id={index + ''} style={tw`flex-1 gap-2 p-2 border border-gray-500 my-2 rounded-lg`}>
+          <View style={tw`flex-row justify-between items-center`}>
+            <Text variant="headlineSmall">Recipient {index + 1}</Text>
+            {index !== 0 && (
+              <IconButton icon="close" size={20} onPress={() => deleteRecipient(index)} />
+            )}
+          </View>
+
+          <DropDown
+            label={'Actions'}
+            mode={'outlined'}
+            visible={recipient.showDropDown}
+            showDropDown={() =>
+              setData((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, showDropDown: true } : item))
+              )
+            }
+            onDismiss={() =>
+              setData((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, showDropDown: false } : item))
+              )
+            }
+            value={String(recipient.sign_type)}
+            setValue={(value) => {
+              setData((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, sign_type: value } : item))
+              );
+            }}
+            list={actionList}
+          />
+          <TextInput
+            mode="outlined"
+            label="Recipient Name"
+            value={recipient.recName}
+            onChangeText={(text) => {
+              setData((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, recName: text } : item))
+              );
+            }}
+          />
+          {recipient.sign_type == '2' ? (
+            <>
+              <TextInput
+                mode="outlined"
+                label="Host Name"
+                value={recipient.hostName}
+                onChangeText={(text) => {
+                  setData((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, hostName: text } : item))
+                  );
+                }}
+              />
+              <TextInput
+                mode="outlined"
+                label="Host Email Address"
+                value={recipient.hostEmail}
+                onChangeText={(text) => {
+                  setData((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, hostEmail: text } : item))
+                  );
+                }}
+              />
+            </>
+          ) : (
+            <TextInput
+              mode="outlined"
+              label="Recipient Email Address"
+              value={recipient.recEmail}
+              onChangeText={(text) => {
+                setData((prev) =>
+                  prev.map((item, i) => (i === index ? { ...item, recEmail: text } : item))
+                );
+              }}
+            />
+          )}
+
+          <Menu
+            visible={recipient.visible}
+            onDismiss={() => {
+              setData((prev) =>
+                prev.map((item, i) => (i === index ? { ...item, visible: false } : item))
+              );
+            }}
+            anchor={
+              <Button
+                onPress={() => {
+                  setData((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, visible: true } : item))
+                  );
+                }}
+              >
+                Customize
+              </Button>
+            }
+          >
+            <Menu.Item
+              onPress={() => {
+                setData((prev) =>
+                  prev.map((item, i) =>
+                    i === index
+                      ? {
+                          ...item,
+                          visible: false,
+                          showAccessCode: !item.showAccessCode,
+                        }
+                      : item
+                  )
+                );
+              }}
+              style={tw`h-16`}
+              title={
+                <View>
+                  <Text variant="titleSmall">Enter Access Code</Text>
+                  <Text variant="bodySmall">
+                    Enter a code that only you and this recipient know.
+                  </Text>
+                </View>
+              }
+            ></Menu.Item>
+            <Divider />
+            <Menu.Item
+              onPress={() => {
+                setData((prev) =>
+                  prev.map((item, i) =>
+                    i === index
+                      ? {
+                          ...item,
+                          visible: false,
+                          showPrivateMessage: !item.showPrivateMessage,
+                        }
+                      : item
+                  )
+                );
+              }}
+              style={tw`h-16`}
+              title={
+                <View>
+                  <Text variant="titleSmall">Add private message</Text>
+                  <Text variant="bodySmall">Include a personal note with this recipient.</Text>
+                </View>
+              }
+            />
+          </Menu>
+          {recipient.showAccessCode && (
+            // style={tw`flex-1 p-2 border border-gray-500 my-2 rounded-lg`}
+            <View>
+              {/* <Text variant="headlineSmall">Enter Access Code</Text> */}
+
+              <TextInput
+                mode="outlined"
+                label="Access Code"
+                value={recipient.access_code}
+                onChangeText={(text) => {
+                  setData((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, access_code: text } : item))
+                  );
+                }}
+              />
+              <HelperText type="info">
+                Codes are not case-sensitive. You must provide this code to the signer. This code is
+                available for you to review on the Envelope Details page.
+              </HelperText>
+            </View>
+          )}
+          {recipient.showPrivateMessage && (
+            <View>
+              <TextInput
+                mode="outlined"
+                label="Private Message"
+                value={recipient.private_message}
+                multiline
+                numberOfLines={4}
+                onChangeText={(text) => {
+                  setData((prev) =>
+                    prev.map((item, i) => (i === index ? { ...item, private_message: text } : item))
+                  );
+                }}
+              />
+              <HelperText type={1000 - recipient.private_message.length >= 0 ? 'info' : 'error'}>
+                Characters remaining: {1000 - recipient.private_message.length}
+              </HelperText>
+            </View>
+          )}
+        </View>
+      ))}
+
+      <Button
+        icon="plus"
+        onPress={() => {
+          addNewRecipient();
+        }}
+      >
+        Add Recipient
+      </Button>
+      <View style={tw`flex-1 gap-2 justify-end flex-row mx-2`}>{renderNextButton()}</View>
+    </View>
+  );
+
+  const renderAddMessage = () => (
+    <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
+      <Text variant="headlineSmall">Add Message</Text>
+      <View>
+        <TextInput
+          mode="outlined"
+          label="Email Subject"
+          value={emailSubject}
+          onChangeText={(text) => setEmailSubject(text)}
+        />
+        <HelperText type={80 - emailSubject.length >= 0 ? 'info' : 'error'}>
+          Characters remaining: {80 - emailSubject.length}
+        </HelperText>
+      </View>
+      <View>
+        <TextInput
+          mode="outlined"
+          label="Email Message"
+          value={emailMessage}
+          multiline
+          numberOfLines={4}
+          onChangeText={(text) => setEmailMessage(text)}
+        />
+        <HelperText type={1000 - emailMessage.length >= 0 ? 'info' : 'error'}>
+          Characters remaining: {1000 - emailMessage.length}
+        </HelperText>
+      </View>
+      <View style={tw`flex-1 gap-2 justify-end flex-row mx-2`}>
+        {renderPrevButton()}
+        {renderNextButton()}
+      </View>
+    </View>
+  );
+  const renderAddDocument = () => (
+    <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
+      <Text variant="headlineSmall">Add Documents</Text>
+      <View style={tw`bg-white px-8 py-8`}>
+        <View
+          style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
+        >
+          <TouchableOpacity style={tw`p-1`} onPress={handlePresentModalPress}>
+            <Image
+              style={tw`h-10 w-10 self-center`}
+              source={require('../../../assets/Upload.png')}
+            />
+            <Text style={tw`text-[${colors.blue}] mt-2`}>Drop additional documents if any</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={tw`py-5 my-2`}>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={generateSignatureDetailsImages}
+            renderItem={({ item }) => {
+              let imageUrl = '';
+              if (item.image?.includes('pdf')) {
+                item.image.split('.')[0] + '-1.jpg';
+                imageUrl =
+                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+                  item.image.split('.')[0] +
+                  '-1.jpg';
+              } else {
+                imageUrl =
+                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
+              }
+              return (
+                <Image
+                  source={{
+                    uri: imageUrl,
+                  }}
+                  style={tw`h-20 w-20 m-2 rounded-lg`}
+                />
+              );
+            }}
+          />
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={[...documents, ...uploadImage]}
+            renderItem={({ item, index }) => (
+              <View
+                style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
+                id={index + '_'}
+              >
+                {item.type === 'image' ||
+                item.type === 'image/png' ||
+                item.type === 'image/jpeg' ? (
+                  <Image
+                    source={{ uri: item.uri }}
+                    style={tw`w-20 h-20`}
+                    resizeMode="contain"
+                  ></Image>
+                ) : (
+                  <>
+                    <MaterialCommunityIcons
+                      name={
+                        item.type === 'application/pdf'
+                          ? 'file-pdf-box'
+                          : item.type === 'image/png'
+                          ? 'file-image'
+                          : 'file-question-outline'
+                      }
+                      size={40}
+                    />
+                    <Text style={tw`w-25 text-center`} numberOfLines={2}>
+                      {item.name}
+                    </Text>
+                  </>
+                )}
+              </View>
+            )}
+          />
+        </View>
+      </View>
+
+      <View style={tw`flex-1 gap-2 justify-end flex-row mx-2`}>
+        {renderPrevButton()}
+        <Button
+          loading={loading}
+          style={tw`w-30`}
+          contentStyle={tw`flex-row-reverse`}
+          mode="outlined"
+          icon="arrow-right"
+          onPress={save}
+        >
+          Create
+        </Button>
+      </View>
+    </View>
+  );
   return (
     <View style={tw`flex-1`}>
       <Appbar.Header mode="small">
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title={envelope ? 'Editing Envelope' : 'Creating New Envelope'} />
       </Appbar.Header>
-      <ScrollView>
-        <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
-          <Text variant="headlineSmall">Add Recipient</Text>
+      <Wizard activeIndex={state.activeIndex} onActiveIndexChanged={onActiveIndexChanged}>
+        <Wizard.Step
+          state={getStepState(0)}
+          labelStyle={tw`text-green-600`}
+          label={'Add Recipient'}
+        />
+        <Wizard.Step
+          labelStyle={tw`text-green-600`}
+          state={getStepState(1)}
+          label={'Add Message'}
+        />
+        <Wizard.Step
+          labelStyle={tw`text-green-600`}
+          state={getStepState(2)}
+          label={'Add Document'}
+        />
+      </Wizard>
 
-          {data.map((recipient, index) => (
-            <View
-              id={index + ''}
-              style={tw`flex-1 gap-2 p-2 border border-gray-500 my-2 rounded-lg`}
-            >
-              <View style={tw`flex-row justify-between items-center`}>
-                <Text variant="headlineSmall">Recipient {index + 1}</Text>
-                {index !== 0 && (
-                  <IconButton icon="close" size={20} onPress={() => deleteRecipient(index)} />
-                )}
-              </View>
-
-              <DropDown
-                label={'Actions'}
-                mode={'outlined'}
-                visible={recipient.showDropDown}
-                showDropDown={() =>
-                  setData((prev) =>
-                    prev.map((item, i) => (i === index ? { ...item, showDropDown: true } : item))
-                  )
-                }
-                onDismiss={() =>
-                  setData((prev) =>
-                    prev.map((item, i) => (i === index ? { ...item, showDropDown: false } : item))
-                  )
-                }
-                value={String(recipient.sign_type)}
-                setValue={(value) => {
-                  setData((prev) =>
-                    prev.map((item, i) => (i === index ? { ...item, sign_type: value } : item))
-                  );
-                }}
-                list={actionList}
-              />
-              <TextInput
-                mode="outlined"
-                label="Recipient Name"
-                value={recipient.recName}
-                onChangeText={(text) => {
-                  setData((prev) =>
-                    prev.map((item, i) => (i === index ? { ...item, recName: text } : item))
-                  );
-                }}
-              />
-              {recipient.sign_type == '2' ? (
-                <>
-                  <TextInput
-                    mode="outlined"
-                    label="Host Name"
-                    value={recipient.hostName}
-                    onChangeText={(text) => {
-                      setData((prev) =>
-                        prev.map((item, i) => (i === index ? { ...item, hostName: text } : item))
-                      );
-                    }}
-                  />
-                  <TextInput
-                    mode="outlined"
-                    label="Host Email Address"
-                    value={recipient.hostEmail}
-                    onChangeText={(text) => {
-                      setData((prev) =>
-                        prev.map((item, i) => (i === index ? { ...item, hostEmail: text } : item))
-                      );
-                    }}
-                  />
-                </>
-              ) : (
-                <TextInput
-                  mode="outlined"
-                  label="Recipient Email Address"
-                  value={recipient.recEmail}
-                  onChangeText={(text) => {
-                    setData((prev) =>
-                      prev.map((item, i) => (i === index ? { ...item, recEmail: text } : item))
-                    );
-                  }}
-                />
-              )}
-
-              <Menu
-                visible={recipient.visible}
-                onDismiss={() => {
-                  setData((prev) =>
-                    prev.map((item, i) => (i === index ? { ...item, visible: false } : item))
-                  );
-                }}
-                anchor={
-                  <Button
-                    onPress={() => {
-                      setData((prev) =>
-                        prev.map((item, i) => (i === index ? { ...item, visible: true } : item))
-                      );
-                    }}
-                  >
-                    Customize
-                  </Button>
-                }
-              >
-                <Menu.Item
-                  onPress={() => {
-                    setData((prev) =>
-                      prev.map((item, i) =>
-                        i === index
-                          ? {
-                              ...item,
-                              visible: false,
-                              showAccessCode: !item.showAccessCode,
-                            }
-                          : item
-                      )
-                    );
-                  }}
-                  style={tw`h-16`}
-                  title={
-                    <View>
-                      <Text variant="titleSmall">Enter Access Code</Text>
-                      <Text variant="bodySmall">
-                        Enter a code that only you and this recipient know.
-                      </Text>
-                    </View>
-                  }
-                ></Menu.Item>
-                <Divider />
-                <Menu.Item
-                  onPress={() => {
-                    setData((prev) =>
-                      prev.map((item, i) =>
-                        i === index
-                          ? {
-                              ...item,
-                              visible: false,
-                              showPrivateMessage: !item.showPrivateMessage,
-                            }
-                          : item
-                      )
-                    );
-                  }}
-                  style={tw`h-16`}
-                  title={
-                    <View>
-                      <Text variant="titleSmall">Add private message</Text>
-                      <Text variant="bodySmall">Include a personal note with this recipient.</Text>
-                    </View>
-                  }
-                />
-              </Menu>
-              {recipient.showAccessCode && (
-                // style={tw`flex-1 p-2 border border-gray-500 my-2 rounded-lg`}
-                <View>
-                  {/* <Text variant="headlineSmall">Enter Access Code</Text> */}
-
-                  <TextInput
-                    mode="outlined"
-                    label="Access Code"
-                    value={recipient.access_code}
-                    onChangeText={(text) => {
-                      setData((prev) =>
-                        prev.map((item, i) => (i === index ? { ...item, access_code: text } : item))
-                      );
-                    }}
-                  />
-                  <HelperText type="info">
-                    Codes are not case-sensitive. You must provide this code to the signer. This
-                    code is available for you to review on the Envelope Details page.
-                  </HelperText>
-                </View>
-              )}
-              {recipient.showPrivateMessage && (
-                <View>
-                  <TextInput
-                    mode="outlined"
-                    label="Private Message"
-                    value={recipient.private_message}
-                    multiline
-                    numberOfLines={4}
-                    onChangeText={(text) => {
-                      setData((prev) =>
-                        prev.map((item, i) =>
-                          i === index ? { ...item, private_message: text } : item
-                        )
-                      );
-                    }}
-                  />
-                  <HelperText
-                    type={1000 - recipient.private_message.length >= 0 ? 'info' : 'error'}
-                  >
-                    Characters remaining: {1000 - recipient.private_message.length}
-                  </HelperText>
-                </View>
-              )}
-            </View>
-          ))}
-
-          <Button
-            icon="plus"
-            onPress={() => {
-              addNewRecipient();
-            }}
-          >
-            Add Recipient
-          </Button>
-        </View>
-        <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
-          <Text variant="headlineSmall">Add Message</Text>
-          <View>
-            <TextInput
-              mode="outlined"
-              label="Email Subject"
-              value={emailSubject}
-              onChangeText={(text) => setEmailSubject(text)}
-            />
-            <HelperText type={80 - emailSubject.length >= 0 ? 'info' : 'error'}>
-              Characters remaining: {80 - emailSubject.length}
-            </HelperText>
-          </View>
-          <View>
-            <TextInput
-              mode="outlined"
-              label="Email Message"
-              value={emailMessage}
-              multiline
-              numberOfLines={4}
-              onChangeText={(text) => setEmailMessage(text)}
-            />
-            <HelperText type={1000 - emailMessage.length >= 0 ? 'info' : 'error'}>
-              Characters remaining: {1000 - emailMessage.length}
-            </HelperText>
-          </View>
-        </View>
-        <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
-          <Text variant="headlineSmall">Add Documents</Text>
-          <View style={tw`bg-white px-8 py-8`}>
-            <View
-              style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
-            >
-              <TouchableOpacity style={tw`p-1`} onPress={handlePresentModalPress}>
-                <Image
-                  style={tw`h-10 w-10 self-center`}
-                  source={require('../../../assets/Upload.png')}
-                />
-                <Text style={tw`text-[${colors.blue}] mt-2`}>Drop additional documents if any</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={tw`py-5 my-2`}>
-              <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={generateSignatureDetailsImages}
-                renderItem={({ item }) => {
-                  let imageUrl = '';
-                  if (item.image?.includes('pdf')) {
-                    item.image.split('.')[0] + '-1.jpg';
-                    imageUrl =
-                      'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-                      item.image.split('.')[0] +
-                      '-1.jpg';
-                  } else {
-                    imageUrl =
-                      'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-                  }
-                  return (
-                    <Image
-                      source={{
-                        uri: imageUrl,
-                      }}
-                      style={tw`h-20 w-20 m-2 rounded-lg`}
-                    />
-                  );
-                }}
-              />
-              <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={[...documents, ...uploadImage]}
-                renderItem={({ item, index }) => (
-                  <View
-                    style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
-                    id={index + '_'}
-                  >
-                    {item.type === 'image' ||
-                    item.type === 'image/png' ||
-                    item.type === 'image/jpeg' ? (
-                      <Image
-                        source={{ uri: item.uri }}
-                        style={tw`w-20 h-20`}
-                        resizeMode="contain"
-                      ></Image>
-                    ) : (
-                      <>
-                        <MaterialCommunityIcons
-                          name={
-                            item.type === 'application/pdf'
-                              ? 'file-pdf-box'
-                              : item.type === 'image/png'
-                              ? 'file-image'
-                              : 'file-question-outline'
-                          }
-                          size={40}
-                        />
-                        <Text style={tw`w-25 text-center`} numberOfLines={2}>
-                          {item.name}
-                        </Text>
-                      </>
-                    )}
-                  </View>
-                )}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={tw`flex-1  mb-10  justify-end flex-row mx-4`}>
-          <Button
-            loading={loading}
-            style={tw`w-30`}
-            contentStyle={tw`flex-row-reverse`}
-            mode="outlined"
-            icon="arrow-right"
-            onPress={save}
-          >
-            Next
-          </Button>
-        </View>
-      </ScrollView>
+      <ScrollView>{renderCurrentStep()}</ScrollView>
 
       <BottomSheetModal
         ref={bottomSheetRef}
