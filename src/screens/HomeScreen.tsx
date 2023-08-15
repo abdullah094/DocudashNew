@@ -16,7 +16,7 @@ import COLORS from '../constants/colors';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import pets from '../constants/pets';
 import Animated from 'react-native-reanimated';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 const { height } = Dimensions.get('window');
 import { LogBox } from 'react-native';
 import { HomeDrawerScreenProps, RootStackScreenProps, pet, User, DashboardAPI } from '@type/index';
@@ -87,12 +87,12 @@ const HomeScreen = () => {
       </View>
     );
   };
-
+  const isFocused = useIsFocused();
   useEffect(() => {
     fetchDashData();
-    console.log('Change name Home');
+    console.log('Change name Home', isFocused);
     dispatch(setRouteName('Home'));
-  }, [route]);
+  }, [navigation, isFocused]);
 
   const pickImage = async () => {
     if (loading) return;

@@ -20,7 +20,7 @@ const Inbox = () => {
   useEffect(() => {
     console.log('Change name');
     dispatch(setRouteName('Manage'));
-  }, [route]);
+  }, [navigation]);
 
   return (
     <SafeAreaView style={tw`flex-1`}>
