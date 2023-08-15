@@ -1,14 +1,14 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { SignUpStackParamList } from '@types';
+import { SignUpStackParamList } from '@type/index';
 import { getData } from '@utils/AsyncFunc';
-import EmailScreen from '@screens/signup/Email';
-import IndustriesScreen from '@screens/signup/Industries';
-import OptScreen from '@screens/signup/OptScreen';
-import PasswordScreen from '@screens/signup/Password';
-import SetPasswordScreen from '@screens/signup/SetPassword';
-import UserInfoScreen from '@screens/signup/UserInfo';
+import EmailScreen from '@screens/SignUp1/Email';
+import IndustriesScreen from '@screens/SignUp1/Industries';
+import OptScreen from '@screens/SignUp1/OptScreen';
+import PasswordScreen from '@screens/SignUp1/Password';
+import SetPasswordScreen from '@screens/SignUp1/SetPassword';
+import UserInfoScreen from '@screens/SignUp1/UserInfo';
 import Loader from '@components/Loader';
 
 const LoginStack = createStackNavigator<SignUpStackParamList>();
