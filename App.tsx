@@ -1,35 +1,19 @@
-import React, { useState } from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import StackNavigator from './src/navigators/StackNavigator';
-import useCachedResources from './src/hooks/useCachedResources';
-import { observer } from 'mobx-react-lite';
-import { makeAutoObservable } from 'mobx';
-import {
-  Appbar,
-  DefaultTheme,
-  Provider,
-  Surface,
-  ThemeProvider,
-  PaperProvider,
-  MD3DarkTheme,
-  MD3LightTheme,
-  useTheme,
-  MD2LightTheme,
-  MD2DarkTheme,
-} from 'react-native-paper';
-import { darkColors, lightColors } from './src/assets/styles/LightTheme';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import StackNavigator from '@navigation/StackNavigator';
 import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
-import { MenuProvider } from 'react-native-popup-menu';
-import { Provider as ReduxProvider } from 'react-redux';
-import Store from './src/Redux/Store';
-import BottomSheet, { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-
+import { NavigationContainer } from '@react-navigation/native';
+import store from '@stores/index';
+import { darkColors, lightColors } from '@utils/index';
+import React from 'react';
+import { StyleSheet, useColorScheme } from 'react-native';
+import 'react-native-gesture-handler';
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import { Provider as StoreProvider } from 'react-redux';
+import useCachedResources from './src/hooks/useCachedResources';
 export default function App() {
   const isLoadingComplete = useCachedResources();
-
   const colorScheme = useColorScheme();
-  // const { theme } = useMaterial3Theme();
+  const { theme } = useMaterial3Theme();
 
   const paperTheme =
     colorScheme === 'dark'
@@ -40,17 +24,15 @@ export default function App() {
     return null;
   }
   return (
-    <ReduxProvider store={Store}>
-      <BottomSheetModalProvider>
-        <PaperProvider theme={paperTheme}>
-          <MenuProvider>
-            <NavigationContainer>
-              <StackNavigator />
-            </NavigationContainer>
-          </MenuProvider>
-        </PaperProvider>
-      </BottomSheetModalProvider>
-    </ReduxProvider>
+    <StoreProvider store={store}>
+      <PaperProvider theme={paperTheme}>
+        <BottomSheetModalProvider>
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </BottomSheetModalProvider>
+      </PaperProvider>
+    </StoreProvider>
   );
 }
 
