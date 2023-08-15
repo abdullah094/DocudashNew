@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import tw from 'twrnc';
-import { DashBoardDrawerScreenProps, User } from '@type/index';
+import { RootStackScreenProps, User } from '@type/index';
 import { colors } from '@utils/Colors';
 import { useSelector } from 'react-redux';
 import { selectProfileData } from '@stores/Slices';
@@ -21,7 +21,7 @@ import COLORS from '@constants/colors';
 const DrawerProfileModal = () => {
   const user = useSelector(selectProfileData);
   const [modalVisible, setModalVisible] = useState(false);
-  const navigation = useNavigation<DashBoardDrawerScreenProps<'Dashboard'>['navigation']>();
+  const navigation = useNavigation<RootStackScreenProps<'Home'>['navigation']>();
   return (
     <>
       {user && (

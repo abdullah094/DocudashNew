@@ -32,7 +32,7 @@ import tw from 'twrnc';
 import {
   GenerateSignature,
   GenerateSignatureDetailsImage,
-  ManageDrawerScreenProps,
+  RootStackScreenProps,
   UploadDocumentAPI,
 } from '@type/index';
 import { colors } from '@utils/Colors';
@@ -57,8 +57,8 @@ const Edit = () => {
   const flavors = ['Chocolate', 'Vanilla'];
   const initialFlavor = flavors[0];
   const accessToken = useSelector(selectAccessToken);
-  const navigation = useNavigation<ManageDrawerScreenProps<'Edit'>['navigation']>();
-  const route = useRoute<ManageDrawerScreenProps<'Edit'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'Edit'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'Edit'>['route']>();
   const [state, setState] = useState<State>({
     activeIndex: 0,
     completedStepIndex: undefined,

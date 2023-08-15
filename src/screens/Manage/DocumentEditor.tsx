@@ -21,7 +21,7 @@ import {
   GenerateSignatureDetail,
   GenerateSignatureDetails,
   HtmlEditorAPI,
-  ManageDrawerScreenProps,
+  RootStackScreenProps,
 } from '@type/index';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
@@ -77,8 +77,8 @@ const color = [
 ];
 const DocumentEditor = () => {
   const accessToken = useSelector(selectAccessToken);
-  const navigation = useNavigation<ManageDrawerScreenProps<'DocumentEditor'>['navigation']>();
-  const route = useRoute<ManageDrawerScreenProps<'DocumentEditor'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'DocumentEditor'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'DocumentEditor'>['route']>();
   const [draggedElArr, setDraggedElArr] = useState<DraggedElArr>({
     signature: [],
     initial: [],
@@ -177,7 +177,7 @@ const DocumentEditor = () => {
           alert(message);
 
           navigation.navigate('Home', {
-            screen: 'Inbox',
+            screen: 'INBOX',
             params: { heading: 'Sent' },
           });
         } else {

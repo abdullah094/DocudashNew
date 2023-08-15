@@ -29,6 +29,7 @@ const SetPasswordScreen = () => {
         const { data, success, message }: iStep4 = response.data;
         console.log('PasswordScreen', data);
         if (success) {
+          //@ts-ignore
           navigation.replace('SignUpIndex', {
             screen: ('Step' + data.steps) as any,
             params: {

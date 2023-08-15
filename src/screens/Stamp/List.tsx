@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Chip, Switch } from 'react-native-paper';
 import tw from 'twrnc';
-import { DashBoardDrawerScreenProps, StampListAPI, StampPreview } from '@type/index';
+import { RootStackScreenProps, StampListAPI, StampPreview } from '@type/index';
 import { colors } from '@utils/Colors';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
@@ -22,8 +22,8 @@ export default function List() {
   const accessToken = useSelector(selectAccessToken);
   const [list, setList] = React.useState<StampPreview[]>();
   const [isFetching, setIsFetching] = React.useState(false);
-  const navigation = useNavigation<DashBoardDrawerScreenProps<'Stamps'>['navigation']>();
-  const route = useRoute<DashBoardDrawerScreenProps<'Stamps'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'Stamps'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'Stamps'>['route']>();
 
   const fetchList = () => {
     setIsFetching(true);

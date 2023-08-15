@@ -7,6 +7,7 @@ import ProgressModal from './ProgressModal';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
+import { HeaderAPI, HeaderOption } from '@type/*';
 
 export default function GettingStarted() {
   const [completeNumber, setCompleteNumber] = useState<number>(0);

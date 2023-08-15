@@ -3,7 +3,7 @@ import SkeletonLoader from 'expo-skeleton-loader';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import tw from 'twrnc';
-import { Envelope, ManageDrawerScreenProps } from '@types/index';
+import { Envelope, RootStackScreenProps } from '@type/index';
 import { colors } from '@utils/Colors';
 
 interface IEnvelopeListItem {
@@ -12,8 +12,8 @@ interface IEnvelopeListItem {
 }
 
 export default function EnvelopeListItem({ item, heading }: IEnvelopeListItem) {
-  const navigation = useNavigation<ManageDrawerScreenProps<'Inbox'>['navigation']>();
-  const route = useRoute<ManageDrawerScreenProps<'Inbox'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'Inbox'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'Inbox'>['route']>();
   return (
     <TouchableOpacity
       delayPressIn={25}

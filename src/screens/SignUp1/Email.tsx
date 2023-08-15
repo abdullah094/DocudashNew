@@ -27,6 +27,7 @@ const EmailScreen = () => {
         console.log('emailScreen', response.data);
         if (success) {
           if (data.steps === 5) {
+            // @ts-ignore
             navigation.navigate('SignUpIndex', {
               screen: ('Step' + data.steps) as any,
               params: {
@@ -35,6 +36,7 @@ const EmailScreen = () => {
               },
             });
           } else {
+            // @ts-ignore
             navigation.replace('SignUpIndex', {
               screen: ('Step' + data.steps) as any,
               params: {

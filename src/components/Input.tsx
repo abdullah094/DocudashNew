@@ -4,7 +4,7 @@ import { TextInput } from 'react-native-paper';
 import tw from 'twrnc';
 interface props {
   state: string | number | undefined | SetStateAction<string | undefined>;
-  setState: Dispatch<React.SetStateAction<string>> | string;
+  setState: Dispatch<React.SetStateAction<string>> | ((text: string) => string);
   placeholder: string;
   style?: StyleProp<ViewStyle> | object;
   secureTextEntry?: boolean;

@@ -77,7 +77,7 @@ const HomeScreen = () => {
         }
       });
   };
-  const Box = ({ text, num }: box) => {
+  const Box = ({ text, num }: { text: string; num: number }) => {
     return (
       <View style={tw`border-2 border-white p-2  rounded-lg w-[40%] h-22`}>
         <Text style={tw`text-10 text-white`}>{num}</Text>
@@ -224,10 +224,7 @@ const HomeScreen = () => {
             <Button
               mode="contained"
               onPress={() =>
-                navigation.navigate('ManageDrawer', {
-                  screen: 'Edit',
-                  params: { files: documents, images: imagesUpload },
-                })
+                navigation.navigate('Edit', { files: documents, images: imagesUpload })
               }
             >
               Start Now

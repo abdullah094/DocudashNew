@@ -7,7 +7,7 @@ import tw from 'twrnc';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import FormData from 'form-data';
-import { RootStackScreenProps, StampPreview, User } from '@types/index';
+import { RootStackScreenProps, StampPreview, User } from '@type/index';
 import { useSelector } from 'react-redux';
 import { selectAccessToken, selectProfileData } from '@stores/Slices';
 

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Appbar, Menu, Button, IconButton, Divider } from 'react-native-paper';
 import tw from 'twrnc';
-import { Envelope, ManageDrawerScreenProps, ViewDocument } from '@type/index';
+import { Envelope, RootStackScreenProps, ViewDocument } from '@type/index';
 import Loader from '@components/Loader';
 import SigningOrderModal from '@components/SigningOrderModal';
 import { useSelector } from 'react-redux';
@@ -19,8 +19,8 @@ interface IButton {
 
 const Details = () => {
   const accessToken = useSelector(selectAccessToken);
-  const navigation = useNavigation<ManageDrawerScreenProps<'Details'>['navigation']>();
-  const route = useRoute<ManageDrawerScreenProps<'Details'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'Details'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'Details'>['route']>();
   const inbox: Envelope = route.params?.Envelope;
   const [data, setData] = useState<ViewDocument>();
   const [dataLoader, setDataLoader] = useState(true);

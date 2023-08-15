@@ -38,6 +38,7 @@ const OptScreen = () => {
 
         if (success) {
           setLoading(false),
+            //@ts-ignore
             navigation.replace('SignUpIndex', {
               screen: ('Step' + data.steps) as any,
               params: {

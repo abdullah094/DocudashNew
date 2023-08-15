@@ -6,8 +6,6 @@ import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import COLORS from '@constants/colors';
 import CustomDrawerContent from '@components/CustomDrawerContent';
 import DrawerScreenContainer from '@components/DrawerScreenContainer';
-import StackNavigator from './StackNavigator';
-import ProfileScreen from '@screens/ProfileScreen';
 import SignatureList from '@screens/Signatures/List';
 import StampList from '@screens/Stamp/List';
 import Profile from '@screens/Profile';
@@ -59,7 +57,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer {...props}>
-                <HomeScreen {...props} />
+                <HomeScreen />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
@@ -74,7 +72,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer {...props}>
-                <Inbox {...props} />
+                <Inbox />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
@@ -89,7 +87,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer {...props}>
-                <SignatureList {...props} />
+                <SignatureList />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
@@ -104,7 +102,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer {...props}>
-                <StampList {...props} />
+                <StampList />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
@@ -119,7 +117,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer>
-                <Profile {...props} />
+                <Profile />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
@@ -137,8 +135,8 @@ const DrawerNavigator = () => {
           >
             {(props) => {
               return (
-                <DrawerScreenContainer>
-                  <Inbox {...props} />
+                <DrawerScreenContainer {...props}>
+                  <Inbox />
                 </DrawerScreenContainer>
               );
             }}
@@ -154,8 +152,8 @@ const DrawerNavigator = () => {
           >
             {(props) => {
               return (
-                <DrawerScreenContainer>
-                  <Inbox {...props} />
+                <DrawerScreenContainer {...props}>
+                  <Inbox />
                 </DrawerScreenContainer>
               );
             }}
@@ -171,8 +169,8 @@ const DrawerNavigator = () => {
           >
             {(props) => {
               return (
-                <DrawerScreenContainer>
-                  <Inbox {...props} />
+                <DrawerScreenContainer {...props}>
+                  <Inbox />
                 </DrawerScreenContainer>
               );
             }}
@@ -188,8 +186,8 @@ const DrawerNavigator = () => {
           >
             {(props) => {
               return (
-                <DrawerScreenContainer>
-                  <Inbox {...props} />
+                <DrawerScreenContainer {...props}>
+                  <Inbox />
                 </DrawerScreenContainer>
               );
             }}
@@ -205,7 +203,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer {...props}>
-                <HomeScreen {...props} />
+                <HomeScreen />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>

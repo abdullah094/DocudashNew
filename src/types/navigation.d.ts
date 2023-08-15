@@ -30,7 +30,19 @@ export type RootStackParamList = {
   Stamps: {} | undefined;
   AddStamp: { Stamp?: StampPreview };
   Profile: undefined;
+  SignUpIndex: undefined;
+  Template: undefined
 };
+
+export type SignUpStackParamList = {
+  Index: undefined;
+  Step1: { api: string };
+  Step2: { api: string };
+  Step3: { api: string };
+  Step4: { industry: Industry[]; signUpReasons: Industry[] };
+  Step5: { token: string; email: string };
+};
+
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<
   RootStackParamList,
@@ -40,12 +52,19 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScre
 export type HomeDrawerParamList = {
   HomeScreen: undefined;
   Latest: undefined;
+  INBOX: {heading: string}
 };
 
 export type HomeDrawerScreenProps<T extends keyof HomeDrawerParamList> = CompositeScreenProps<
   DrawerScreenProps<HomeDrawerParamList, T>,
   RootStackScreenProps<keyof RootStackParamList>
 >;
+
+export type SignUpStackScreenProps<T extends keyof SignUpStackParamList> = CompositeScreenProps<
+  StackScreenProps<SignUpStackParamList, T>,
+  RootStackScreenProps<keyof RootStackParamList>
+>;
+
 
 declare global {
   namespace ReactNavigation {

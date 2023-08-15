@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { Appbar, Divider } from 'react-native-paper';
 import tw from 'twrnc';
-import { Envelope, InboxApiResponse, ManageDrawerScreenProps } from '@type/index';
+import { RootStackScreenProps } from '@type/index';
 // import EmailBar from '@components/EmailBar';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAccessToken, selectRouteName, setRouteName } from '@stores/Slices';
@@ -12,8 +12,8 @@ import EnvelopeList from '@components/EnvelopeList';
 import HomeHeader from '@components/HomeHeader';
 
 const Inbox = () => {
-  const navigation = useNavigation<ManageDrawerScreenProps<'Inbox'>['navigation']>();
-  const route = useRoute<ManageDrawerScreenProps<'Inbox'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'Inbox'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'Inbox'>['route']>();
   const heading = route.params?.heading || ('Inbox' as string);
 
   const dispatch = useDispatch();

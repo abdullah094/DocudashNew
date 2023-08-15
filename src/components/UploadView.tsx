@@ -8,6 +8,7 @@ import { Button, Divider, List } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import { RootStackScreenProps } from '@type/*';
 
 interface uploadType {
   uri: string;
@@ -16,7 +17,7 @@ interface uploadType {
 }
 
 export default function UploadView({ documents, setDocuments, imagesUpload, setImagesUpload }) {
-  const navigation = useNavigation<DashBoardDrawerScreenProps<'Dashboard'>['navigation']>();
+  const navigation = useNavigation<RootStackScreenProps<'Home'>['navigation']>();
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ['35%', '45%'], []);
   const handleSheetChanges = useCallback((index: number) => {}, []);

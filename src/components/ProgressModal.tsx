@@ -13,7 +13,7 @@ import {
 import { IconButton } from 'react-native-paper';
 import * as Progress from 'react-native-progress';
 import tw from 'twrnc';
-import { DashBoardDrawerScreenProps, HeaderOption } from '@type/index';
+import { HeaderOption, RootStackScreenProps } from '@type/index';
 import { colors } from '@utils/Colors';
 
 interface IRectangle {
@@ -51,7 +51,7 @@ interface IProgressModal {
 const { width } = Dimensions.get('window');
 const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const navigation = useNavigation<DashBoardDrawerScreenProps<'Dashboard'>['navigation']>();
+  const navigation = useNavigation<RootStackScreenProps<'Home'>['navigation']>();
   if (!obj) return <></>;
 
   return (
@@ -115,7 +115,7 @@ const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
               check={obj?.Send_Documents_for_Signature}
               onPress={() => {
                 setModalVisible(!modalVisible);
-                navigation.navigate('ManageDrawer', { screen: 'Edit' });
+                navigation.navigate('Edit');
               }}
             />
             <Rectangle
