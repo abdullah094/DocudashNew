@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import DropDown from 'react-native-paper-dropdown';
 import tw from 'twrnc';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { Istep5Response, SignUpStackScreenProps } from '../../../types';
-import { storeTokenGlobal } from '../../AsyncGlobal';
-import { colors } from '../../Colors';
-import GreenButton from '../../components/GreenButton';
-import { clearAsync, getToken } from './AsynFunc';
+import { Istep5Response, SignUpStackScreenProps } from '@type/index';
+import { storeTokenGlobal } from '@utils/AsyncGlobal';
+import { colors } from '@utils/Colors';
+import GreenButton from '@components/GreenButton';
+import { clearAsync, getToken } from '@utils/AsyncFunc';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAccessToken } from '@stores/Slices';
 
 interface route {
   email: string;
@@ -42,7 +43,7 @@ const IndustriesScreen = () => {
   const [reasonID, setReasonID] = useState<string>('');
   const [showDropDownIndustry, setShowDropDownIndustry] = useState(false);
   const [showDropDownReason, setShowDropDownReason] = useState(false);
-  const mobX = useCounterStore();
+  const dispatch = useDispatch();
 
   const fetchIndustry = () => {
     axios.get('https://docudash.net/api/set-ups/industries/').then((response) => {
@@ -55,9 +56,6 @@ const IndustriesScreen = () => {
           };
         }) as dropDown[]
       );
-      // if (data.length > 0) {
-      //   setIndustryID(String(data[0].id));
-      // }
     });
   };
 
@@ -73,9 +71,6 @@ const IndustriesScreen = () => {
           };
         }) as dropDown[]
       );
-      // if (data.length > 0) {
-      //   setReasonID(String(data[0].id));
-      // }
     });
   };
   useEffect(() => {
@@ -93,11 +88,11 @@ const IndustriesScreen = () => {
       .then((response) => {
         const { success, message, token }: Istep5Response = response.data;
         if (success) {
-          mobX.addAccessToken(token),
-            setLoading(false),
-            Alert.alert(message),
-            storeTokenGlobal(token),
-            clearAsync();
+          dispatch(setAccessToken(token));
+          setLoading(false);
+          Alert.alert(message);
+          storeTokenGlobal(token);
+          clearAsync();
         } else {
           setLoading(false);
           // @ts-ignore
@@ -123,7 +118,7 @@ const IndustriesScreen = () => {
         <Image
           style={tw`w-75 h-35 self-center`}
           resizeMode="contain"
-          source={require('../../assets/logo.png')}
+          source={require('@assets/logo.png')}
         />
         <Text
           style={{

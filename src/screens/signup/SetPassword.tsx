@@ -1,13 +1,13 @@
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SignUpStackScreenProps, iStep4 } from '@type/index';
+import { getToken, storeData } from '@utils/AsyncFunc';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import tw from 'twrnc';
-import { SignUpStackScreenProps, iStep4 } from '@types';
-import { colors } from '@utils/Colors';
-import GreenButton from '@components/GreenButton';
-import Input from '@components/Input';
-import { getToken, storeData } from '@utils/AsyncFunc';
 
 interface route {
   email: string;

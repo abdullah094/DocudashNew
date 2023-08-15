@@ -1,14 +1,13 @@
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
 import { useNavigation } from '@react-navigation/native';
+import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
+import { storeData, storeToken } from '@utils/AsyncFunc';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Checkbox } from 'react-native-paper';
+import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Checkbox, Text } from 'react-native-paper';
 import tw from 'twrnc';
-import { SignUpAPI, SignUpStackScreenProps } from '../../../types';
-import { colors } from '../../Colors';
-import GreenButton from '../../components/GreenButton';
-import Input from '../../components/Input';
-import { storeData, storeToken } from './AsynFunc';
 
 const EmailScreen = () => {
   const navigation = useNavigation<SignUpStackScreenProps<'Index'>['navigation']>();
@@ -65,7 +64,6 @@ const EmailScreen = () => {
         <Text
           style={{
             fontFamily: 'nunito-SemiBold',
-            color: colors.blue,
             fontSize: 25,
           }}
         >

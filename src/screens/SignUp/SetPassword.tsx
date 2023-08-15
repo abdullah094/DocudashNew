@@ -1,13 +1,13 @@
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SignUpStackScreenProps, iStep4 } from '@type/index';
+import { getToken, storeData } from '@utils/AsyncFunc';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import tw from 'twrnc';
-import { SignUpStackScreenProps, iStep4 } from '../../../types';
-import { colors } from '../../Colors';
-import GreenButton from '../../components/GreenButton';
-import Input from '../../components/Input';
-import { getToken, storeData } from './AsynFunc';
 
 interface route {
   email: string;
@@ -53,7 +53,7 @@ const SetPasswordScreen = () => {
         <Image
           style={tw`w-75 h-35 self-center`}
           resizeMode="contain"
-          source={require('../../assets/logo.png')}
+          source={require('@assets/logo.png')}
         />
         <Text
           style={{

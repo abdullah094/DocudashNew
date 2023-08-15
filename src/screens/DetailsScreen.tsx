@@ -1,19 +1,10 @@
-import React from 'react';
-import {
-  Text,
-  ImageBackground,
-  SafeAreaView,
-  StatusBar,
-  View,
-  Image,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import COLORS from '../constants/colors';
-import Animated from 'react-native-reanimated';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackScreenProps, pet } from '@types/index';
+import { RootStackScreenProps, pet } from '@type/index';
+import React from 'react';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
+import COLORS from '../constants/colors';
 
 const DetailsScreen = () => {
   const navigation = useNavigation<RootStackScreenProps<'DetailsScreen'>['navigation']>();

@@ -3,20 +3,22 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import tw from 'twrnc';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { SignUpStackScreenProps } from '../../../types';
-import { storeTokenGlobal } from '../../AsyncGlobal';
-import GreenButton from '../../components/GreenButton';
-import Input from '../../components/Input';
+import { SignUpStackScreenProps } from '@type/index';
+import { storeTokenGlobal } from '@utils/AsyncGlobal';
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
+import { setAccessToken } from '@stores/Slices';
+import { useDispatch } from 'react-redux';
 
 const PasswordScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigation = useNavigation<SignUpStackScreenProps<'Step5'>['navigation']>();
   const route = useRoute<SignUpStackScreenProps<'Step5'>['route']>();
   const { token, email } = route.params;
-  const Mobx = useCounterStore();
+
   const [password, setPassword] = useState<string>('');
 
+  const dispatch = useDispatch();
   const LoginButton = async () => {
     setLoading(true);
     await axios
@@ -30,8 +32,9 @@ const PasswordScreen = () => {
         console.log(response.data);
         setLoading(false);
         if (success) {
+          console.log('token', token);
           storeTokenGlobal(token);
-          Mobx.addAccessToken(token);
+          dispatch(setAccessToken(token));
         } else {
           Alert.alert(message);
         }
@@ -48,7 +51,7 @@ const PasswordScreen = () => {
       <View style={tw`flex-1 bg-white gap-3 px-10 justify-center`}>
         <Image
           style={tw`w-50 h-10 rounded-sm self-center`}
-          source={require('../../assets/docudash_pow_logo.png')}
+          source={require('@assets/docudash_pow_logo.png')}
         />
         <Input
           state={password}

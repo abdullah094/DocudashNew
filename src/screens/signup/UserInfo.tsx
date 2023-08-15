@@ -1,4 +1,9 @@
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
+import { getToken, storeData } from '@utils/AsyncFunc';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
@@ -12,11 +17,6 @@ import {
   View,
 } from 'react-native';
 import tw from 'twrnc';
-import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
-import { colors } from '@utils/Colors';
-import GreenButton from '@components/GreenButton';
-import Input from '@components/Input';
-import { getToken, storeData } from '@utils/AsyncFunc';
 
 interface form {
   first_Name: string;

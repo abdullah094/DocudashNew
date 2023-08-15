@@ -12,11 +12,11 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import tw from 'twrnc';
-import { SignUpAPI, SignUpStackScreenProps } from '../../../types';
-import { colors } from '../../Colors';
-import GreenButton from '../../components/GreenButton';
-import Input from '../../components/Input';
-import { getToken, storeData } from './AsynFunc';
+import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
+import { colors } from '@utils/Colors';
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
+import { getToken, storeData } from '@utils/AsyncFunc';
 
 const OptScreen = () => {
   const navigation = useNavigation<SignUpStackScreenProps<'Step2'>['navigation']>();
@@ -75,7 +75,7 @@ const OptScreen = () => {
           <Image
             style={tw`w-65 self-center`}
             resizeMode="contain"
-            source={require('../../assets/logo.png')}
+            source={require('@assets/logo.png')}
           />
           <Text
             style={{

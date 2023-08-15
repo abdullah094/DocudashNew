@@ -1,4 +1,9 @@
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
+import { getToken, storeData } from '@utils/AsyncFunc';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
@@ -12,12 +17,6 @@ import {
   View,
 } from 'react-native';
 import tw from 'twrnc';
-import { useCounterStore } from '../../../MobX/TodoStore';
-import { SignUpAPI, SignUpStackScreenProps } from '../../../types';
-import { colors } from '../../Colors';
-import GreenButton from '../../components/GreenButton';
-import Input from '../../components/Input';
-import { getToken, storeData } from './AsynFunc';
 
 interface form {
   first_Name: string;
@@ -27,9 +26,8 @@ interface form {
 const UserInfoScreen = () => {
   const navigation = useNavigation<SignUpStackScreenProps<'Step2'>['navigation']>();
   const route = useRoute<SignUpStackScreenProps<'Step2'>['route']>();
-  const { count, increment, decrement, access_token } = useCounterStore();
   const [fontsLoaded] = useFonts({
-    Signature: require('../../assets/Fonts/Creattion.otf'),
+    Signature: require('@assets/Fonts/Creattion.otf'),
   });
 
   const [form, setForm] = useState<form>({
@@ -90,7 +88,7 @@ const UserInfoScreen = () => {
           <Image
             style={tw`w-65 self-center`}
             resizeMode="contain"
-            source={require('../../assets/logo.png')}
+            source={require('@assets/logo.png')}
           />
           <Text
             style={{
@@ -138,7 +136,7 @@ const UserInfoScreen = () => {
             <Image
               style={tw`w-30 self-center top-3`}
               resizeMode="contain"
-              source={require('../../assets/logo.png')}
+              source={require('@assets/logo.png')}
             />
             <View style={tw`w-30  h-20 border-b-2  border-gray-400 justify-end py-3 items-center`}>
               <Text style={{ fontFamily: 'Signature', fontSize: 28 }}>

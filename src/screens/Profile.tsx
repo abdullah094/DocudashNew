@@ -1,17 +1,17 @@
+import HomeHeader from '@components/HomeHeader';
+import InfoEditModal from '@components/InfoEditModel';
+import NameEditModal from '@components/NameEditModel';
+import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
+import { DashboardAPI } from '@type/index';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
 import React, { useState } from 'react';
-import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { Avatar, Button, Text } from 'react-native-paper';
-import tw from 'twrnc';
-import { DashboardAPI, User } from '@types/index';
-import { colors } from '@utils/Colors';
-import InfoEditModal from '@components/InfoEditModel';
-import NameEditModal from '@components/NameEditModel';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
-import HomeHeader from '@components/HomeHeader';
+import tw from 'twrnc';
 
 const Profile = () => {
   const user = useSelector(selectProfileData);
