@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import tw from 'twrnc';
-import { SignUpAPI, SignUpStackScreenProps } from '@types';
+import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
 import { colors } from '@utils/Colors';
 import GreenButton from '@components/GreenButton';
 import Input from '@components/Input';

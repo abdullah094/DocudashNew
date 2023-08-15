@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   Dimensions,
   SafeAreaView,
@@ -16,19 +16,20 @@ import COLORS from '../constants/colors';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import pets from '../constants/pets';
 import Animated from 'react-native-reanimated';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 const { height } = Dimensions.get('window');
 import { LogBox } from 'react-native';
-import { HomeDrawerScreenProps, RootStackScreenProps, pet, User, DashboardAPI } from '@types/index';
+import { HomeDrawerScreenProps, RootStackScreenProps, pet, User, DashboardAPI } from '@type/index';
 import { ActivityIndicator, Avatar, Button, Checkbox } from 'react-native-paper';
 import axios from 'axios';
-import { selectAccessToken, setProfileData } from '@stores/Slices';
+import { selectAccessToken, setProfileData, setRouteName } from '@stores/Slices';
 import { useDispatch, useSelector } from 'react-redux';
 import GettingStarted from '@components/GettingStarted';
 import tw from 'twrnc';
 import { colors } from '@utils/Colors';
 import UploadView from '@components/UploadView';
 import * as ImagePicker from 'expo-image-picker';
+import HomeHeader from '@components/HomeHeader';
 
 interface uploadType {
   uri: string;
@@ -37,6 +38,7 @@ interface uploadType {
 }
 const HomeScreen = () => {
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();
+  const route = useRoute<HomeDrawerScreenProps<'HomeScreen'>['route']>();
   const [documents, setDocuments] = useState<uploadType[]>(new Array());
   const [imagesUpload, setImagesUpload] = useState<uploadType[]>(new Array());
   const dispatch = useDispatch();
@@ -50,6 +52,7 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(false);
   const [signature, setSignature] = useState<any>();
   const accessToken = useSelector(selectAccessToken);
+
   const fetchDashData = () => {
     axios
       .get('https://docudash.net/api/dashboard', {
@@ -59,7 +62,7 @@ const HomeScreen = () => {
       })
       .then((response) => {
         const data: DashboardAPI = response.data;
-        console.log('DashboardAPI', data);
+        // console.log('DashboardAPI', data);
         setDashNumber({
           ...dashNumber,
           waitingForOthers: data.WaitingForOthers,
@@ -67,7 +70,6 @@ const HomeScreen = () => {
         });
         dispatch(setProfileData(data.user));
         setUserData(data.user);
-        setLoading(false);
         if (data.signature?.signature) {
           setSignature(data.signature);
         } else {
@@ -88,7 +90,9 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchDashData();
-  }, [navigation]);
+    console.log('Change name Home');
+    dispatch(setRouteName('Home'));
+  }, [route]);
 
   const pickImage = async () => {
     if (loading) return;
@@ -153,16 +157,7 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <View style={style.header}>
-        <Icon name="sort-variant" size={28} onPress={navigation.toggleDrawer} />
-        <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>JANE GARY</Text>
-        <Image
-          source={{
-            uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-          }}
-          style={{ height: 30, width: 30, borderRadius: 25 }}
-        />
-      </View>
+      <HomeHeader heading={'DASHBOARD'} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={style.mainContainer}>
           <GettingStarted />

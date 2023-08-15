@@ -9,9 +9,27 @@ import { pet } from './pet';
 
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeDrawerParamList>;
-  DetailsScreen: { pet: pet };
   NotFound: undefined;
-  Browser: { url: string };
+  Browser: { url: string; heading: string };
+  Signatures: {} | undefined;
+  AddSignature: { SignaturePreview?: SignaturePreview };
+  Inbox: { heading: string };
+  Edit:
+    | undefined
+    | {
+        Envelope?: Envelope;
+        files?: DocumentPickerOptions.DocumentResult[];
+        images?: ImagePicker.ImagePickerAsset[];
+      };
+  DocumentEditor: {
+    Envelope: GenerateSignature;
+  };
+  Details: {
+    Envelope: Envelope;
+  };
+  Stamps: {} | undefined;
+  AddStamp: { Stamp?: StampPreview };
+  Profile: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<

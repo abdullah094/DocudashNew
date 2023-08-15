@@ -8,8 +8,13 @@ import {
 import COLORS from '../constants/colors';
 import DrawerProfileModal from './DrawerProfileModal';
 import tw from 'twrnc';
+import { Drawer } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '@stores/Slices';
+import { clearToken } from '@utils/AsyncGlobal';
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
+  const dispatch = useDispatch();
   return (
     <DrawerContentScrollView
       style={{
@@ -22,6 +27,16 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       <DrawerProfileModal />
 
       <DrawerItemList {...props} />
+      <Drawer.Item
+        active
+        label="LOGOUT"
+        style={tw`m-1 bg-transparent rounded-none`}
+        icon="logout"
+        onPress={() => {
+          dispatch(logoutUser());
+          clearToken();
+        }}
+      />
     </DrawerContentScrollView>
   );
 };

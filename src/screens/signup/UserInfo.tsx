@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import tw from 'twrnc';
-import { SignUpAPI, SignUpStackScreenProps } from '@types';
+import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
 import { colors } from '@utils/Colors';
 import GreenButton from '@components/GreenButton';
 import Input from '@components/Input';

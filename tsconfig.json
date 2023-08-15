@@ -11,7 +11,7 @@
       "@services/*": ["./src/services/*"],
       "@assets/*": ["./assets/*"],
       "@constants/*": ["./src/constants/*"],
-      "@types/*": ["./src/types"],
+      "@type/*": ["./src/types"],
       "@hooks/*": ["./src/hooks"]
     }
   }

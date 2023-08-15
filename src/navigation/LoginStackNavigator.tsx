@@ -9,13 +9,13 @@ import OptScreen from '@screens/signup/OptScreen';
 import PasswordScreen from '@screens/signup/Password';
 import SetPasswordScreen from '@screens/signup/SetPassword';
 import UserInfoScreen from '@screens/signup/UserInfo';
+import Loader from '@components/Loader';
 
 const LoginStack = createStackNavigator<SignUpStackParamList>();
 export default function LoginStackNavigator() {
   // clearAsync();
 
   const [step, setStep] = useState<keyof SignUpStackParamList | undefined>('Index');
-
   useEffect(() => {
     getData().then((response) => {
       if (response) {

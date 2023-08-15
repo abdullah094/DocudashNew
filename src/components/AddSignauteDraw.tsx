@@ -4,7 +4,7 @@ import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas';
 import tw from 'twrnc';
-import { SignaturePreview } from '@types/index';
+import { SignaturePreview } from '@type/index';
 
 interface ISignatureDraw {
   setSelectedUri: React.Dispatch<React.SetStateAction<string>>;

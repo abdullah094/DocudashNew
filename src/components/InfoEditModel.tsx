@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button, Divider, HelperText, TextInput } from 'react-native-paper';
 import tw from 'twrnc';
-import { User } from '@types/index';
+import { User } from '@type/index';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
 

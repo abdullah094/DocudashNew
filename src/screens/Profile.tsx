@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
 import React, { useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { Avatar, Button, Text } from 'react-native-paper';
 import tw from 'twrnc';
 import { DashboardAPI, User } from '@types/index';
@@ -11,6 +11,7 @@ import InfoEditModal from '@components/InfoEditModel';
 import NameEditModal from '@components/NameEditModel';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
+import HomeHeader from '@components/HomeHeader';
 
 const Profile = () => {
   const user = useSelector(selectProfileData);
@@ -97,7 +98,8 @@ const Profile = () => {
       });
   };
   return (
-    <View style={tw`flex-1`}>
+    <SafeAreaView style={tw`flex-1`}>
+      <HomeHeader heading={'PROFILE'} />
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View style={tw`m-4 gap-1 `}>
           <Text style={tw`text-black text-5 font-bold `}>Profile</Text>
@@ -161,7 +163,7 @@ const Profile = () => {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

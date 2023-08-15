@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
 import axios from 'axios';
 import { Divider } from 'react-native-paper';
-import { Envelope, InboxApiResponse } from '@types/index';
+import { Envelope, InboxApiResponse } from '@type/index';
 import FilterModal from '@components/FilterModal';
 import EnvelopeListItem from './EnvelopeListItem';
 export default function EnvelopeList({ heading }: { heading: string }) {

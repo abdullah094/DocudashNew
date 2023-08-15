@@ -13,7 +13,7 @@ import {
 import { IconButton } from 'react-native-paper';
 import * as Progress from 'react-native-progress';
 import tw from 'twrnc';
-import { DashBoardDrawerScreenProps, HeaderOption } from '@/types/index';
+import { DashBoardDrawerScreenProps, HeaderOption } from '@type/index';
 import { colors } from '@utils/Colors';
 
 interface IRectangle {
@@ -60,7 +60,7 @@ const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
         onPress={() => setModalVisible(true)}
         style={tw`bg-[${colors.blue}] p-3 px-5 mt-5 rounded-md`}
       >
-        <Text style={tw`text-[${colors.white}] font-nunito`}>Show Me</Text>
+        <Text style={tw`text-[${colors.white}] `}>Show Me</Text>
       </TouchableOpacity>
       <Modal
         animationType="slide"

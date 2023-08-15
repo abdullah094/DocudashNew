@@ -5,4 +5,5 @@ export interface IUserSlice {
   accessToken: string | null;
   profile: User;
   wishList: Array<string>;
+  routeName: string;
 }

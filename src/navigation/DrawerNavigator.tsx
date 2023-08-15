@@ -13,12 +13,15 @@ import StampList from '@screens/Stamp/List';
 import Profile from '@screens/Profile';
 import { useRoute } from '@react-navigation/native';
 import Inbox from '@screens/Manage/Inbox';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectRouteName } from '@stores/Slices';
 
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
   const route = useRoute();
-  console.log('name', route.name);
+  const routeName = useSelector(selectRouteName);
+  console.log('name', routeName);
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -43,34 +46,34 @@ const DrawerNavigator = () => {
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen
-        name="HomeScreen"
-        options={{
-          title: 'Home',
-          drawerIcon: ({ color }) => (
-            <Icon name="paw" size={25} style={{ marginRight: -20, color }} />
-          ),
-        }}
-      >
-        {(props) => (
-          <DrawerScreenContainer>
-            <HomeScreen {...props} />
-          </DrawerScreenContainer>
-        )}
-      </Drawer.Screen>
-
-      {route.name == 'Home' ? (
+      {routeName != 'Manage' ? (
         <>
           <Drawer.Screen
-            name="MANAGE"
+            name="HomeScreen"
             options={{
+              title: 'Home',
               drawerIcon: ({ color }) => (
-                <Icon name="heart" size={25} style={{ marginRight: -20, color }} />
+                <Icon name="home" size={25} style={{ marginRight: -20, color }} />
               ),
             }}
           >
             {(props) => (
-              <DrawerScreenContainer>
+              <DrawerScreenContainer {...props}>
+                <HomeScreen {...props} />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+          <Drawer.Screen
+            initialParams={{ heading: 'Inbox' }}
+            name="MANAGE"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="email-newsletter" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer {...props}>
                 <Inbox {...props} />
               </DrawerScreenContainer>
             )}
@@ -80,12 +83,12 @@ const DrawerNavigator = () => {
             name="SIGNATURES"
             options={{
               drawerIcon: ({ color }) => (
-                <Icon name="gift" size={25} style={{ marginRight: -20, color }} />
+                <Icon name="signature-freehand" size={25} style={{ marginRight: -20, color }} />
               ),
             }}
           >
             {(props) => (
-              <DrawerScreenContainer>
+              <DrawerScreenContainer {...props}>
                 <SignatureList {...props} />
               </DrawerScreenContainer>
             )}
@@ -95,12 +98,12 @@ const DrawerNavigator = () => {
             name="STAMPS"
             options={{
               drawerIcon: ({ color }) => (
-                <Icon name="plus-box" size={25} style={{ marginRight: -20, color }} />
+                <Icon name="stamper" size={25} style={{ marginRight: -20, color }} />
               ),
             }}
           >
             {(props) => (
-              <DrawerScreenContainer>
+              <DrawerScreenContainer {...props}>
                 <StampList {...props} />
               </DrawerScreenContainer>
             )}
@@ -122,7 +125,91 @@ const DrawerNavigator = () => {
           </Drawer.Screen>
         </>
       ) : (
-        <></>
+        <>
+          <Drawer.Screen
+            initialParams={{ heading: 'Inbox' }}
+            name="INBOX"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="inbox" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => {
+              return (
+                <DrawerScreenContainer>
+                  <Inbox {...props} />
+                </DrawerScreenContainer>
+              );
+            }}
+          </Drawer.Screen>
+          <Drawer.Screen
+            name="SEND"
+            initialParams={{ heading: 'Sent' }}
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="email-send" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => {
+              return (
+                <DrawerScreenContainer>
+                  <Inbox {...props} />
+                </DrawerScreenContainer>
+              );
+            }}
+          </Drawer.Screen>
+          <Drawer.Screen
+            name="DRAFT"
+            initialParams={{ heading: 'Draft' }}
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="archive-clock" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => {
+              return (
+                <DrawerScreenContainer>
+                  <Inbox {...props} />
+                </DrawerScreenContainer>
+              );
+            }}
+          </Drawer.Screen>
+          <Drawer.Screen
+            name="TRASH"
+            initialParams={{ heading: 'Trash' }}
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="trash-can" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => {
+              return (
+                <DrawerScreenContainer>
+                  <Inbox {...props} />
+                </DrawerScreenContainer>
+              );
+            }}
+          </Drawer.Screen>
+          <Drawer.Screen
+            name="HomeScreen"
+            options={{
+              title: 'Home',
+              drawerIcon: ({ color }) => (
+                <Icon name="home" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer {...props}>
+                <HomeScreen {...props} />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+        </>
       )}
     </Drawer.Navigator>
   );

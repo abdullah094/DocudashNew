@@ -1,18 +1,14 @@
-import { StatusBar, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import {
   createDrawerNavigator,
   useDrawerProgress,
   DrawerContentScrollView,
   DrawerItemList,
   useDrawerStatus,
-} from "@react-navigation/drawer";
-import Animated, {
-  SharedValue,
-  interpolate,
-  useAnimatedStyle,
-} from "react-native-reanimated";
-import COLORS from "../constants/colors";
+} from '@react-navigation/drawer';
+import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import COLORS from '../constants/colors';
 
 function DrawerScreenContainer({ children }: { children: JSX.Element }) {
   const isDrawerOpen = useDrawerStatus();
@@ -36,13 +32,13 @@ function DrawerScreenContainer({ children }: { children: JSX.Element }) {
           flex: 1,
           backgroundColor: COLORS.white,
           // transform: [{ scale }],
-          overflow: "hidden",
+          overflow: 'hidden',
         },
         animatedStyle,
       ]}
     >
       <StatusBar
-        backgroundColor={isDrawerOpen == "open" ? COLORS.primary : COLORS.white}
+        backgroundColor={isDrawerOpen == 'open' ? COLORS.primary : COLORS.white}
         barStyle="dark-content"
       />
       {children}

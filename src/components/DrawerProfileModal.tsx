@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import tw from 'twrnc';
-import { DashBoardDrawerScreenProps, User } from '@types';
+import { DashBoardDrawerScreenProps, User } from '@type/index';
 import { colors } from '@utils/Colors';
 import { useSelector } from 'react-redux';
 import { selectProfileData } from '@stores/Slices';

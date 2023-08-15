@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import DropDown from 'react-native-paper-dropdown';
 import tw from 'twrnc';
-import { Istep5Response, SignUpStackScreenProps } from '@types';
+import { Istep5Response, SignUpStackScreenProps } from '@type/index';
 import { storeTokenGlobal } from '@utils/AsyncGlobal';
 import { colors } from '@utils/Colors';
 import GreenButton from '@components/GreenButton';

@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import tw from 'twrnc';
-import { SignUpStackScreenProps } from '@types';
+import { SignUpStackScreenProps } from '@type/index';
 import { storeTokenGlobal } from '@utils/AsyncGlobal';
 import GreenButton from '@components/GreenButton';
 import Input from '@components/Input';

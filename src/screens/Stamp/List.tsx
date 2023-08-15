@@ -1,13 +1,22 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import React from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Chip, Switch } from 'react-native-paper';
 import tw from 'twrnc';
-import { DashBoardDrawerScreenProps, StampListAPI, StampPreview } from '@types/index';
+import { DashBoardDrawerScreenProps, StampListAPI, StampPreview } from '@type/index';
 import { colors } from '@utils/Colors';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
+import HomeHeader from '@components/HomeHeader';
 
 export default function List() {
   const accessToken = useSelector(selectAccessToken);
@@ -133,7 +142,8 @@ export default function List() {
   };
 
   return (
-    <View>
+    <SafeAreaView style={tw`flex-1`}>
+      <HomeHeader heading={'STAMPS'} />
       <View style={tw`m-4 gap-1 `}>
         <Text style={tw`text-black text-5 font-bold `}>Stamps</Text>
         <Text style={tw`text-[${colors.gray}] text-3`}>Add or update your name and stamps.</Text>
@@ -153,6 +163,6 @@ export default function List() {
         contentContainerStyle={tw`pb-50`}
         renderItem={({ item }) => <RenderItem item={item} />}
       />
-    </View>
+    </SafeAreaView>
   );
 }

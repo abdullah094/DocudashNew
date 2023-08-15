@@ -7,11 +7,11 @@ export const UserSlice = createSlice({
     accessToken: null,
     profile: {},
     wishList: [],
+    routeName: 'Home',
   } as IUserSlice,
 
   reducers: {
     setAccessToken: (state, action) => {
-      console.log('action', action);
       state.accessToken = action.payload;
     },
     logoutUser(state) {
@@ -32,6 +32,9 @@ export const UserSlice = createSlice({
     RemoveFromWishList(state, action) {
       state.wishList = state.wishList.filter((x) => x != action.payload);
     },
+    setRouteName: (state, action) => {
+      state.routeName = action.payload;
+    },
   },
 });
 
@@ -39,6 +42,7 @@ export const UserSlice = createSlice({
 export const selectAccessToken = (state: { user: IUserSlice }) => state.user.accessToken;
 export const selectProfileData = (state: { user: IUserSlice }) => state.user.profile;
 export const selectWishlist = (state: { user: IUserSlice }) => state.user.wishList;
+export const selectRouteName = (state: { user: IUserSlice }) => state.user.routeName;
 
 export const {
   setAccessToken,
@@ -48,5 +52,6 @@ export const {
   setWishList,
   AddToWishlist,
   RemoveFromWishList,
+  setRouteName,
 } = UserSlice.actions;
 export default UserSlice.reducer;
