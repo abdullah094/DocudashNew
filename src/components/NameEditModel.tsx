@@ -1,12 +1,11 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Alert, Modal, StyleSheet, Text, View } from 'react-native';
 import { Button, Divider, TextInput } from 'react-native-paper';
-import tw from 'twrnc';
-import { User } from '@type/index';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
+import tw from 'twrnc';
 
 const NameEditModal = () => {
   const [modalVisible, setModalVisible] = useState(false);

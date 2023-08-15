@@ -1,5 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
+import { HeaderOption, RootStackScreenProps } from '@type/index';
+import { colors } from '@utils/Colors';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -13,8 +15,6 @@ import {
 import { IconButton } from 'react-native-paper';
 import * as Progress from 'react-native-progress';
 import tw from 'twrnc';
-import { HeaderOption, RootStackScreenProps } from '@type/index';
-import { colors } from '@utils/Colors';
 
 interface IRectangle {
   heading: string;

@@ -1,11 +1,11 @@
+import COLORS from '@constants/colors';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { RootStackScreenProps } from '@type/index';
 import React from 'react';
-import { SafeAreaView, StyleSheet, View, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import tw from 'twrnc';
-import { RootStackScreenProps } from '@type/index';
-import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import COLORS from '@constants/colors';
 
 const Browser = () => {
   const navigation = useNavigation<RootStackScreenProps<'Browser'>['navigation']>();

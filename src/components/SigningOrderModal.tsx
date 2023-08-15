@@ -1,10 +1,10 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { GenerateSignatureDetail } from '@type/index';
+import { colors } from '@utils/Colors';
 import React, { ReactNode, useState } from 'react';
 import { Alert, Image, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import tw from 'twrnc';
-import { GenerateSignatureDetail } from '@type/index';
-import { colors } from '@utils/Colors';
 
 interface IRow {
   title: string;

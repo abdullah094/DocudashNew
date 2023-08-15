@@ -1,9 +1,9 @@
+import { colors } from '@utils/Colors';
 import { useFonts } from 'expo-font';
 import React, { useRef } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import tw from 'twrnc';
-import { colors } from '@utils/Colors';
 
 const ChooseSignatureItem = ({
   item,

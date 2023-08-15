@@ -1,19 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import axios from 'axios';
-import FormData from 'form-data';
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  Dimensions,
-  FlatList,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import Draggable from 'react-native-draggable';
-import { Appbar, Avatar, Badge, Button, IconButton, Text } from 'react-native-paper';
-import tw from 'twrnc';
+import { selectAccessToken } from '@stores/Slices';
 import {
   DraggedElArr,
   DraggedElement,
@@ -23,11 +9,23 @@ import {
   HtmlEditorAPI,
   RootStackScreenProps,
 } from '@type/index';
-import { useSelector } from 'react-redux';
-import { selectAccessToken } from '@stores/Slices';
-import { Carousel, Image } from 'react-native-ui-lib';
+import axios from 'axios';
+import FormData from 'form-data';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
-import { current } from '@reduxjs/toolkit';
+import Draggable from 'react-native-draggable';
+import { Appbar, Avatar, Badge, Button, IconButton, Text } from 'react-native-paper';
+import { Carousel } from 'react-native-ui-lib';
+import { useSelector } from 'react-redux';
+import tw from 'twrnc';
 
 const { width, height } = Dimensions.get('window');
 

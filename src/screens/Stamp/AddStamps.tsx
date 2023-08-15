@@ -6,10 +6,10 @@ import { Appbar, Avatar, Badge, Button, TextInput } from 'react-native-paper';
 import tw from 'twrnc';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import FormData from 'form-data';
-import { RootStackScreenProps, StampPreview, User } from '@type/index';
-import { useSelector } from 'react-redux';
 import { selectAccessToken, selectProfileData } from '@stores/Slices';
+import { RootStackScreenProps, StampPreview } from '@type/index';
+import FormData from 'form-data';
+import { useSelector } from 'react-redux';
 
 const AddStamp = () => {
   const user = useSelector(selectProfileData);

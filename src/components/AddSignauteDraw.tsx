@@ -1,10 +1,10 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SignaturePreview } from '@type/index';
 import React, { useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import { Appbar } from 'react-native-paper';
 import SignatureScreen, { SignatureViewRef } from 'react-native-signature-canvas';
 import tw from 'twrnc';
-import { SignaturePreview } from '@type/index';
 
 interface ISignatureDraw {
   setSelectedUri: React.Dispatch<React.SetStateAction<string>>;

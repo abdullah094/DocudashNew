@@ -1,3 +1,5 @@
+import AddSignatureDraw from '@components/AddSignauteDraw';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
@@ -13,14 +15,12 @@ import {
 } from 'react-native';
 import { Appbar, Button, SegmentedButtons, TextInput } from 'react-native-paper';
 import tw from 'twrnc';
-import { colors } from '@utils/Colors';
-import AddSignatureDraw from '@components/AddSignauteDraw';
 
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackScreenProps, SignaturePreview, User } from '@types/index';
 import ChooseSignatureItem from '@components/ChooseSignatureItem';
-import { useSelector } from 'react-redux';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken, selectProfileData } from '@stores/Slices';
+import { RootStackScreenProps, SignaturePreview } from '@type/index';
+import { useSelector } from 'react-redux';
 
 const AddSignature = () => {
   const user = useSelector(selectProfileData);

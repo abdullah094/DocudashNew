@@ -1,14 +1,14 @@
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { setAccessToken } from '@stores/Slices';
+import { SignUpStackScreenProps } from '@type/index';
+import { storeTokenGlobal } from '@utils/AsyncGlobal';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
-import tw from 'twrnc';
-import { SignUpStackScreenProps } from '@type/index';
-import { storeTokenGlobal } from '@utils/AsyncGlobal';
-import GreenButton from '@components/GreenButton';
-import Input from '@components/Input';
-import { setAccessToken } from '@stores/Slices';
 import { useDispatch } from 'react-redux';
+import tw from 'twrnc';
 
 const PasswordScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);

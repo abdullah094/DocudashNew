@@ -1,12 +1,12 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
 import COLORS from '@constants/colors';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { HomeDrawerScreenProps } from '@type/*';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { selectProfileData } from '@stores/Slices';
+import { HomeDrawerScreenProps } from '@type/*';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar, Divider, Menu } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { selectProfileData } from '@stores/Slices';
 
 export default function HomeHeader({ heading }) {
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();

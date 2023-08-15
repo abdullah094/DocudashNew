@@ -1,16 +1,16 @@
+import GreenButton from '@components/GreenButton';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { setAccessToken } from '@stores/Slices';
+import { Istep5Response, SignUpStackScreenProps } from '@type/index';
+import { clearAsync, getToken } from '@utils/AsyncFunc';
+import { storeTokenGlobal } from '@utils/AsyncGlobal';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import DropDown from 'react-native-paper-dropdown';
+import { useDispatch } from 'react-redux';
 import tw from 'twrnc';
-import { Istep5Response, SignUpStackScreenProps } from '@type/index';
-import { storeTokenGlobal } from '@utils/AsyncGlobal';
-import { colors } from '@utils/Colors';
-import GreenButton from '@components/GreenButton';
-import { clearAsync, getToken } from '@utils/AsyncFunc';
-import { useDispatch, useSelector } from 'react-redux';
-import { setAccessToken } from '@stores/Slices';
 
 interface route {
   email: string;

@@ -1,15 +1,14 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
+import Loader from '@components/Loader';
+import SigningOrderModal from '@components/SigningOrderModal';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { selectAccessToken } from '@stores/Slices';
+import { Envelope, RootStackScreenProps, ViewDocument } from '@type/index';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Appbar, Menu, Button, IconButton, Divider } from 'react-native-paper';
-import tw from 'twrnc';
-import { Envelope, RootStackScreenProps, ViewDocument } from '@type/index';
-import Loader from '@components/Loader';
-import SigningOrderModal from '@components/SigningOrderModal';
+import { Appbar, Button, Divider, IconButton, Menu } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { selectAccessToken } from '@stores/Slices';
+import tw from 'twrnc';
 
 interface IButton {
   text: string;

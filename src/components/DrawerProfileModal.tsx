@@ -1,5 +1,9 @@
+import COLORS from '@constants/colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import { selectProfileData } from '@stores/Slices';
+import { RootStackScreenProps } from '@type/index';
+import { colors } from '@utils/Colors';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -11,12 +15,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import tw from 'twrnc';
-import { RootStackScreenProps, User } from '@type/index';
-import { colors } from '@utils/Colors';
 import { useSelector } from 'react-redux';
-import { selectProfileData } from '@stores/Slices';
-import COLORS from '@constants/colors';
+import tw from 'twrnc';
 
 const DrawerProfileModal = () => {
   const user = useSelector(selectProfileData);

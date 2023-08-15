@@ -1,6 +1,14 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { selectAccessToken } from '@stores/Slices';
+import {
+  GenerateSignature,
+  GenerateSignatureDetailsImage,
+  RootStackScreenProps,
+  UploadDocumentAPI,
+} from '@type/index';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -28,16 +36,8 @@ import {
 } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
 import { Wizard } from 'react-native-ui-lib';
-import tw from 'twrnc';
-import {
-  GenerateSignature,
-  GenerateSignatureDetailsImage,
-  RootStackScreenProps,
-  UploadDocumentAPI,
-} from '@type/index';
-import { colors } from '@utils/Colors';
 import { useSelector } from 'react-redux';
-import { selectAccessToken } from '@stores/Slices';
+import tw from 'twrnc';
 
 interface uploadType {
   uri: string;

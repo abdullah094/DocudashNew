@@ -1,4 +1,9 @@
+import GreenButton from '@components/GreenButton';
+import Input from '@components/Input';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
+import { getToken, storeData } from '@utils/AsyncFunc';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React, { useState } from 'react';
 import {
@@ -12,11 +17,6 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import tw from 'twrnc';
-import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
-import { colors } from '@utils/Colors';
-import GreenButton from '@components/GreenButton';
-import Input from '@components/Input';
-import { getToken, storeData } from '@utils/AsyncFunc';
 
 const OptScreen = () => {
   const navigation = useNavigation<SignUpStackScreenProps<'Step2'>['navigation']>();

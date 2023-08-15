@@ -1,13 +1,13 @@
-import { View, Text, FlatList } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import SkeletonLoader from 'expo-skeleton-loader';
-import tw from 'twrnc';
-import { useSelector } from 'react-redux';
-import { selectAccessToken } from '@stores/Slices';
-import axios from 'axios';
-import { Divider } from 'react-native-paper';
-import { Envelope, InboxApiResponse } from '@type/index';
 import FilterModal from '@components/FilterModal';
+import { selectAccessToken } from '@stores/Slices';
+import { Envelope, InboxApiResponse } from '@type/index';
+import axios from 'axios';
+import SkeletonLoader from 'expo-skeleton-loader';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Text, View } from 'react-native';
+import { Divider } from 'react-native-paper';
+import { useSelector } from 'react-redux';
+import tw from 'twrnc';
 import EnvelopeListItem from './EnvelopeListItem';
 export default function EnvelopeList({ heading }: { heading: string }) {
   const accessToken = useSelector(selectAccessToken);

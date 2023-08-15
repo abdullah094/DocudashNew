@@ -1,12 +1,6 @@
-import { StatusBar, StyleSheet, Text, View } from 'react-native';
+import { useDrawerProgress, useDrawerStatus } from '@react-navigation/drawer';
 import React from 'react';
-import {
-  createDrawerNavigator,
-  useDrawerProgress,
-  DrawerContentScrollView,
-  DrawerItemList,
-  useDrawerStatus,
-} from '@react-navigation/drawer';
+import { StatusBar, StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import COLORS from '../constants/colors';
 

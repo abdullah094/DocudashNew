@@ -1,14 +1,14 @@
-import { View, Text, Pressable, Image, FlatList } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import tw from 'twrnc';
-import { colors } from '@utils/Colors';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { Button, Divider, List } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { RootStackScreenProps } from '@type/*';
+import { colors } from '@utils/Colors';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
-import { RootStackScreenProps } from '@type/*';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { FlatList, Image, Pressable, Text, View } from 'react-native';
+import { Divider, List } from 'react-native-paper';
+import tw from 'twrnc';
 
 interface uploadType {
   uri: string;

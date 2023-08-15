@@ -1,10 +1,9 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import SkeletonLoader from 'expo-skeleton-loader';
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import tw from 'twrnc';
 import { Envelope, RootStackScreenProps } from '@type/index';
 import { colors } from '@utils/Colors';
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import tw from 'twrnc';
 
 interface IEnvelopeListItem {
   item: Envelope;

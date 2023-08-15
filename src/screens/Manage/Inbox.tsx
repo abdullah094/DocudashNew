@@ -1,15 +1,13 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { Appbar, Divider } from 'react-native-paper';
-import tw from 'twrnc';
 import { RootStackScreenProps } from '@type/index';
+import React, { useEffect } from 'react';
+import { SafeAreaView } from 'react-native';
+import tw from 'twrnc';
 // import EmailBar from '@components/EmailBar';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectAccessToken, selectRouteName, setRouteName } from '@stores/Slices';
 import EnvelopeList from '@components/EnvelopeList';
 import HomeHeader from '@components/HomeHeader';
+import { setRouteName } from '@stores/Slices';
+import { useDispatch } from 'react-redux';
 
 const Inbox = () => {
   const navigation = useNavigation<RootStackScreenProps<'Inbox'>['navigation']>();

@@ -1,18 +1,18 @@
-import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import React from 'react';
 
-import HomeScreen from '@screens/HomeScreen';
-import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import COLORS from '@constants/colors';
 import CustomDrawerContent from '@components/CustomDrawerContent';
 import DrawerScreenContainer from '@components/DrawerScreenContainer';
+import COLORS from '@constants/colors';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons';
+import { useRoute } from '@react-navigation/native';
+import HomeScreen from '@screens/HomeScreen';
+import Inbox from '@screens/Manage/Inbox';
+import Profile from '@screens/Profile';
 import SignatureList from '@screens/Signatures/List';
 import StampList from '@screens/Stamp/List';
-import Profile from '@screens/Profile';
-import { useRoute } from '@react-navigation/native';
-import Inbox from '@screens/Manage/Inbox';
-import { useDispatch, useSelector } from 'react-redux';
 import { selectRouteName } from '@stores/Slices';
+import { useSelector } from 'react-redux';
 
 const Drawer = createDrawerNavigator();
 

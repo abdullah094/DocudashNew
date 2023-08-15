@@ -1,13 +1,13 @@
-import { View, Text } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import tw from 'twrnc';
-import { colors } from '@utils/Colors';
-import * as Progress from 'react-native-progress';
-import ProgressModal from './ProgressModal';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
 import { HeaderAPI, HeaderOption } from '@type/*';
+import { colors } from '@utils/Colors';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import * as Progress from 'react-native-progress';
+import { useSelector } from 'react-redux';
+import tw from 'twrnc';
+import ProgressModal from './ProgressModal';
 
 export default function GettingStarted() {
   const [completeNumber, setCompleteNumber] = useState<number>(0);

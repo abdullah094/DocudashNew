@@ -1,17 +1,16 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import COLORS from '../constants/colors';
-import DrawerProfileModal from './DrawerProfileModal';
-import tw from 'twrnc';
-import { Drawer } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
 import { logoutUser } from '@stores/Slices';
 import { clearToken } from '@utils/AsyncGlobal';
+import React from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { Drawer } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
+import tw from 'twrnc';
+import DrawerProfileModal from './DrawerProfileModal';
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const dispatch = useDispatch();

@@ -1,28 +1,20 @@
+import HomeHeader from '@components/HomeHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { selectAccessToken } from '@stores/Slices';
+import { RootStackScreenProps, SignaturePreview, SignaturesListAPI } from '@type/index';
+import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React from 'react';
-import {
-  FlatList,
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { Chip, Switch } from 'react-native-paper';
-import tw from 'twrnc';
-import { DashBoardDrawerScreenProps, SignaturePreview, SignaturesListAPI } from '@type/index';
-import { colors } from '@utils/Colors';
 import { useSelector } from 'react-redux';
-import { selectAccessToken } from '@stores/Slices';
-import HomeHeader from '@components/HomeHeader';
+import tw from 'twrnc';
 
 export default function List() {
   const accessToken = useSelector(selectAccessToken);
   const [list, setList] = React.useState<SignaturePreview[]>();
   const [isFetching, setIsFetching] = React.useState(false);
-  const navigation = useNavigation<DashBoardDrawerScreenProps<'Signatures'>['navigation']>();
+  const navigation = useNavigation<RootStackScreenProps<'Signatures'>['navigation']>();
 
   const route = useRoute();
 

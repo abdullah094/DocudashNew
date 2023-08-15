@@ -1,35 +1,29 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import GettingStarted from '@components/GettingStarted';
+import HomeHeader from '@components/HomeHeader';
+import UploadView from '@components/UploadView';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { selectAccessToken, setProfileData, setRouteName } from '@stores/Slices';
+import { DashboardAPI, HomeDrawerScreenProps, User } from '@type/index';
+import { colors } from '@utils/Colors';
+import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Dimensions,
-  SafeAreaView,
-  View,
   Image,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  FlatList,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
-  Alert,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import COLORS from '../constants/colors';
-import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import pets from '../constants/pets';
-import Animated from 'react-native-reanimated';
-import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
-const { height } = Dimensions.get('window');
-import { LogBox } from 'react-native';
-import { HomeDrawerScreenProps, RootStackScreenProps, pet, User, DashboardAPI } from '@type/index';
-import { ActivityIndicator, Avatar, Button, Checkbox } from 'react-native-paper';
-import axios from 'axios';
-import { selectAccessToken, setProfileData, setRouteName } from '@stores/Slices';
+import { ActivityIndicator, Avatar, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import GettingStarted from '@components/GettingStarted';
 import tw from 'twrnc';
-import { colors } from '@utils/Colors';
-import UploadView from '@components/UploadView';
-import * as ImagePicker from 'expo-image-picker';
-import HomeHeader from '@components/HomeHeader';
+import COLORS from '../constants/colors';
+const { height } = Dimensions.get('window');
 
 interface uploadType {
   uri: string;

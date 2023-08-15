@@ -1,22 +1,14 @@
+import HomeHeader from '@components/HomeHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import axios from 'axios';
-import React from 'react';
-import {
-  FlatList,
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Chip, Switch } from 'react-native-paper';
-import tw from 'twrnc';
+import { selectAccessToken } from '@stores/Slices';
 import { RootStackScreenProps, StampListAPI, StampPreview } from '@type/index';
 import { colors } from '@utils/Colors';
+import axios from 'axios';
+import React from 'react';
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Chip, Switch } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { selectAccessToken } from '@stores/Slices';
-import HomeHeader from '@components/HomeHeader';
+import tw from 'twrnc';
 
 export default function List() {
   const accessToken = useSelector(selectAccessToken);

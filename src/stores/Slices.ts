@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IUserSlice } from '../types/userSlice';
+import { User } from '@type/*';
 
 export const UserSlice = createSlice({
   name: 'user',
@@ -21,7 +22,7 @@ export const UserSlice = createSlice({
       state.profile = { ...action.payload };
     },
     removeProfileData(state) {
-      state.profile = {};
+      state.profile = {} as User;
     },
     setWishList(state, action) {
       state.wishList = action.payload;
