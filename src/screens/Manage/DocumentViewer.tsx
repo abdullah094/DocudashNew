@@ -24,7 +24,7 @@ import {
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
-import { Appbar, Avatar, Badge, Button, IconButton, Text } from 'react-native-paper';
+import { Appbar, Avatar, Badge, Button, IconButton, Text, TextInput } from 'react-native-paper';
 import { Carousel } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
@@ -104,6 +104,8 @@ const DocumentViewer = () => {
   const [dateActiveted, setDateActivated] = useState(false);
   const [nameActivated, setNameActivated] = useState(false);
   const [emailActivated, setEmailActivated] = useState(false);
+  const [companyActivated, setCompanyActivated] = useState(false);
+  const [titleActivated, setTitleActivated] = useState(false);
 
   useEffect(() => {
     setSignState(signItem);
@@ -293,7 +295,14 @@ const DocumentViewer = () => {
                     .map((item, index) => {
                       console.log(Number.parseFloat(item.left), item.top);
 
-                      return (
+                      return companyActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <TextInput style={tw`w-30 h-10`} />
+                        </View>
+                      ) : (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
@@ -305,9 +314,7 @@ const DocumentViewer = () => {
                               size={10}
                               style={tw`m-0 `}
                               icon="office-building"
-                              onPress={() =>
-                                navigation.navigate('SignatureSelection', { Envelope: envelope })
-                              }
+                              onPress={() => setCompanyActivated(true)}
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Company</Text>
                           </View>
@@ -603,7 +610,14 @@ const DocumentViewer = () => {
                       // );
                       console.log(Number.parseFloat(item.left), item.top);
 
-                      return (
+                      return titleActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <TextInput style={tw`w-30 h-10`} />
+                        </View>
+                      ) : (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
@@ -615,7 +629,7 @@ const DocumentViewer = () => {
                               size={10}
                               style={tw`m-0 `}
                               icon="briefcase"
-                              onPress={() => {}}
+                              onPress={() => setTitleActivated(true)}
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Title</Text>
                           </View>
