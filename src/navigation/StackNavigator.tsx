@@ -16,6 +16,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../types/navigation';
 import DrawerNavigator from './DrawerNavigator';
 import LoginStackNavigator from './LoginStackNavigator';
+import DocumentViewer from '@screens/Manage/DocumentViewer';
+import SignatureSelection from '@screens/Manage/SignatureSelection';
+import StampSelection from '@screens/Manage/StampSelection';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
@@ -54,6 +57,10 @@ export default function StackNavigator() {
           <Stack.Screen name="Edit" component={Edit} />
           <Stack.Screen name="DocumentEditor" component={DocumentEditor} />
           <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="DocumentViewer" component={DocumentViewer} />
+          <Stack.Screen name="SignatureSelection" component={SignatureSelection} />
+          <Stack.Screen name="StampSelection" component={StampSelection} />
+
           {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
           {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}
         </Stack.Group>

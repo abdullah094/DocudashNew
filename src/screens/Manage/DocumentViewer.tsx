@@ -8,6 +8,7 @@ import {
   GenerateSignatureDetails,
   HtmlEditorAPI,
   RootStackScreenProps,
+  SignaturePreview,
 } from '@type/index';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -19,6 +20,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
@@ -73,10 +75,10 @@ const color = [
     background: '#ffbcbceb',
   },
 ];
-const DocumentEditor = () => {
+const DocumentViewer = () => {
   const accessToken = useSelector(selectAccessToken);
-  const navigation = useNavigation<RootStackScreenProps<'DocumentEditor'>['navigation']>();
-  const route = useRoute<RootStackScreenProps<'DocumentEditor'>['route']>();
+  const navigation = useNavigation<RootStackScreenProps<'DocumentViewer'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'DocumentViewer'>['route']>();
   const [draggedElArr, setDraggedElArr] = useState<DraggedElArr>({
     signature: [],
     initial: [],
@@ -92,11 +94,19 @@ const DocumentEditor = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<GenerateSignatureDetails[]>();
   const envelope: GenerateSignature = route.params.Envelope;
+  const signItem: SignaturePreview = route.params?.item || undefined;
+  const stampItem = route.params?.stamp || undefined;
+  const [signState, setSignState] = useState<SignaturePreview | undefined>();
+  const [stampState, setStampState] = useState();
+  useEffect(() => {
+    setSignState(signItem);
+    setStampState(stampItem);
+  }, [route, navigation]);
   const [index, setIndex] = useState(0);
   console.log(images);
 
   const carousel = useRef<typeof Carousel>();
-  console.log(envelope);
+  console.log('stampItem', stampItem);
 
   const fetchData = async () => {
     setLoading(true);
@@ -246,7 +256,7 @@ const DocumentEditor = () => {
           >
             {images?.map((item) => {
               let imageUrl = '';
-              if (item.image?.includes('pdf')) {
+              if (item.image?.includes('pdf') || item.image?.includes('docx')) {
                 item.image.split('.')[0] + '-1.jpg';
                 imageUrl =
                   'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
@@ -272,18 +282,12 @@ const DocumentEditor = () => {
                         x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
                       console.log(Number.parseFloat(item.left), item.top);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
-                          renderText={item.type}
                         >
                           <View
                             style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
@@ -292,11 +296,13 @@ const DocumentEditor = () => {
                               size={10}
                               style={tw`m-0 `}
                               icon="office-building"
-                              onPress={() => {}}
+                              onPress={() =>
+                                navigation.navigate('SignatureSelection', { Envelope: envelope })
+                              }
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Company</Text>
                           </View>
-                        </Draggable>
+                        </View>
                       );
                     })}
                   {draggedElArr?.date
@@ -313,11 +319,9 @@ const DocumentEditor = () => {
                       console.log(Number.parseFloat(item.left), item.top);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
-                          renderText={item.type}
                         >
                           <View
                             style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
@@ -330,7 +334,7 @@ const DocumentEditor = () => {
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Date</Text>
                           </View>
-                        </Draggable>
+                        </View>
                       );
                     })}
                   {draggedElArr?.email
@@ -347,11 +351,9 @@ const DocumentEditor = () => {
                       console.log(Number.parseFloat(item.left), item.top);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
-                          renderText={item.type}
                         >
                           <View
                             style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
@@ -364,7 +366,7 @@ const DocumentEditor = () => {
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Email</Text>
                           </View>
-                        </Draggable>
+                        </View>
                       );
                     })}
                   {draggedElArr?.initial
@@ -381,24 +383,44 @@ const DocumentEditor = () => {
                       console.log(Number.parseFloat(item.left), item.top);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="signature-text"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Initial</Text>
-                          </View>
-                        </Draggable>
+                        <>
+                          {signState ? (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Image
+                                resizeMode="contain"
+                                style={[
+                                  tw`w-14 h-8 bg-black`,
+                                  { tintColor: 'white', zIndex: 999, borderWidth: 2 },
+                                ]}
+                                source={{ uri: signState.initial }}
+                              />
+                            </View>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <View
+                                style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                              >
+                                <IconButton
+                                  size={10}
+                                  style={tw`m-0 `}
+                                  icon="signature-text"
+                                  onPress={() =>
+                                    navigation.navigate('SignatureSelection', {
+                                      Envelope: envelope,
+                                    })
+                                  }
+                                ></IconButton>
+                                <Text style={tw`text-[10px] `}>Initial</Text>
+                              </View>
+                            </View>
+                          )}
+                        </>
                       );
                     })}
                   {draggedElArr?.name
@@ -415,11 +437,9 @@ const DocumentEditor = () => {
                       console.log(Number.parseFloat(item.left), item.top);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
-                          renderText={item.type}
                         >
                           <View
                             style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
@@ -432,7 +452,7 @@ const DocumentEditor = () => {
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Name</Text>
                           </View>
-                        </Draggable>
+                        </View>
                       );
                     })}
                   {draggedElArr?.signature
@@ -449,24 +469,44 @@ const DocumentEditor = () => {
                       console.log('rerender', `bg-[${color[index].bg}]`);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="draw"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Signature</Text>
-                          </View>
-                        </Draggable>
+                        <>
+                          {signState ? (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Image
+                                resizeMode="contain"
+                                style={[
+                                  tw`w-14 h-8 bg-black`,
+                                  { tintColor: 'white', zIndex: 999, borderWidth: 2 },
+                                ]}
+                                source={{ uri: signState.signature }}
+                              />
+                            </View>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <View
+                                style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                              >
+                                <IconButton
+                                  size={10}
+                                  style={tw`m-0 `}
+                                  icon="draw"
+                                  onPress={() =>
+                                    navigation.navigate('SignatureSelection', {
+                                      Envelope: envelope,
+                                    })
+                                  }
+                                ></IconButton>
+                                <Text style={tw`text-[10px] `}>Signature</Text>
+                              </View>
+                            </View>
+                          )}
+                        </>
                       );
                     })}
                   {draggedElArr?.stamp
@@ -483,24 +523,39 @@ const DocumentEditor = () => {
                       console.log(Number.parseFloat(item.left), item.top);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="stamper"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Stamp</Text>
-                          </View>
-                        </Draggable>
+                        <>
+                          {stampState ? (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Image
+                                resizeMode="contain"
+                                style={[tw`w-14 h-8 bg-black`, { zIndex: 999, borderWidth: 2 }]}
+                                source={{ uri: stampState.image_base64 }}
+                              />
+                            </View>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <View
+                                style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                              >
+                                <IconButton
+                                  size={10}
+                                  style={tw`m-0 `}
+                                  icon="stamper"
+                                  onPress={() =>
+                                    navigation.navigate('StampSelection', { Envelope: envelope })
+                                  }
+                                ></IconButton>
+                                <Text style={tw`text-[10px] `}>Stamp</Text>
+                              </View>
+                            </View>
+                          )}
+                        </>
                       );
                     })}
                   {draggedElArr?.title
@@ -517,11 +572,9 @@ const DocumentEditor = () => {
                       console.log(Number.parseFloat(item.left), item.top);
 
                       return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
-                          renderText={item.type}
                         >
                           <View
                             style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
@@ -534,7 +587,7 @@ const DocumentEditor = () => {
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Title</Text>
                           </View>
-                        </Draggable>
+                        </View>
                       );
                     })}
                 </View>
@@ -841,265 +894,12 @@ const DocumentEditor = () => {
             }}
           /> */}
         </View>
-        <View style={tw` bg-white bottom-0 `}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* draw */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="draw"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'signature',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '10%',
-                      top: '10%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'Signature',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      signature: [...prev?.signature, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Signature</Text>
-            </View>
-            {/* Initials */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="signature-text"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'initial',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '20%',
-                      top: '20%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'initial',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      initial: [...prev?.initial, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Initials</Text>
-            </View>
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="stamper"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'stamp',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '30%',
-                      top: '30%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'stamp',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      stamp: [...prev?.stamp, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Stamp</Text>
-            </View>
-            {/* Date */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="calendar"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'date',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'date',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      date: [...prev?.date, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Date</Text>
-            </View>
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="face-man"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'name',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'name',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      name: [...prev?.name, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Name</Text>
-            </View>
-            {/* Text box */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="email"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'email',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'email',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      email: [...prev?.email, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Email</Text>
-            </View>
-            {/* Name */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="office-building"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'company',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'company',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      company: [...prev?.company, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Company</Text>
-            </View>
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="briefcase"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'title',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'title',
-                      uuid: 0,
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      title: [...prev?.title, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Title</Text>
-            </View>
-          </ScrollView>
-        </View>
-        <View style={tw`flex-row  bg-white  items-center justify-between`}>
-          <View style={tw`flex-row`}>
-            <TouchableOpacity>
-              <IconButton
-                icon="chevron-down"
-                onPress={() => {
-                  carousel.current?.goToPage(index + 1, true);
-                }}
-              ></IconButton>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <IconButton
-                icon="chevron-up"
-                onPress={() => {
-                  carousel.current?.goToPage(index - 1, true);
-                }}
-              ></IconButton>
-            </TouchableOpacity>
-          </View>
-          <View style={tw`flex-row `}>
-            <TouchableOpacity>
-              <IconButton icon="magnify" onPress={() => {}}></IconButton>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <IconButton icon="dots-horizontal" onPress={() => {}}></IconButton>
-            </TouchableOpacity>
-          </View>
-        </View>
       </SafeAreaView>
     </View>
   );
 };
 
-export default DocumentEditor;
+export default DocumentViewer;
 
 const styles = StyleSheet.create({
   botton_view_buttons: tw`items-center mx-2 w-20 h-20 gap-1 justify-center`,

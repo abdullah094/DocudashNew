@@ -6,7 +6,7 @@ import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React from 'react';
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { Chip, Switch } from 'react-native-paper';
+import { Chip, Switch, RadioButton } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 
@@ -89,6 +89,8 @@ export default function List() {
 
   const RenderItem = ({ item }: { item: SignaturePreview }) => {
     const [isSwitchOn, setIsSwitchOn] = React.useState(item.status === 1 ? true : false);
+    const [checked, setChecked] = React.useState(item.status === 1 ? true : false);
+
     const onToggleSwitch = () => {
       setIsSwitchOn(!isSwitchOn);
       StatusUpdate(item.id, !isSwitchOn ? 1 : 0);
@@ -97,7 +99,12 @@ export default function List() {
 
     return (
       <View style={tw` bg-white p-2 my-1 gap-2 px-3`}>
-        <View style={tw`flex-row gap-2 overflow-hidden`}>
+        <View style={tw`flex-row gap-2 overflow-hidden items-center`}>
+          <RadioButton
+            value="first"
+            status={checked === true ? 'checked' : 'unchecked'}
+            onPress={() => setChecked('first')}
+          />
           <View style={tw`flex-1`}>
             <View>
               <Text style={tw`font-medium`}>Signed by</Text>
@@ -118,23 +125,22 @@ export default function List() {
               <Text>{item.signature_code}</Text>
             </View>
           </View>
-          <View style={tw` p-2 justify-between`}>
+          <View style={tw` p-2 justify-between h-50`}>
             <View style={tw`gap-2`}>
               <Text style={tw`font-medium`}>Status:</Text>
               <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
             </View>
-            <View>
-              <View style={tw`flex-row items-center gap-1`}>
-                <Chip
-                  selectedColor={colors.blue}
-                  onPress={() => {
-                    navigation.navigate('AddSignature', { SignaturePreview: item });
-                  }}
-                >
-                  Edit
-                </Chip>
-                <Chip onPress={() => Delete(item.id)}>Delete</Chip>
-              </View>
+
+            <View style={tw`flex-row items-center gap-1`}>
+              <Chip
+                selectedColor={colors.blue}
+                onPress={() => {
+                  navigation.navigate('AddSignature', { SignaturePreview: item });
+                }}
+              >
+                Edit
+              </Chip>
+              <Chip onPress={() => Delete(item.id)}>Delete</Chip>
             </View>
           </View>
         </View>

@@ -6,6 +6,7 @@ import type {
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { pet } from './pet';
+import { Envelope } from './envelope';
 
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeDrawerParamList>;
@@ -31,7 +32,10 @@ export type RootStackParamList = {
   AddStamp: { Stamp?: StampPreview };
   Profile: undefined;
   SignUpIndex: undefined;
-  Template: undefined
+  Template: undefined;
+  DocumentViewer: {Envelope:envelope,item: SignaturePreview };
+  SignatureSelection: envelope
+  StampSelection: envelope
 };
 
 export type SignUpStackParamList = {

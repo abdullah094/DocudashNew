@@ -2,7 +2,7 @@ import Loader from '@components/Loader';
 import SigningOrderModal from '@components/SigningOrderModal';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken } from '@stores/Slices';
-import { Envelope, RootStackScreenProps, ViewDocument } from '@type/index';
+import { Envelope, GenerateSignature, RootStackScreenProps, ViewDocument } from '@type/index';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -33,7 +33,10 @@ const Details = () => {
   const closeMenuMore = () => setVisibleMore(false);
 
   console.log(inbox.uniqid, inbox.signature_id);
-
+  const generate: GenerateSignature = {
+    signature_id: inbox.signature_id,
+    uniqid: inbox.uniqid,
+  };
   useEffect(() => {
     const url = 'https://docudash.net/api/generate-signature/manage-doc-view/';
 
@@ -162,7 +165,7 @@ const Details = () => {
               <Button
                 mode="elevated"
                 onPress={() => {
-                  console.log('Sign');
+                  navigation.navigate('DocumentViewer', { Envelope: generate });
                 }}
               >
                 Sign
