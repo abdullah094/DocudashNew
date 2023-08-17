@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { selectAccessToken } from '@stores/Slices';
+import { selectAccessToken, selectProfileData } from '@stores/Slices';
 import {
   DraggedElArr,
   DraggedElement,
@@ -77,6 +77,9 @@ const color = [
 ];
 const DocumentViewer = () => {
   const accessToken = useSelector(selectAccessToken);
+  const profileData = useSelector(selectProfileData);
+  console.log('profileData', profileData);
+
   const navigation = useNavigation<RootStackScreenProps<'DocumentViewer'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'DocumentViewer'>['route']>();
   const [draggedElArr, setDraggedElArr] = useState<DraggedElArr>({
@@ -98,12 +101,18 @@ const DocumentViewer = () => {
   const stampItem = route.params?.stamp || undefined;
   const [signState, setSignState] = useState<SignaturePreview | undefined>();
   const [stampState, setStampState] = useState();
+  const [dateActiveted, setDateActivated] = useState(false);
+  const [nameActivated, setNameActivated] = useState(false);
+  const [emailActivated, setEmailActivated] = useState(false);
+
   useEffect(() => {
     setSignState(signItem);
     setStampState(stampItem);
   }, [route, navigation]);
   const [index, setIndex] = useState(0);
   console.log(images);
+  const date = new Date();
+  const cureentDate = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
 
   const carousel = useRef<typeof Carousel>();
   console.log('stampItem', stampItem);
@@ -318,7 +327,14 @@ const DocumentViewer = () => {
                       // );
                       console.log(Number.parseFloat(item.left), item.top);
 
-                      return (
+                      return dateActiveted ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <Text style={tw`text-4 text-black font-medium`}>{cureentDate}</Text>
+                        </View>
+                      ) : (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
@@ -330,7 +346,7 @@ const DocumentViewer = () => {
                               size={10}
                               style={tw`m-0 `}
                               icon="calendar"
-                              onPress={() => {}}
+                              onPress={() => setDateActivated(true)}
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Date</Text>
                           </View>
@@ -350,7 +366,14 @@ const DocumentViewer = () => {
                       // );
                       console.log(Number.parseFloat(item.left), item.top);
 
-                      return (
+                      return emailActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <Text style={tw`text-4 text-black font-medium`}>{profileData.email}</Text>
+                        </View>
+                      ) : (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
@@ -362,7 +385,7 @@ const DocumentViewer = () => {
                               size={10}
                               style={tw`m-0 `}
                               icon="email"
-                              onPress={() => {}}
+                              onPress={() => setEmailActivated(true)}
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Email</Text>
                           </View>
@@ -436,7 +459,16 @@ const DocumentViewer = () => {
                       // );
                       console.log(Number.parseFloat(item.left), item.top);
 
-                      return (
+                      return nameActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <Text style={tw`text-4 text-black font-medium`}>
+                            {profileData.first_name + ' ' + profileData.last_name}
+                          </Text>
+                        </View>
+                      ) : (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
@@ -448,7 +480,7 @@ const DocumentViewer = () => {
                               size={10}
                               style={tw`m-0 `}
                               icon="face-man"
-                              onPress={() => {}}
+                              onPress={() => setNameActivated(true)}
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>Name</Text>
                           </View>
