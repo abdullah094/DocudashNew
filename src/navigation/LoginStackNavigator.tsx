@@ -1,4 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
+import Browser from '@screens/Browser';
 import EmailScreen from '@screens/SignUp1/Email';
 import IndustriesScreen from '@screens/SignUp1/Industries';
 import OptScreen from '@screens/SignUp1/OptScreen';
@@ -29,6 +30,7 @@ export default function LoginStackNavigator() {
       <LoginStack.Screen name="Step3" component={SetPasswordScreen} />
       <LoginStack.Screen name="Step4" component={IndustriesScreen} />
       <LoginStack.Screen name="Step5" component={PasswordScreen} />
+      <LoginStack.Screen name="Browser" component={Browser} />
     </LoginStack.Navigator>
   );
 }

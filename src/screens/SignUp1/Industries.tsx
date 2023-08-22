@@ -7,7 +7,8 @@ import { storeTokenGlobal } from '@utils/AsyncGlobal';
 import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Chip, Text } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
 import { useDispatch } from 'react-redux';
 import tw from 'twrnc';
@@ -115,6 +116,11 @@ const IndustriesScreen = () => {
   return (
     <ScrollView contentContainerStyle={tw`flex-1  `}>
       <View style={tw`flex-1 gap-2 justify-center px-10`}>
+        <View style={tw`absolute top-30 left-10`}>
+          <Chip>
+            <Text variant="labelLarge">{`4/4`}</Text>
+          </Chip>
+        </View>
         <Image
           style={tw`w-75 h-35 self-center`}
           resizeMode="contain"

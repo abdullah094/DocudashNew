@@ -7,15 +7,8 @@ import { colors } from '@utils/Colors';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
+import { Chip, Text } from 'react-native-paper';
 import tw from 'twrnc';
 
 interface form {
@@ -86,6 +79,11 @@ const UserInfoScreen = () => {
           keyboardVerticalOffset={150}
           // behavior={"position"}
         >
+          <View style={tw`absolute top--10 left-5`}>
+            <Chip>
+              <Text variant="labelLarge">{`1/4`}</Text>
+            </Chip>
+          </View>
           <Image
             style={tw`w-65 self-center`}
             resizeMode="contain"

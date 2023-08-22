@@ -6,7 +6,8 @@ import { getToken, storeData } from '@utils/AsyncFunc';
 import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Chip, Text } from 'react-native-paper';
 import tw from 'twrnc';
 
 interface route {
@@ -51,6 +52,11 @@ const SetPasswordScreen = () => {
   return (
     <ScrollView contentContainerStyle={tw`h-full `}>
       <View style={tw`flex-1 bg-white gap-2 justify-center px-10`}>
+        <View style={tw`absolute top-30 left-10`}>
+          <Chip>
+            <Text variant="labelLarge">{`3/4`}</Text>
+          </Chip>
+        </View>
         <Image
           style={tw`w-75 h-35 self-center`}
           resizeMode="contain"

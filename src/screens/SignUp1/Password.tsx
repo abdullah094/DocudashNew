@@ -6,7 +6,8 @@ import { SignUpStackScreenProps } from '@type/index';
 import { storeTokenGlobal } from '@utils/AsyncGlobal';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Appbar, Button } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import tw from 'twrnc';
 
@@ -47,22 +48,33 @@ const PasswordScreen = () => {
       });
   };
   return (
-    <ScrollView contentContainerStyle={tw`h-full`}>
-      <View style={tw`flex-1 bg-white gap-3 px-10 justify-center`}>
-        <Image
-          style={tw`w-50 h-10 rounded-sm self-center`}
-          source={require('@assets/docudash_pow_logo.png')}
-        />
-        <Input
-          state={password}
-          secureTextEntry
-          setState={setPassword}
-          placeholder={'Enter password'}
-          style={{}}
-        />
-        <GreenButton loading={loading} text={'Login'} onPress={LoginButton} styles={{}} />
-      </View>
-    </ScrollView>
+    <>
+      <ScrollView contentContainerStyle={tw`h-full`}>
+        <View style={tw`flex-1 bg-white gap-2 px-10 justify-center`}>
+          <View style={tw`flex-row items-center`}>
+            <Button
+              onPress={() => navigation.goBack()}
+              mode="outlined"
+              icon={'arrow-left-thick'}
+              style={tw``}
+              children={''}
+            ></Button>
+            <Image
+              style={tw`w-50 h-10 rounded-sm self-center`}
+              source={require('@assets/docudash_pow_logo.png')}
+            />
+          </View>
+          <Input
+            state={password}
+            secureTextEntry
+            setState={setPassword}
+            placeholder={'Enter password'}
+            style={{}}
+          />
+          <GreenButton loading={loading} text={'Login'} onPress={LoginButton} styles={{}} />
+        </View>
+      </ScrollView>
+    </>
   );
 };
 

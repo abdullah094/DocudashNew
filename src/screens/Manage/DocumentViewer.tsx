@@ -111,23 +111,8 @@ const DocumentViewer = () => {
   const [imageSizes, setImageSizes] = useState<{ width: number; height: number }[]>(new Array());
   console.log('Imagesizes', imageSizes);
   useEffect(() => {
-    if (signItem != undefined) {
-      setSignState(signItem);
-      if (signState) {
-        setDraggedElArr((prev) => {
-          return {
-            ...prev,
-            signature: prev.signature.map((item) => {
-              return { ...item, background: signState.signature };
-            }),
-            initial: prev.initial.map((item) => {
-              item.background = signState.initial;
-              return { ...item, background: signState.initial };
-            }),
-          };
-        });
-      }
-    }
+    if (signItem != undefined) setSignState(signItem);
+
     if (stampItem != undefined) setStampState(stampItem);
   }, [route, navigation]);
 
@@ -250,7 +235,7 @@ const DocumentViewer = () => {
       <SafeAreaView style={tw`flex-1 `}>
         <View style={tw` bg-white bottom-0 `}>
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
             horizontal
             showsHorizontalScrollIndicator={false}
           >
@@ -286,10 +271,10 @@ const DocumentViewer = () => {
         <View style={tw`flex-1`}>
           <FlatList
             data={images}
-            onViewableItemsChanged={_onViewableItemsChanged}
-            viewabilityConfig={{
-              itemVisiblePercentThreshold: 50,
-            }}
+            // onViewableItemsChanged={_onViewableItemsChanged}
+            // viewabilityConfig={{
+            //   itemVisiblePercentThreshold: 50,
+            // }}
             renderItem={({ item, index }) => {
               let imageUrl = '';
               if (item.image?.includes('pdf') || item.image?.includes('docx')) {

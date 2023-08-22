@@ -19,6 +19,7 @@ import LoginStackNavigator from './LoginStackNavigator';
 import DocumentViewer from '@screens/Manage/DocumentViewer';
 import SignatureSelection from '@screens/Manage/SignatureSelection';
 import StampSelection from '@screens/Manage/StampSelection';
+import EmailScreen from '@screens/SignUp1/Email';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
