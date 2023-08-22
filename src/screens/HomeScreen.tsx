@@ -34,7 +34,6 @@ const HomeScreen = () => {
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();
   const route = useRoute<HomeDrawerScreenProps<'HomeScreen'>['route']>();
   const [documents, setDocuments] = useState<uploadType[]>(new Array());
-  const [imagesUpload, setImagesUpload] = useState<uploadType[]>(new Array());
   const dispatch = useDispatch();
   const [dashNumber, setDashNumber] = useState({
     actionRequired: 0,
@@ -208,18 +207,11 @@ const HomeScreen = () => {
             </View>
           </View>
 
-          <UploadView
-            documents={documents}
-            setDocuments={setDocuments}
-            imagesUpload={imagesUpload}
-            setImagesUpload={setImagesUpload}
-          />
-          {[...documents, ...imagesUpload].length > 0 ? (
+          <UploadView documents={documents} setDocuments={setDocuments} />
+          {[...documents].length > 0 ? (
             <Button
               mode="contained"
-              onPress={() =>
-                navigation.navigate('Edit', { files: documents, images: imagesUpload })
-              }
+              onPress={() => navigation.navigate('Edit', { files: documents })}
             >
               Start Now
             </Button>

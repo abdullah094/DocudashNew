@@ -5,9 +5,10 @@ import { RootStackScreenProps } from '@type/*';
 import { colors } from '@utils/Colors';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
+import mime from 'mime';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { FlatList, Image, Pressable, Text, View } from 'react-native';
-import { Divider, List } from 'react-native-paper';
+import { FlatList, Image, Platform, Pressable, Text, View } from 'react-native';
+import { Badge, Divider, List } from 'react-native-paper';
 import tw from 'twrnc';
 
 interface uploadType {
@@ -16,7 +17,7 @@ interface uploadType {
   type: 'image' | 'video' | undefined | string;
 }
 
-export default function UploadView({ documents, setDocuments, imagesUpload, setImagesUpload }) {
+export default function UploadView({ documents, setDocuments }) {
   const navigation = useNavigation<RootStackScreenProps<'Home'>['navigation']>();
   const bottomSheetRef = useRef(null);
   const snapPoints = useMemo(() => ['35%', '45%'], []);
@@ -50,17 +51,28 @@ export default function UploadView({ documents, setDocuments, imagesUpload, setI
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      // aspect: [4, 3],
       quality: 1,
     });
     if (!result.canceled) {
       const image = result.assets[0];
-      const imageToUpload = {
-        uri: image.uri,
-        name: image.fileName || image.uri,
-        type: image.type,
-      };
-      setImagesUpload((prev) => [...prev, imageToUpload]);
+      if (Platform.OS === 'android') {
+        const newImageUri = 'file:///' + image.uri.split('file:/').join('');
+
+        const imageToUpload = {
+          uri: newImageUri,
+          name: image.fileName ?? image.uri.split('/').pop(),
+          type: mime.getType(newImageUri),
+        };
+        setDocuments((prev) => [...prev, imageToUpload]);
+      } else {
+        const imageToUpload = {
+          uri: image.uri,
+          name: image.fileName ?? image.uri.split('/').pop(),
+          type: image.type,
+        };
+        setDocuments((prev) => [...prev, imageToUpload]);
+      }
     }
   };
   return (
@@ -79,13 +91,22 @@ export default function UploadView({ documents, setDocuments, imagesUpload, setI
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={[...documents, ...imagesUpload]}
+          data={[...documents]}
           renderItem={({ item, index }) => (
-            <View style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`} id={index + '_'}>
+            <View
+              style={tw`items-center w-30 h-30 mx-2 border border-gray-300 rounded-lg`}
+              id={index + '_'}
+            >
+              <Badge
+                style={tw`absolute z-1 top-1 right-1`}
+                onPress={() => setDocuments((prev) => prev.filter((_, i) => i !== index))}
+              >
+                X
+              </Badge>
               {item.type === 'image' || item.type === 'image/png' || item.type === 'image/jpeg' ? (
                 <Image
                   source={{ uri: item.uri }}
-                  style={tw`w-20 h-20`}
+                  style={tw`w-full h-full`}
                   resizeMode="contain"
                 ></Image>
               ) : (

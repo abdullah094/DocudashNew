@@ -1,3 +1,4 @@
+import UploadView from '@components/UploadView';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -107,61 +108,7 @@ const Edit = () => {
 
   const envelope = route.params?.Envelope;
   const files = route.params?.files;
-  const images = route.params?.images;
-
   console.log(envelope);
-
-  const uploadFile = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: ['image/*', 'application/pdf'], // You can specify the file types here (e.g., 'image/*', 'application/pdf', etc.)
-      });
-      if (result.type !== 'cancel') {
-        const fileToUpload = {
-          uri: result.uri,
-          name: result.name || result.uri,
-          type: result.mimeType || result.type,
-        };
-        setDocuments((prev) => [...prev, fileToUpload]);
-      }
-    } catch (err) {
-      console.log('err');
-    }
-  };
-  const uploadImage1 = async () => {
-    // @ts-ignore
-    bottomSheetRef.current?.close();
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      // aspect: [4, 3],
-      quality: 1,
-    });
-
-    // console.log("reault", result);
-
-    if (!result.canceled) {
-      const image = result.assets[0];
-      if (Platform.OS === 'android') {
-        const newImageUri = 'file:///' + image.uri.split('file:/').join('');
-
-        const imageToUpload = {
-          uri: newImageUri,
-          name: image.fileName ?? image.uri.split('/').pop(),
-          type: mime.getType(newImageUri),
-        };
-        setDocuments((prev) => [...prev, imageToUpload]);
-      } else {
-        const imageToUpload = {
-          uri: image.uri,
-          name: image.fileName ?? image.uri.split('/').pop(),
-          type: image.type,
-        };
-        setDocuments((prev) => [...prev, imageToUpload]);
-      }
-    }
-  };
-  // console.log("data", envelope.id, envelope.signature_id);
 
   const addNewRecipient = () => {
     setData([
@@ -211,10 +158,7 @@ const Edit = () => {
       toastMessage: undefined,
     });
     if (files) {
-      setDocuments((prev) => [...prev, ...files]);
-    }
-    if (images) {
-      setDocuments((prev) => [...prev, ...images]);
+      setDocuments(files);
     }
     if (envelope) {
       axios
@@ -717,86 +661,34 @@ const Edit = () => {
   const renderAddDocument = () => (
     <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
       <Text variant="headlineSmall">Add Documents</Text>
-      <View style={tw`bg-white px-8 py-8`}>
-        <View
-          style={tw` border-2 py-10 rounded-xl border-dashed border-[${colors.blue}] justify-center items-center`}
-        >
-          <TouchableOpacity style={tw`p-1`} onPress={handlePresentModalPress}>
-            <Image
-              style={tw`h-10 w-10 self-center`}
-              source={require('../../../assets/Upload.png')}
-            />
-            <Text style={tw`text-[${colors.blue}] mt-2`}>Drop additional documents if any</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={tw`py-5 my-2`}>
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={generateSignatureDetailsImages}
-            renderItem={({ item }) => {
-              let imageUrl = '';
-              if (item.image?.includes('pdf')) {
-                item.image.split('.')[0] + '-1.jpg';
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-                  item.image.split('.')[0] +
-                  '-1.jpg';
-              } else {
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-              }
-              return (
-                <Image
-                  source={{
-                    uri: imageUrl,
-                  }}
-                  style={tw`h-20 w-20 m-2 rounded-lg`}
-                />
-              );
-            }}
-          />
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={[...documents]}
-            renderItem={({ item, index }) => (
-              <View
-                style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
-                id={index + '_'}
-              >
-                <Badge onPress={() => setDocuments((prev) => prev.filter((_, i) => i !== index))}>
-                  X
-                </Badge>
-                {item.type === 'image' ||
-                item.type === 'image/png' ||
-                item.type === 'image/jpeg' ? (
-                  <Image
-                    source={{ uri: item.uri }}
-                    style={tw`w-20 h-20`}
-                    resizeMode="contain"
-                  ></Image>
-                ) : (
-                  <>
-                    <MaterialCommunityIcons
-                      name={
-                        item.type === 'application/pdf'
-                          ? 'file-pdf-box'
-                          : item.type === 'image/png'
-                          ? 'file-image'
-                          : 'file-question-outline'
-                      }
-                      size={40}
-                    />
-                    <Text style={tw`w-25 text-center`} numberOfLines={2}>
-                      {item.name}
-                    </Text>
-                  </>
-                )}
-              </View>
-            )}
-          />
-        </View>
+      <View style={tw`bg-white `}>
+        <UploadView documents={documents} setDocuments={setDocuments} />
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={generateSignatureDetailsImages}
+          renderItem={({ item }) => {
+            let imageUrl = '';
+            if (item.image?.includes('pdf')) {
+              item.image.split('.')[0] + '-1.jpg';
+              imageUrl =
+                'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+                item.image.split('.')[0] +
+                '-1.jpg';
+            } else {
+              imageUrl =
+                'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
+            }
+            return (
+              <Image
+                source={{
+                  uri: imageUrl,
+                }}
+                style={tw`h-20 w-20 m-2 rounded-lg`}
+              />
+            );
+          }}
+        />
       </View>
 
       <View style={tw`flex-1 gap-2 justify-end flex-row mx-2`}>
@@ -885,38 +777,6 @@ const Edit = () => {
       </Wizard>
 
       <ScrollView>{renderCurrentStep()}</ScrollView>
-
-      <BottomSheetModal
-        ref={bottomSheetRef}
-        index={0}
-        snapPoints={snapPoints}
-        onChange={handleSheetChanges}
-      >
-        <View style={tw`flex-1 bg-white`}>
-          <List.Item
-            onPress={uploadFile}
-            title="Upload Document"
-            description="Sign document files like pdf"
-            left={(props) => <List.Icon {...props} icon="folder" />}
-          />
-          <Divider />
-          <List.Item
-            onPress={uploadImage1}
-            title="Upload Image"
-            description="Sign images like png/jpg"
-            left={(props) => <List.Icon {...props} icon="folder" />}
-          />
-          <Divider />
-          <List.Item
-            onPress={() => {
-              // @ts-ignore
-              bottomSheetRef.current?.close();
-            }}
-            title="Cancel"
-            left={(props) => <List.Icon {...props} icon="close" />}
-          />
-        </View>
-      </BottomSheetModal>
     </View>
   );
 };
