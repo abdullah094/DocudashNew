@@ -100,6 +100,7 @@ const DocumentViewer = () => {
   const signItem: SignaturePreview = route.params?.item || undefined;
   const stampItem = route.params?.stamp || undefined;
   const [signState, setSignState] = useState<SignaturePreview | undefined>();
+  const [initialState, setInitialState] = useState();
   const [stampState, setStampState] = useState();
   const [dateActiveted, setDateActivated] = useState(false);
   const [nameActivated, setNameActivated] = useState(false);
@@ -108,11 +109,28 @@ const DocumentViewer = () => {
   const [titleActivated, setTitleActivated] = useState(false);
 
   useEffect(() => {
-    setSignState(signItem);
-    setStampState(stampItem);
+    if (signItem != undefined) {
+      setSignState(signItem);
+      if (signState) {
+        setDraggedElArr((prev) => {
+          return {
+            ...prev,
+            signature: prev.signature.map((item) => {
+              return { ...item, background: signState.signature };
+            }),
+            initial: prev.initial.map((item) => {
+              item.background = signState.initial;
+              return { ...item, background: signState.initial };
+            }),
+          };
+        });
+      }
+    }
+    if (stampItem != undefined) setStampState(stampItem);
   }, [route, navigation]);
+
   const [index, setIndex] = useState(0);
-  console.log(images);
+  console.log('draggedElArr', draggedElArr.initial);
   const date = new Date();
   const cureentDate = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
 
@@ -950,5 +968,5 @@ export default DocumentViewer;
 const styles = StyleSheet.create({
   botton_view_buttons: tw`items-center mx-2 w-20 h-20 gap-1 justify-center`,
   yellow_round: tw`h-12 w-12 rounded-full bg-yellow-200 justify-center items-center`,
-  yellow_round_text: tw``,
+  yellow_round_text: tw`text-center`,
 });
