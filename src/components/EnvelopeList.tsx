@@ -51,7 +51,7 @@ export default function EnvelopeList({ heading }: { heading: string }) {
   };
   return (
     <FlatList
-      data={loading ? new Array(5).fill({}) : filter(Name) ? filter(Name) : data}
+      data={loading ? new Array(7).fill({}) : filter(Name) ? filter(Name) : data}
       ListHeaderComponent={
         <View style={tw`flex-row items-center justify-between px-5 mb-5 `}>
           <Text style={tw`font-bold text-6  tracking-wider`} numberOfLines={1}>

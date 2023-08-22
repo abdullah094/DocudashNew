@@ -12,7 +12,7 @@ import {
 } from '@type/index';
 import axios from 'axios';
 import FormData from 'form-data';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   SafeAreaView,
@@ -21,6 +21,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  FlatList,
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
@@ -106,10 +107,11 @@ const DocumentViewer = () => {
   const [emailActivated, setEmailActivated] = useState(false);
   const [companyActivated, setCompanyActivated] = useState(false);
   const [titleActivated, setTitleActivated] = useState(false);
-
+  const [imageSizes, setImageSizes] = useState<{ width: number; height: number }[]>(new Array());
+  console.log('Imagesizes', imageSizes);
   useEffect(() => {
-    setSignState(signItem);
-    setStampState(stampItem);
+    if (signItem) setSignState(signItem);
+    if (stampItem) setStampState(stampItem);
   }, [route, navigation]);
   const [index, setIndex] = useState(0);
   console.log(images);
@@ -209,6 +211,10 @@ const DocumentViewer = () => {
       });
   };
 
+  const _onViewableItemsChanged = useCallback(({ viewableItems, changed }) => {
+    console.log('Visible items are', viewableItems);
+    // console.log('Changed in this iteration', changed);
+  }, []);
   return (
     <View style={tw`h-full `}>
       <Appbar.Header mode="center-aligned">
@@ -260,11 +266,394 @@ const DocumentViewer = () => {
           </ScrollView>
         </View>
         <View style={tw`flex-1`}>
-          <Carousel
-            ref={carousel}
-            horizontal={false}
-            onChangePage={(currentPage: number) => setIndex(currentPage)}
-          >
+          <FlatList
+            data={images}
+            onViewableItemsChanged={_onViewableItemsChanged}
+            viewabilityConfig={{
+              itemVisiblePercentThreshold: 50,
+            }}
+            renderItem={({ item, index }) => {
+              let imageUrl = '';
+              if (item.image?.includes('pdf') || item.image?.includes('docx')) {
+                item.image.split('.')[0] + '-1.jpg';
+                imageUrl =
+                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+                  item.image.split('.')[0] +
+                  '-1.jpg';
+              } else {
+                imageUrl =
+                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
+              }
+
+              console.log(imageUrl);
+              return (
+                <View id={index + '_'} style={tw`my-2`}>
+                  <AutoHeightImage
+                    onLoad={({
+                      nativeEvent: {
+                        source: { width, height },
+                      },
+                    }) => setImageSizes((prev) => [...prev, { width, height }])}
+                    width={width}
+                    source={{
+                      uri: imageUrl,
+                    }}
+                  />
+                  {draggedElArr?.company
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, index) => {
+                      console.log(Number.parseFloat(item.left), item.top);
+
+                      return companyActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <TextInput style={tw`w-30 h-10`} />
+                        </View>
+                      ) : (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon="office-building"
+                              onPress={() => setCompanyActivated(true)}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>Company</Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  {draggedElArr?.date
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, index) => {
+                      // console.log(
+                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
+                      //   ((Number.parseInt(item.top) * 100) / width) * 15
+                      // );
+                      console.log(Number.parseFloat(item.left), item.top);
+
+                      return dateActiveted ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <Text style={tw`text-4 text-black font-medium`}>{cureentDate}</Text>
+                        </View>
+                      ) : (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon="calendar"
+                              onPress={() => setDateActivated(true)}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>Date</Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  {draggedElArr?.email
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, index) => {
+                      // console.log(
+                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
+                      //   ((Number.parseInt(item.top) * 100) / width) * 15
+                      // );
+                      console.log(Number.parseFloat(item.left), item.top);
+
+                      return emailActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <Text style={tw`text-4 text-black font-medium`}>{profileData.email}</Text>
+                        </View>
+                      ) : (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon="email"
+                              onPress={() => setEmailActivated(true)}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>Email</Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  {draggedElArr?.initial
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, index) => {
+                      // console.log(
+                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
+                      //   ((Number.parseInt(item.top) * 100) / width) * 15
+                      // );
+                      console.log(Number.parseFloat(item.left), item.top);
+
+                      return (
+                        <>
+                          {signState ? (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Image
+                                resizeMode="contain"
+                                style={[
+                                  tw`w-14 h-8 bg-black`,
+                                  { tintColor: 'white', zIndex: 999, borderWidth: 2 },
+                                ]}
+                                source={{ uri: signState.initial }}
+                              />
+                            </View>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <View
+                                style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                              >
+                                <IconButton
+                                  size={10}
+                                  style={tw`m-0 `}
+                                  icon="signature-text"
+                                  onPress={() =>
+                                    navigation.navigate('SignatureSelection', {
+                                      Envelope: envelope,
+                                    })
+                                  }
+                                ></IconButton>
+                                <Text style={tw`text-[10px] `}>Initial</Text>
+                              </View>
+                            </View>
+                          )}
+                        </>
+                      );
+                    })}
+                  {draggedElArr?.name
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, index) => {
+                      // console.log(
+                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
+                      //   ((Number.parseInt(item.top) * 100) / width) * 15
+                      // );
+                      console.log(Number.parseFloat(item.left), item.top);
+
+                      return nameActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <Text style={tw`text-4 text-black font-medium`}>
+                            {profileData.first_name + ' ' + profileData.last_name}
+                          </Text>
+                        </View>
+                      ) : (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon="face-man"
+                              onPress={() => setNameActivated(true)}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>Name</Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  {draggedElArr?.signature
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item) => {
+                      // console.log(
+                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
+                      //   ((Number.parseInt(item.top) * 100) / width) * 15
+                      // );
+                      console.log('rerender', `bg-[${color[index].bg}]`);
+
+                      return (
+                        <>
+                          {signState ? (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Image
+                                resizeMode="contain"
+                                style={[
+                                  tw`w-14 h-8 bg-black`,
+                                  { tintColor: 'white', zIndex: 999, borderWidth: 2 },
+                                ]}
+                                source={{ uri: signState.signature }}
+                              />
+                            </View>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <View
+                                style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                              >
+                                <IconButton
+                                  size={10}
+                                  style={tw`m-0 `}
+                                  icon="draw"
+                                  onPress={() =>
+                                    navigation.navigate('SignatureSelection', {
+                                      Envelope: envelope,
+                                    })
+                                  }
+                                ></IconButton>
+                                <Text style={tw`text-[10px] `}>Signature</Text>
+                              </View>
+                            </View>
+                          )}
+                        </>
+                      );
+                    })}
+                  {draggedElArr?.stamp
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item) => {
+                      // console.log(
+                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
+                      //   ((Number.parseInt(item.top) * 100) / width) * 15
+                      // );
+                      console.log(Number.parseFloat(item.left), item.top);
+
+                      return (
+                        <>
+                          {stampState ? (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Image
+                                resizeMode="contain"
+                                style={[tw`w-14 h-8 bg-black`, { zIndex: 999, borderWidth: 2 }]}
+                                source={{ uri: stampState.image_base64 }}
+                              />
+                            </View>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <View
+                                style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                              >
+                                <IconButton
+                                  size={10}
+                                  style={tw`m-0 `}
+                                  icon="stamper"
+                                  onPress={() =>
+                                    navigation.navigate('StampSelection', { Envelope: envelope })
+                                  }
+                                ></IconButton>
+                                <Text style={tw`text-[10px] `}>Stamp</Text>
+                              </View>
+                            </View>
+                          )}
+                        </>
+                      );
+                    })}
+                  {draggedElArr?.title
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item) => {
+                      // console.log(
+                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
+                      //   ((Number.parseInt(item.top) * 100) / width) * 15
+                      // );
+                      console.log(Number.parseFloat(item.left), item.top);
+
+                      return titleActivated ? (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <TextInput style={tw`w-30 h-10`} />
+                        </View>
+                      ) : (
+                        <View
+                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                          // renderColor="red"
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon="briefcase"
+                              onPress={() => setTitleActivated(true)}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>Title</Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                </View>
+              );
+            }}
+          />
+          {/* <ScrollView>
             {images?.map((item) => {
               let imageUrl = '';
               if (item.image?.includes('pdf') || item.image?.includes('docx')) {
@@ -277,10 +666,16 @@ const DocumentViewer = () => {
                 imageUrl =
                   'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
               }
+
               console.log(imageUrl);
               return (
                 <View id={index + '_'}>
                   <AutoHeightImage
+                    onLoad={({
+                      nativeEvent: {
+                        source: { width, height },
+                      },
+                    }) => setImageSizes((prev) => [...prev, { width, height }])}
                     width={width}
                     source={{
                       uri: imageUrl,
@@ -639,7 +1034,7 @@ const DocumentViewer = () => {
                 </View>
               );
             })}
-          </Carousel>
+          </ScrollView> */}
           {/* <FlatList
             data={images}
             renderItem={({ item, index }) => {

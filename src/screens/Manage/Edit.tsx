@@ -13,11 +13,13 @@ import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
+import mime from 'mime';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -25,6 +27,7 @@ import {
 } from 'react-native';
 import {
   Appbar,
+  Badge,
   Button,
   Divider,
   HelperText,
@@ -95,7 +98,6 @@ const Edit = () => {
     bottomSheetRef.current?.present();
   }, []);
 
-  const [uploadImage, setUploadImage] = useState<uploadType[]>(new Array());
   const [documents, setDocuments] = useState<uploadType[]>(new Array());
   const [loading, setLoading] = useState(false);
   const [generateSignature, setGenerateSignature] = useState<GenerateSignature>();
@@ -132,7 +134,7 @@ const Edit = () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      // aspect: [4, 3],
       quality: 1,
     });
 
@@ -140,12 +142,23 @@ const Edit = () => {
 
     if (!result.canceled) {
       const image = result.assets[0];
-      const imageToUpload = {
-        uri: image.uri,
-        name: image.fileName || image.uri,
-        type: image.type,
-      };
-      setUploadImage((prev) => [...prev, imageToUpload]);
+      if (Platform.OS === 'android') {
+        const newImageUri = 'file:///' + image.uri.split('file:/').join('');
+
+        const imageToUpload = {
+          uri: newImageUri,
+          name: image.fileName ?? image.uri.split('/').pop(),
+          type: mime.getType(newImageUri),
+        };
+        setDocuments((prev) => [...prev, imageToUpload]);
+      } else {
+        const imageToUpload = {
+          uri: image.uri,
+          name: image.fileName ?? image.uri.split('/').pop(),
+          type: image.type,
+        };
+        setDocuments((prev) => [...prev, imageToUpload]);
+      }
     }
   };
   // console.log("data", envelope.id, envelope.signature_id);
@@ -198,10 +211,10 @@ const Edit = () => {
       toastMessage: undefined,
     });
     if (files) {
-      setDocuments(files);
+      setDocuments((prev) => [...prev, ...files]);
     }
     if (images) {
-      setUploadImage(images);
+      setDocuments((prev) => [...prev, ...images]);
     }
     if (envelope) {
       axios
@@ -269,7 +282,7 @@ const Edit = () => {
         });
     }
   }, [route]);
-  console.log([...documents, ...uploadImage]);
+  console.log([...documents]);
 
   const save = () => {
     if (!generateSignature) return;
@@ -300,7 +313,7 @@ const Edit = () => {
     formData.append('emailSubject', emailSubject);
     formData.append('emailMessage', emailMessage);
 
-    [...documents, ...uploadImage].forEach((image, index) => {
+    [...documents].forEach((image, index) => {
       formData.append('photosID[' + index + ']', '0');
       formData.append('photos[]', image, `image${index + 1}.png`);
     });
@@ -746,12 +759,15 @@ const Edit = () => {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={[...documents, ...uploadImage]}
+            data={[...documents]}
             renderItem={({ item, index }) => (
               <View
                 style={tw`items-center mx-2 border-2 rounded-lg p-2 py-5 gap-2`}
                 id={index + '_'}
               >
+                <Badge onPress={() => setDocuments((prev) => prev.filter((_, i) => i !== index))}>
+                  X
+                </Badge>
                 {item.type === 'image' ||
                 item.type === 'image/png' ||
                 item.type === 'image/jpeg' ? (
