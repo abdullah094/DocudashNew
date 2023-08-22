@@ -12,7 +12,7 @@ interface IRow {
 }
 const Row = ({ title, shortName }: IRow) => {
   return (
-    <View style={tw`flex-row items-center justify-between`}>
+    <View id={title} style={tw`flex-row items-center justify-between`}>
       <Text style={tw`text-4 font-nunito-SemiBold`}>{title}</Text>
       <View style={tw`w-8 h-8 rounded-full  justify-center items-center bg-[${colors.green}]`}>
         <Text style={tw`text-3 text-black`}>{shortName}</Text>
