@@ -12,6 +12,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -23,6 +24,7 @@ import { ActivityIndicator, Avatar, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import COLORS from '../constants/colors';
+import mime from 'mime';
 const { height } = Dimensions.get('window');
 
 interface uploadType {
@@ -82,6 +84,7 @@ const HomeScreen = () => {
   };
   const isFocused = useIsFocused();
   useEffect(() => {
+    setDocuments(new Array());
     fetchDashData();
     console.log('Change name Home', isFocused);
     dispatch(setRouteName('Home'));
@@ -103,12 +106,27 @@ const HomeScreen = () => {
     setLoading(true);
     if (!result.canceled) {
       const image = result.assets[0];
-      let formData = new FormData();
-      const imageToUpload = {
-        uri: image.uri,
-        name: image.fileName || image.uri,
-        type: image.type,
+      var imageToUpload = {
+        uri: '',
+        name: '',
+        type: '',
       };
+      let formData = new FormData();
+      if (Platform.OS === 'android') {
+        const newImageUri = 'file:///' + image.uri.split('file:/').join('');
+        imageToUpload = {
+          uri: newImageUri,
+          name: image.fileName ?? image.uri.split('/').pop(),
+          type: mime.getType(newImageUri),
+        };
+      } else {
+        imageToUpload = {
+          uri: image.uri,
+          name: image.fileName ?? image.uri.split('/').pop(),
+          type: image.type,
+        };
+      }
+
       // @ts-ignore
       formData.append('photo', imageToUpload);
       let headers = {
@@ -172,7 +190,7 @@ const HomeScreen = () => {
                 style={tw`w-2.1 h-24 rounded-full mt-5 top--2 mx-2`}
                 source={require('@assets/WhiteLine.png')}
               />
-              <View style={tw`h-full justify-between  px-1  items-start `}>
+              <View style={tw`h-full flex-1 justify-between items-start px-1 `}>
                 <Text style={tw`font-semibold text-white text-4 w-50`}>Signed by:</Text>
 
                 {signature ? (

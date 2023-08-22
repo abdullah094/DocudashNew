@@ -6,7 +6,7 @@ import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React from 'react';
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { Chip, Switch, RadioButton } from 'react-native-paper';
+import { Chip, Switch, RadioButton, Divider } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 
@@ -100,11 +100,6 @@ export default function List() {
     return (
       <View style={tw` bg-white p-2 my-1 gap-2 px-3`}>
         <View style={tw`flex-row gap-2 overflow-hidden items-center`}>
-          <RadioButton
-            value="first"
-            status={checked === true ? 'checked' : 'unchecked'}
-            onPress={() => setChecked('first')}
-          />
           <View style={tw`flex-1`}>
             <View>
               <Text style={tw`font-medium`}>Signed by</Text>
@@ -169,6 +164,7 @@ export default function List() {
         keyExtractor={(item) => item.id + '_'}
         onRefresh={fetchList}
         refreshing={isFetching}
+        ItemSeparatorComponent={Divider}
         contentContainerStyle={tw`pb-50`}
         renderItem={({ item }) => <RenderItem item={item} />}
       />

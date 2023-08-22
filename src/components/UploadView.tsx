@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackScreenProps } from '@type/*';
 import { colors } from '@utils/Colors';
@@ -7,7 +7,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import mime from 'mime';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { FlatList, Image, Platform, Pressable, Text, View } from 'react-native';
+import { FlatList, Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { Badge, Divider, List } from 'react-native-paper';
 import tw from 'twrnc';
 
@@ -20,7 +20,7 @@ interface uploadType {
 export default function UploadView({ documents, setDocuments }) {
   const navigation = useNavigation<RootStackScreenProps<'Home'>['navigation']>();
   const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ['35%', '45%'], []);
+  const snapPoints = useMemo(() => ['26%'], []);
   const handleSheetChanges = useCallback((index: number) => {}, []);
   const handlePresentModalPress = useCallback(() => {
     // @ts-ignore
@@ -138,30 +138,32 @@ export default function UploadView({ documents, setDocuments }) {
         enablePanDownToClose
         onChange={handleSheetChanges}
       >
-        <View style={tw`flex-1 bg-white`}>
-          <List.Item
-            onPress={uploadFile}
-            title="Upload Document"
-            description="Sign document files like pdf"
-            left={(props) => <List.Icon {...props} icon="folder" />}
-          />
-          <Divider />
-          <List.Item
-            onPress={uploadImage}
-            title="Upload Image"
-            description="Sign images like png/jpg"
-            left={(props) => <List.Icon {...props} icon="folder" />}
-          />
-          <Divider />
-          <List.Item
-            onPress={() => {
-              // @ts-ignore
-              bottomSheetRef.current?.close();
-            }}
-            title="Cancel"
-            left={(props) => <List.Icon {...props} icon="close" />}
-          />
-        </View>
+        <BottomSheetScrollView>
+          <View style={tw`flex-1 bg-white`}>
+            <List.Item
+              onPress={uploadFile}
+              title="Upload Document"
+              description="Sign document files like pdf"
+              left={(props) => <List.Icon {...props} icon="folder" />}
+            />
+            <Divider />
+            <List.Item
+              onPress={uploadImage}
+              title="Upload Image"
+              description="Sign images like png/jpg"
+              left={(props) => <List.Icon {...props} icon="folder" />}
+            />
+            <Divider />
+            <List.Item
+              onPress={() => {
+                // @ts-ignore
+                bottomSheetRef.current?.close();
+              }}
+              title="Cancel"
+              left={(props) => <List.Icon {...props} icon="close" />}
+            />
+          </View>
+        </BottomSheetScrollView>
       </BottomSheetModal>
     </View>
   );

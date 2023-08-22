@@ -6,7 +6,7 @@ import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React from 'react';
 import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { Chip, Switch } from 'react-native-paper';
+import { Chip, Divider, Switch } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 
@@ -152,6 +152,7 @@ export default function List() {
         keyExtractor={(item) => item.id + '_'}
         onRefresh={fetchList}
         refreshing={isFetching}
+        ItemSeparatorComponent={Divider}
         contentContainerStyle={tw`pb-50`}
         renderItem={({ item }) => <RenderItem item={item} />}
       />
