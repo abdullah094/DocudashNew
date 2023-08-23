@@ -1,12 +1,22 @@
 import Loader from '@components/Loader';
 import SigningOrderModal from '@components/SigningOrderModal';
+import COLORS from '@constants/colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { selectAccessToken } from '@stores/Slices';
+import { selectAccessToken, selectProfileData } from '@stores/Slices';
 import { Envelope, GenerateSignature, RootStackScreenProps, ViewDocument } from '@type/index';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Appbar, Button, Divider, IconButton, Menu } from 'react-native-paper';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons';
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Appbar, Avatar, Button, Divider, IconButton, Menu } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 
@@ -27,12 +37,17 @@ const Details = () => {
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
-
+  const user = useSelector(selectProfileData);
   const [visibleMore, setVisibleMore] = React.useState(false);
   const openMenuMore = () => setVisibleMore(true);
   const closeMenuMore = () => setVisibleMore(false);
+  const [visibleMoreHeader, setVisibleMoreHeader] = React.useState(false);
+  const openMenuMoreHeader = () => setVisibleMoreHeader(true);
+  const closeMenuMoreHeader = () => setVisibleMoreHeader(false);
+  const [needToSignButton, setNeedToSignButton] = useState('Sign');
 
   console.log(inbox.uniqid, inbox.signature_id);
+  //@ts-ignore
   const generate: GenerateSignature = {
     signature_id: inbox.signature_id,
     uniqid: inbox.uniqid,
@@ -84,16 +99,68 @@ const Details = () => {
         console.log('Error----', error);
       });
   };
+  useEffect(() => {
+    SignOrView();
+  }, [data]);
+
+  const SignOrView = () => {
+    data?.generateSignatureDetails.forEach((element, index) => {
+      if (element?.recEmail?.toLowerCase() == user?.email.toLowerCase()) {
+        console.log('element.sign_type', element.sign_type);
+
+        element.sign_type == '1' ? setNeedToSignButton('Sign') : setNeedToSignButton('View');
+      }
+    });
+  };
+  const SignOrViewButton = () => {
+    if (needToSignButton === 'View') {
+      //@ts-ignore
+      navigation.navigate('DocumentViewer', { Envelope: generate });
+    } else if (needToSignButton === 'Sign') {
+      navigation.navigate('DocumentEditor', { Envelope: generate });
+    }
+  };
+
   if (dataLoader) return <Loader />;
 
   return (
-    <View style={tw`flex-1`}>
-      <Appbar.Header>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title={data?.generateSignatureDetails[0].emailSubject} />
-      </Appbar.Header>
+    <SafeAreaView style={tw`flex-1`}>
+      <View style={styles.header}>
+        <Icon name="arrow-left" size={28} onPress={() => navigation.goBack()} />
+        <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>
+          {data?.generateSignatureDetails[0].emailSubject}
+        </Text>
+        <Menu
+          anchorPosition="bottom"
+          visible={visibleMoreHeader}
+          onDismiss={closeMenuMoreHeader}
+          anchor={
+            <TouchableOpacity onPress={openMenuMoreHeader}>
+              <Avatar.Image
+                source={{
+                  uri: user
+                    ? user.profile_photo
+                    : 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+                }}
+                size={30}
+              />
+            </TouchableOpacity>
+          }
+        >
+          <Menu.Item
+            onPress={() => {
+              closeMenuMoreHeader();
+              navigation.navigate('Browser', {
+                url: 'https://docudash.net/pricing',
+                heading: 'PRICING',
+              });
+            }}
+            title="Void"
+          />
+        </Menu>
+      </View>
       <ScrollView>
-        <View style={tw`p-4 gap-3 py-10`}>
+        <View style={tw`p-4 gap-3 py-10 pt-3`}>
           <View style={tw`flex-row items-center gap-3`}>
             <Text style={styles.heading}>{data?.generateSignatureDetails[0].emailSubject}</Text>
             <Menu
@@ -165,6 +232,7 @@ const Details = () => {
               <Button
                 mode="elevated"
                 onPress={() => {
+                  //@ts-ignore
                   navigation.navigate('DocumentViewer', { Envelope: generate });
                 }}
               >
@@ -269,7 +337,13 @@ const Details = () => {
           </View>
         </View>
       </ScrollView>
-    </View>
+      <View style={tw`h-15 bg-gray-200 my-2 flex-row justify-between items-center px-10`}>
+        <Text style={tw`text-4 font-semibold`}>Needs to sign</Text>
+        <Button onPress={SignOrViewButton} mode="outlined">
+          {needToSignButton}
+        </Button>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -279,4 +353,10 @@ const styles = StyleSheet.create({
   heading: tw`font-bold text-5`,
   h2: tw`text-3 w-[50%]`,
   menu_block: tw`p-3 font-bold`,
+  header: {
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 });

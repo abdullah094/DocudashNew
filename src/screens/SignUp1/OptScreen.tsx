@@ -6,16 +6,9 @@ import { getToken, storeData } from '@utils/AsyncFunc';
 import { colors } from '@utils/Colors';
 import axios from 'axios';
 import React, { useState } from 'react';
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Chip, Text } from 'react-native-paper';
 import tw from 'twrnc';
 
 const OptScreen = () => {
@@ -58,21 +51,31 @@ const OptScreen = () => {
   };
   const ResendCode = async () => {
     const token = await getToken();
-    axios.get('https://docudash.net/api/sendCodeAgain/' + token).then((response) => {
-      const data = response.data;
-      console.log('resend code ', data);
-      if (data.success) {
-        Alert.alert('Code sent to ' + data.data.email);
-      } else {
-        Alert.alert('Please try again');
-      }
-    });
+    axios
+      .get('https://docudash.net/api/sendCodeAgain/' + token)
+      .then((response) => {
+        const data = response.data;
+        console.log('resend code ', data);
+        if (data.success) {
+          Alert.alert('Code sent to ' + data.data.email);
+        } else {
+          Alert.alert('Please try again');
+        }
+      })
+      .catch((err) => {
+        console.log('error', err);
+      });
   };
 
   return (
     <ScrollView contentContainerStyle={tw`h-full bg-white`}>
       <View style={tw`flex-1 gap-2 justify-center px-10`}>
         <KeyboardAvoidingView keyboardVerticalOffset={150} behavior={'position'}>
+          <View style={tw`absolute top--10 left-5`}>
+            <Chip>
+              <Text variant="labelLarge">{`2/4`}</Text>
+            </Chip>
+          </View>
           <Image
             style={tw`w-65 self-center`}
             resizeMode="contain"

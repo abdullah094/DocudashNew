@@ -1,3 +1,5 @@
+import { User } from "./user";
+
 export interface GenerateSignatureDetail {
     id: number;
     signature_id: number;

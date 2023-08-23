@@ -101,6 +101,7 @@ const DocumentViewer = () => {
   const signItem: SignaturePreview = route.params?.item || undefined;
   const stampItem = route.params?.stamp || undefined;
   const [signState, setSignState] = useState<SignaturePreview | undefined>();
+  const [initialState, setInitialState] = useState();
   const [stampState, setStampState] = useState();
   const [dateActiveted, setDateActivated] = useState(false);
   const [nameActivated, setNameActivated] = useState(false);
@@ -110,11 +111,12 @@ const DocumentViewer = () => {
   const [imageSizes, setImageSizes] = useState<{ width: number; height: number }[]>(new Array());
   console.log('Imagesizes', imageSizes);
   useEffect(() => {
-    if (signItem) setSignState(signItem);
-    if (stampItem) setStampState(stampItem);
+    if (signItem != undefined) setSignState(signItem);
+
+    if (stampItem != undefined) setStampState(stampItem);
   }, [route, navigation]);
-  const [index, setIndex] = useState(0);
-  console.log(images);
+
+  console.log('draggedElArr', draggedElArr.initial);
   const date = new Date();
   const cureentDate = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
 
@@ -232,7 +234,7 @@ const DocumentViewer = () => {
       <SafeAreaView style={tw`flex-1 `}>
         <View style={tw` bg-white bottom-0 `}>
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}
             horizontal
             showsHorizontalScrollIndicator={false}
           >
@@ -268,10 +270,10 @@ const DocumentViewer = () => {
         <View style={tw`flex-1`}>
           <FlatList
             data={images}
-            onViewableItemsChanged={_onViewableItemsChanged}
-            viewabilityConfig={{
-              itemVisiblePercentThreshold: 50,
-            }}
+            // onViewableItemsChanged={_onViewableItemsChanged}
+            // viewabilityConfig={{
+            //   itemVisiblePercentThreshold: 50,
+            // }}
             renderItem={({ item, index }) => {
               let imageUrl = '';
               if (item.image?.includes('pdf') || item.image?.includes('docx')) {
@@ -1345,5 +1347,5 @@ export default DocumentViewer;
 const styles = StyleSheet.create({
   botton_view_buttons: tw`items-center mx-2 w-20 h-20 gap-1 justify-center`,
   yellow_round: tw`h-12 w-12 rounded-full bg-yellow-200 justify-center items-center`,
-  yellow_round_text: tw``,
+  yellow_round_text: tw`text-center`,
 });

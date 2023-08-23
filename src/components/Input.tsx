@@ -34,7 +34,7 @@ const Input = (props: props) => {
       right={secureTextEntry ? <TextInput.Icon icon="eye" onPress={() => setSafe(!safe)} /> : null}
       style={{
         height: 56,
-        marginTop: 20,
+        marginTop: 10,
         ...style,
       }}
     />
