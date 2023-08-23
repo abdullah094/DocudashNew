@@ -5,7 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken, selectProfileData } from '@stores/Slices';
 import { Envelope, GenerateSignature, RootStackScreenProps, ViewDocument } from '@type/index';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   Image,
@@ -124,36 +124,22 @@ const Details = () => {
   if (dataLoader) return <Loader />;
 
   return (
-    <SafeAreaView style={tw`flex-1`}>
+    <Fragment>
+      <SafeAreaView style={tw`flex-0`}></SafeAreaView>
       <View style={styles.header}>
         <Icon name="arrow-left" size={28} onPress={() => navigation.goBack()} />
         <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>
-          {data?.generateSignatureDetails[0].emailSubject}
+          {data?.generateSignatureDetails[0]?.emailSubject}
         </Text>
         <Menu
           anchorPosition="bottom"
           visible={visibleMoreHeader}
           onDismiss={closeMenuMoreHeader}
-          anchor={
-            <TouchableOpacity onPress={openMenuMoreHeader}>
-              <Avatar.Image
-                source={{
-                  uri: user
-                    ? user.profile_photo
-                    : 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-                }}
-                size={30}
-              />
-            </TouchableOpacity>
-          }
+          anchor={<IconButton icon="dots-vertical"></IconButton>}
         >
           <Menu.Item
             onPress={() => {
               closeMenuMoreHeader();
-              navigation.navigate('Browser', {
-                url: 'https://docudash.net/pricing',
-                heading: 'PRICING',
-              });
             }}
             title="Void"
           />
@@ -162,7 +148,7 @@ const Details = () => {
       <ScrollView>
         <View style={tw`p-4 gap-3 py-10 pt-3`}>
           <View style={tw`flex-row items-center gap-3`}>
-            <Text style={styles.heading}>{data?.generateSignatureDetails[0].emailSubject}</Text>
+            <Text style={styles.heading}>{data?.generateSignatureDetails[0]?.emailSubject}</Text>
             <Menu
               visible={visible}
               onDismiss={closeMenu}
@@ -202,14 +188,14 @@ const Details = () => {
           <View style={tw`mt-5 gap-1`}>
             <Text>
               Envelope ID:{' '}
-              <Text style={tw`text-[#6FAC46]`}>{data?.generateSignatureDetails[0].uniqid}</Text>
+              <Text style={tw`text-[#6FAC46]`}>{data?.generateSignatureDetails[0]?.uniqid}</Text>
             </Text>
             <Text>
               From:{' '}
               <Text style={tw`text-[#6FAC46]`}>
                 {' '}
-                {data?.generateSignatureDetails[0].user.first_name}{' '}
-                {data?.generateSignatureDetails[0].user.last_name}
+                {data?.generateSignatureDetails[0]?.user.first_name}{' '}
+                {data?.generateSignatureDetails[0]?.user.last_name}
               </Text>
             </Text>
             <Text>
@@ -337,13 +323,14 @@ const Details = () => {
           </View>
         </View>
       </ScrollView>
-      <View style={tw`h-15 bg-gray-200 my-2 flex-row justify-between items-center px-10`}>
+      <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
         <Text style={tw`text-4 font-semibold`}>Needs to sign</Text>
         <Button onPress={SignOrViewButton} mode="outlined">
           {needToSignButton}
         </Button>
       </View>
-    </SafeAreaView>
+      <SafeAreaView style={tw`flex-1 bg-gray-200`}></SafeAreaView>
+    </Fragment>
   );
 };
 

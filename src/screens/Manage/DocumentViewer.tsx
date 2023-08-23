@@ -252,7 +252,7 @@ const DocumentViewer = () => {
         <Appbar.Content
           title={
             <View style={tw`items-center`}>
-              <Text variant="titleSmall">Sign</Text>
+              <Text variant="titleSmall">Viewing Document</Text>
               <Text variant="labelSmall">Subtitle</Text>
             </View>
           }

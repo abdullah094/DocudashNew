@@ -175,10 +175,10 @@ const DocumentEditor = () => {
     const data = new FormData();
     data.append('uniqid', envelope.uniqid);
     data.append('signature_id', envelope.signature_id);
-    data.append('draggedElArr', draggedElArr);
+    data.append('draggedElArr', JSON.stringify(draggedElArr));
     data.append('save_type', '0');
 
-    console.log('data', JSON.stringify(data._parts));
+    console.log('data', JSON.stringify(data));
 
     axios
       .post(url + envelope.uniqid + '/' + envelope.signature_id, data, {
@@ -212,14 +212,14 @@ const DocumentEditor = () => {
         <Appbar.Content
           title={
             <View style={tw`items-center`}>
-              <Text variant="titleSmall">Sign</Text>
+              <Text variant="titleSmall">Editing Document</Text>
               <Text variant="labelSmall">Subtitle</Text>
             </View>
           }
         />
         <Button onPress={save}>Save</Button>
       </Appbar.Header>
-      <SafeAreaView style={tw`flex-1 `}>
+      <SafeAreaView style={tw`flex-1 bg-white `}>
         <View style={tw` bg-white bottom-0 `}>
           <ScrollView
             contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
@@ -227,38 +227,41 @@ const DocumentEditor = () => {
             showsHorizontalScrollIndicator={false}
           >
             {/* draw */}
-            {recipients?.slice(0, 5)?.map((item, index) => (
-              <View style={[styles.botton_view_buttons]}>
-                {index == selectedRecipient ? (
-                  <Badge style={tw`absolute top-0 right-2 z-1`}>✓</Badge>
-                ) : null}
-                <View style={styles.yellow_round}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedRecipient(index);
-                    }}
-                  >
-                    <Avatar.Text
-                      size={48}
-                      style={tw`bg-[${color[index].background}]`}
-                      // color={color[index].background}
-                      label={item.recName
-                        .replace(/\b(\w)\w+/g, '$1.')
-                        .replace(/\s/g, '')
-                        .replace(/\.$/, '')
-                        .toUpperCase()}
-                    />
-                  </TouchableOpacity>
+            {recipients
+              ?.filter((x) => x.sign_type == '1')
+              .slice(0, 5)
+              ?.map((item, index) => (
+                <View style={[styles.botton_view_buttons]}>
+                  {index == selectedRecipient ? (
+                    <Badge style={tw`absolute top-0 right-2 z-1`}>✓</Badge>
+                  ) : null}
+                  <View style={styles.yellow_round}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedRecipient(index);
+                      }}
+                    >
+                      <Avatar.Text
+                        size={48}
+                        style={tw`bg-[${color[index].background}]`}
+                        // color={color[index].background}
+                        label={item.recName
+                          .replace(/\b(\w)\w+/g, '$1.')
+                          .replace(/\s/g, '')
+                          .replace(/\.$/, '')
+                          .toUpperCase()}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.yellow_round_text}>{item.recName}</Text>
                 </View>
-                <Text style={styles.yellow_round_text}>{item.recName}</Text>
-              </View>
-            ))}
+              ))}
           </ScrollView>
         </View>
         <View style={tw`flex-1`}>
           <Carousel
             ref={carousel}
-            // horizontal={false}
+            horizontal={false}
             onChangePage={(currentPage: number) => setIndex(currentPage)}
           >
             {images?.map((item) => {

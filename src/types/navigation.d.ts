@@ -7,6 +7,7 @@ import type { StackScreenProps } from '@react-navigation/stack';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { pet } from './pet';
 import { Envelope } from './envelope';
+import { Recipient } from './recipient';
 
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeDrawerParamList>;
@@ -21,6 +22,7 @@ export type RootStackParamList = {
         Envelope?: Envelope;
         files?: DocumentPickerOptions.DocumentResult[];
         images?: ImagePicker.ImagePickerAsset[];
+        Recipients: Recipient[];
       };
   DocumentEditor: {
     Envelope: GenerateSignature;
@@ -33,9 +35,10 @@ export type RootStackParamList = {
   Profile: undefined;
   SignUpIndex: undefined;
   Template: undefined;
-  DocumentViewer: {Envelope:GenerateSignature,item: SignaturePreview };
-  SignatureSelection: envelope
-  StampSelection: envelope
+  DocumentViewer: { Envelope: envelope; item: SignaturePreview };
+  SignatureSelection: envelope;
+  StampSelection: envelope;
+  AddRecipient: { Recipients: Recipient[]; Recipient: Recipient };
 };
 
 export type SignUpStackParamList = {
@@ -46,9 +49,7 @@ export type SignUpStackParamList = {
   Step4: { industry: Industry[]; signUpReasons: Industry[] };
   Step5: { token: string; email: string };
   Browser: { url: string; heading: string };
- 
 };
-
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<
   RootStackParamList,
@@ -58,7 +59,7 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScre
 export type HomeDrawerParamList = {
   HomeScreen: undefined;
   Latest: undefined;
-  INBOX: {heading: string}
+  INBOX: { heading: string };
 };
 
 export type HomeDrawerScreenProps<T extends keyof HomeDrawerParamList> = CompositeScreenProps<
@@ -70,7 +71,6 @@ export type SignUpStackScreenProps<T extends keyof SignUpStackParamList> = Compo
   StackScreenProps<SignUpStackParamList, T>,
   RootStackScreenProps<keyof RootStackParamList>
 >;
-
 
 declare global {
   namespace ReactNavigation {
