@@ -1,3 +1,5 @@
+import { GenerateSignatureDetail } from "./generateSignatureDetail";
+
 export interface ViewDocument {
     success: boolean;
     message: string;

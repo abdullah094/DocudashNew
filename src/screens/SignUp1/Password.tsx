@@ -49,7 +49,7 @@ const PasswordScreen = () => {
   };
   return (
     <>
-      <ScrollView contentContainerStyle={tw`h-full`}>
+      <ScrollView contentContainerStyle={tw`h-full`} keyboardShouldPersistTaps="handled">
         <View style={tw`flex-1 bg-white gap-2 px-10 justify-center`}>
           <View style={tw`flex-row items-center`}>
             <Button

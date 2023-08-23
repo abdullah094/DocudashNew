@@ -33,7 +33,7 @@ export type RootStackParamList = {
   Profile: undefined;
   SignUpIndex: undefined;
   Template: undefined;
-  DocumentViewer: {Envelope:envelope,item: SignaturePreview };
+  DocumentViewer: {Envelope:GenerateSignature,item: SignaturePreview };
   SignatureSelection: envelope
   StampSelection: envelope
 };

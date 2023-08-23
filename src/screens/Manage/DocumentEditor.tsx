@@ -175,10 +175,11 @@ const DocumentEditor = () => {
     const data = new FormData();
     data.append('uniqid', envelope.uniqid);
     data.append('signature_id', envelope.signature_id);
-    data.append('draggedElArr', JSON.stringify(draggedElArr));
+    data.append('draggedElArr', draggedElArr);
     data.append('save_type', '0');
 
-    console.log(JSON.stringify(data));
+    console.log('data', JSON.stringify(data._parts));
+
     axios
       .post(url + envelope.uniqid + '/' + envelope.signature_id, data, {
         headers: {

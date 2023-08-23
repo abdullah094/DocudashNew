@@ -116,7 +116,6 @@ const DocumentViewer = () => {
     if (stampItem != undefined) setStampState(stampItem);
   }, [route, navigation]);
 
-  const [index, setIndex] = useState(0);
   console.log('draggedElArr', draggedElArr.initial);
   const date = new Date();
   const cureentDate = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
