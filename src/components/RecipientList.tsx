@@ -1,40 +1,76 @@
 import _ from 'lodash';
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
+import { Avatar, IconButton } from 'react-native-paper';
 import {
   SortableList,
   SortableListItemProps,
   View,
   TouchableOpacity,
-  Text,
   Icon,
   Assets,
   Colors,
-  Button,
 } from 'react-native-ui-lib';
+import tw from 'twrnc';
+import { Text, Button } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
 interface Item extends SortableListItemProps {
-  text: string;
+  id: string;
+  recName: string;
+  recEmail: string;
+  sign_type: string;
+  hostName: string;
+  hostEmail: string;
+  access_code: string;
+  private_message: string;
+  recipients_update_id: string;
+  showDropDown: boolean;
+  visible: boolean;
+  showAccessCode: boolean;
+  showPrivateMessage: boolean;
 }
 
-const data: Item[] = _.times(5, (index) => {
-  let text = `${index}`;
-  if (index === 3) {
-    text = 'Locked item';
-  }
+// const data: Item[] = _.times(5, (index) => {
+//   // if (index === 3) {
+//   //   text = 'Locked item';
+//   // }
 
-  return {
-    text,
-    id: `${index}`,
-    locked: index === 3,
-  };
-});
-
-const RecipientList = () => {
+//   return {
+//     id: `${index}`,
+//     locked: false,
+//   };
+// });
+const actionList = [
+  {},
+  {
+    label: 'Needs to Sign',
+    value: '1',
+  },
+  {
+    label: 'In Person Signer',
+    value: '2',
+  },
+  {
+    label: 'Receives a Copy',
+    value: '3',
+  },
+  {
+    label: 'Needs to View',
+    value: '4',
+  },
+];
+const RecipientList = ({ data, setData }) => {
+  console.log('RecipientList', data);
+  // const [data, setData] = useState<Item[]>([]);
+  const navigation = useNavigation();
   const [items, setItems] = useState<Item[]>(data);
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-  const [removedItems, setRemovedItems] = useState<Item[]>([]);
-  const orderedItems = useRef<Item[]>(data);
+
+  useEffect(() => {
+    const idData2 = data.map((item, index) => ({ ...item, id: `${index}` }));
+    setItems(idData2);
+  }, [data]);
 
   const toggleItemSelection = useCallback(
     (item: Item) => {
@@ -49,20 +85,15 @@ const RecipientList = () => {
     [selectedItems, setSelectedItems]
   );
 
-  const addItem = useCallback(() => {
-    if (removedItems.length > 0) {
-      orderedItems.current = orderedItems.current.concat(removedItems[0]);
-      setItems(orderedItems.current);
-      setRemovedItems(removedItems.slice(1));
-    }
-  }, [removedItems, setItems, setRemovedItems]);
+  // const addItem = useCallback(() => {
+  //     setItems(orderedItems.current);
+  // }, [ setItems]);
 
   const removeSelectedItems = useCallback(() => {
-    setRemovedItems(removedItems.concat(selectedItems));
     setSelectedItems([]);
-    orderedItems.current = orderedItems.current.filter((item) => !selectedItems.includes(item));
-    setItems(orderedItems.current);
-  }, [setRemovedItems, removedItems, selectedItems, setItems, setSelectedItems]);
+    // orderedItems.current = data.current.filter((item) => !selectedItems.includes(item));
+    setItems(items.filter((item) => !selectedItems.includes(item)));
+  }, [selectedItems, setItems, setSelectedItems]);
 
   const keyExtractor = useCallback((item: Item) => {
     return `${item.id}`;
@@ -70,54 +101,61 @@ const RecipientList = () => {
 
   const onOrderChange = useCallback((newData: Item[]) => {
     console.log('New order:', newData);
-    orderedItems.current = newData;
+    setData(newData);
   }, []);
 
-  const renderItem = useCallback(
-    ({ item, index: _index }: { item: Item; index: number }) => {
-      const isSelected = selectedItems.includes(item);
-      const { locked } = item;
-      const Container = locked ? View : TouchableOpacity;
-      return (
-        <Container
-          // TODO: fix Android selection color
-          style={[styles.itemContainer, isSelected && styles.selectedItemContainer]}
-          onPress={() => toggleItemSelection(item)}
-          // overriding the BG color to anything other than white will cause Android's elevation to fail
-          // backgroundColor={Colors.red30}
-          centerV
-          centerH={locked}
-          paddingH-page
+  const renderItem = ({ item, index: _index }: { item: Item; index: number }) => {
+    const isSelected = selectedItems.includes(item);
+    const { locked } = item;
+    const Container = locked ? View : TouchableOpacity;
+    return (
+      <Container
+        // TODO: fix Android selection color
+        style={[styles.itemContainer, isSelected && styles.selectedItemContainer]}
+        onPress={() => toggleItemSelection(item)}
+        // overriding the BG color to anything other than white will cause Android's elevation to fail
+        // backgroundColor={Colors.red30}
+        centerV
+        // centerH={locked}
+        paddingH-page
+      >
+        <View
+          style={tw`flex-1 h-20 flex-row bg-white justify-center  border border-gray-200 items-center text-white text-xl font-bold text-center`}
         >
-          <View flex row spread centerV>
-            {!locked && <Icon name="check" tintColor={Colors.$iconDisabled} />}
-            <Text center $textDefault={!locked} $textNeutralLight={locked}>
-              {item.text}
-            </Text>
-            {!locked && <Icon name="check" tintColor={Colors.$iconDefault} />}
+          <Text style={tw`w-14 text-center`} variant="labelLarge">
+            {_index}
+          </Text>
+          <View style={tw`w-14 text-center`}>
+            <Avatar.Text size={40} label="XD" />
           </View>
-        </Container>
-      );
-    },
-    [selectedItems, toggleItemSelection]
-  );
+
+          <View style={tw`flex-1`}>
+            <Text variant="labelLarge">{item.recName}</Text>
+            <Text variant="bodySmall">
+              {item.recEmail == '' ? `Host: ${item.hostEmail}` : item.recEmail}
+            </Text>
+            <Text variant="bodySmall">{actionList[item.sign_type].label}</Text>
+          </View>
+          <IconButton
+            onPress={() => {
+              navigation.navigate('AddRecipient', { Recipients: items, Recipient: item });
+            }}
+            icon="chevron-right"
+          ></IconButton>
+        </View>
+      </Container>
+    );
+  };
 
   return (
-    <View flex bg-$backgroundDefault>
-      <View row center marginB-s2>
-        <Button
-          label="Add Item"
-          size={Button.sizes.xSmall}
-          disabled={removedItems.length === 0}
-          onPress={addItem}
-        />
-        <Button
-          label="Remove Items"
-          size={Button.sizes.xSmall}
-          disabled={selectedItems.length === 0}
-          marginL-s3
-          onPress={removeSelectedItems}
-        />
+    <View style={tw`flex-1 bg-white`}>
+      <View row center style={tw`p-2`}>
+        <Button onPress={() => navigation.navigate('AddRecipient', { Recipients: items })}>
+          Add Recipient
+        </Button>
+        <Button disabled={selectedItems.length === 0} marginL-s3 onPress={removeSelectedItems}>
+          Remove Recipient
+        </Button>
       </View>
       <View flex useSafeArea>
         <SortableList
@@ -135,7 +173,7 @@ const RecipientList = () => {
 export default RecipientList;
 const styles = StyleSheet.create({
   itemContainer: {
-    height: 52,
+    height: 80,
     borderColor: Colors.$outlineDefault,
     borderBottomWidth: 1,
   },

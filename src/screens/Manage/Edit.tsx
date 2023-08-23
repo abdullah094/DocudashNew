@@ -73,20 +73,20 @@ const Edit = () => {
     toastMessage: undefined,
   });
   const [data, setData] = useState([
-    {
-      recName: '',
-      recEmail: '',
-      sign_type: '1',
-      hostName: '',
-      hostEmail: '',
-      access_code: '',
-      private_message: '',
-      recipients_update_id: '0',
-      showDropDown: false,
-      visible: false,
-      showAccessCode: false,
-      showPrivateMessage: false,
-    },
+    // {
+    //   recName: '',
+    //   recEmail: '',
+    //   sign_type: '1',
+    //   hostName: '',
+    //   hostEmail: '',
+    //   access_code: '',
+    //   private_message: '',
+    //   recipients_update_id: '0',
+    //   showDropDown: false,
+    //   visible: false,
+    //   showAccessCode: false,
+    //   showPrivateMessage: false,
+    // },
   ]);
 
   const [emailSubject, setEmailSubject] = useState('');
@@ -109,7 +109,8 @@ const Edit = () => {
 
   const envelope = route.params?.Envelope;
   const files = route.params?.files;
-  console.log(envelope);
+  const Recipients = route.params?.Recipients;
+  console.log('Recipients', Recipients);
 
   const addNewRecipient = () => {
     setData([
@@ -160,6 +161,9 @@ const Edit = () => {
     });
     if (files) {
       setDocuments(files);
+    }
+    if (Recipients) {
+      setData(Recipients);
     }
     if (envelope) {
       axios
@@ -424,207 +428,10 @@ const Edit = () => {
     );
   };
   const renderAddRecipient = () => (
-    <RecipientList />
-    // <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
-    //   <Text variant="headlineSmall">Add Recipient</Text>
-
-    //   {data.map((recipient, index) => (
-    //     <View id={index + '_'} style={tw`flex-1 gap-2 p-2 border border-gray-500 my-2 rounded-lg`}>
-    //       <View style={tw`flex-row justify-between items-center`}>
-    //         <Text variant="headlineSmall">Recipient {index + 1}</Text>
-    //         {index !== 0 && (
-    //           <IconButton icon="close" size={20} onPress={() => deleteRecipient(index)} />
-    //         )}
-    //       </View>
-
-    //       <DropDown
-    //         label={'Actions'}
-    //         mode={'outlined'}
-    //         visible={recipient.showDropDown}
-    //         showDropDown={() =>
-    //           setData((prev) =>
-    //             prev.map((item, i) => (i === index ? { ...item, showDropDown: true } : item))
-    //           )
-    //         }
-    //         onDismiss={() =>
-    //           setData((prev) =>
-    //             prev.map((item, i) => (i === index ? { ...item, showDropDown: false } : item))
-    //           )
-    //         }
-    //         value={String(recipient.sign_type)}
-    //         setValue={(value) => {
-    //           setData((prev) =>
-    //             prev.map((item, i) => (i === index ? { ...item, sign_type: value } : item))
-    //           );
-    //         }}
-    //         list={actionList}
-    //       />
-    //       <TextInput
-    //         mode="outlined"
-    //         label="Recipient Name"
-    //         value={recipient.recName}
-    //         onChangeText={(text) => {
-    //           setData((prev) =>
-    //             prev.map((item, i) => (i === index ? { ...item, recName: text } : item))
-    //           );
-    //         }}
-    //       />
-    //       {recipient.sign_type == '2' ? (
-    //         <>
-    //           <TextInput
-    //             mode="outlined"
-    //             label="Host Name"
-    //             value={recipient.hostName}
-    //             onChangeText={(text) => {
-    //               setData((prev) =>
-    //                 prev.map((item, i) => (i === index ? { ...item, hostName: text } : item))
-    //               );
-    //             }}
-    //           />
-    //           <TextInput
-    //             mode="outlined"
-    //             label="Host Email Address"
-    //             value={recipient.hostEmail}
-    //             onChangeText={(text) => {
-    //               setData((prev) =>
-    //                 prev.map((item, i) => (i === index ? { ...item, hostEmail: text } : item))
-    //               );
-    //             }}
-    //           />
-    //         </>
-    //       ) : (
-    //         <TextInput
-    //           mode="outlined"
-    //           label="Recipient Email Address"
-    //           value={recipient.recEmail}
-    //           onChangeText={(text) => {
-    //             setData((prev) =>
-    //               prev.map((item, i) => (i === index ? { ...item, recEmail: text } : item))
-    //             );
-    //           }}
-    //         />
-    //       )}
-
-    //       <Menu
-    //         visible={recipient.visible}
-    //         onDismiss={() => {
-    //           setData((prev) =>
-    //             prev.map((item, i) => (i === index ? { ...item, visible: false } : item))
-    //           );
-    //         }}
-    //         anchor={
-    //           <Button
-    //             onPress={() => {
-    //               setData((prev) =>
-    //                 prev.map((item, i) => (i === index ? { ...item, visible: true } : item))
-    //               );
-    //             }}
-    //           >
-    //             Customize
-    //           </Button>
-    //         }
-    //       >
-    //         <Menu.Item
-    //           onPress={() => {
-    //             setData((prev) =>
-    //               prev.map((item, i) =>
-    //                 i === index
-    //                   ? {
-    //                       ...item,
-    //                       visible: false,
-    //                       showAccessCode: !item.showAccessCode,
-    //                     }
-    //                   : item
-    //               )
-    //             );
-    //           }}
-    //           style={tw`h-16`}
-    //           title={
-    //             <View>
-    //               <Text variant="titleSmall">Enter Access Code</Text>
-    //               <Text variant="bodySmall">
-    //                 Enter a code that only you and this recipient know.
-    //               </Text>
-    //             </View>
-    //           }
-    //         ></Menu.Item>
-    //         <Divider />
-    //         <Menu.Item
-    //           onPress={() => {
-    //             setData((prev) =>
-    //               prev.map((item, i) =>
-    //                 i === index
-    //                   ? {
-    //                       ...item,
-    //                       visible: false,
-    //                       showPrivateMessage: !item.showPrivateMessage,
-    //                     }
-    //                   : item
-    //               )
-    //             );
-    //           }}
-    //           style={tw`h-16`}
-    //           title={
-    //             <View>
-    //               <Text variant="titleSmall">Add private message</Text>
-    //               <Text variant="bodySmall">Include a personal note with this recipient.</Text>
-    //             </View>
-    //           }
-    //         />
-    //       </Menu>
-    //       {recipient.showAccessCode && (
-    //         // style={tw`flex-1 p-2 border border-gray-500 my-2 rounded-lg`}
-    //         <View>
-    //           {/* <Text variant="headlineSmall">Enter Access Code</Text> */}
-
-    //           <TextInput
-    //             mode="outlined"
-    //             label="Access Code"
-    //             value={recipient.access_code}
-    //             onChangeText={(text) => {
-    //               setData((prev) =>
-    //                 prev.map((item, i) => (i === index ? { ...item, access_code: text } : item))
-    //               );
-    //             }}
-    //           />
-    //           <HelperText type="info">
-    //             Codes are not case-sensitive. You must provide this code to the signer. This code is
-    //             available for you to review on the Envelope Details page.
-    //           </HelperText>
-    //         </View>
-    //       )}
-    //       {recipient.showPrivateMessage && (
-    //         <View>
-    //           <TextInput
-    //             mode="outlined"
-    //             label="Private Message"
-    //             value={recipient.private_message}
-    //             multiline
-    //             numberOfLines={4}
-    //             onChangeText={(text) => {
-    //               setData((prev) =>
-    //                 prev.map((item, i) => (i === index ? { ...item, private_message: text } : item))
-    //               );
-    //             }}
-    //           />
-    //           <HelperText type={1000 - recipient.private_message.length >= 0 ? 'info' : 'error'}>
-    //             Characters remaining: {1000 - recipient.private_message.length}
-    //           </HelperText>
-    //         </View>
-    //       )}
-    //     </View>
-    //   ))}
-
-    //   <Button
-    //     icon="plus"
-    //     onPress={() => {
-    //       addNewRecipient();
-    //     }}
-    //   >
-    //     Add Recipient
-    //   </Button>
-    //   <View style={tw`flex-1 gap-2 justify-end flex-row mx-2`}>{renderNextButton()}</View>
-    // </View>
+    <View style={tw`flex-1`}>
+      <RecipientList data={data} setData={setData} />
+      <View style={tw`gap-2 justify-end flex-row mx-2`}>{renderNextButton()}</View>
+    </View>
   );
 
   const renderAddMessage = () => (
@@ -778,7 +585,7 @@ const Edit = () => {
         />
       </Wizard>
 
-      <ScrollView>{renderCurrentStep()}</ScrollView>
+      {renderCurrentStep()}
     </View>
   );
 };
