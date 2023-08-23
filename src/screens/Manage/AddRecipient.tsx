@@ -70,8 +70,12 @@ export default function AddRecipient() {
   }, []);
 
   const addNewRecipient = () => {
-    if (!recipient) console.log('Data is old');
-    else navigation.navigate('Edit', { Recipients: [...Recipients, recipient] });
+    if (Recipient) {
+      var EditedRecipients = Recipients;
+      EditedRecipients[Recipients.indexOf(Recipient)] = recipient;
+      console.log('EditedRecipients', EditedRecipients);
+      navigation.navigate('Edit', { Recipients: EditedRecipients });
+    } else navigation.navigate('Edit', { Recipients: [...Recipients, recipient] });
   };
 
   return (
@@ -79,7 +83,7 @@ export default function AddRecipient() {
       <View style={tw`p-5 flex-row justify-between items-center`}>
         <Icon name="arrow-left" size={28} onPress={() => navigation.goBack()} />
         <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>
-          {Recipient ? 'Edit RECIPIENT' : 'Add RECIPIENT'}
+          {Recipient ? 'EDIT RECIPIENT' : 'ADD RECIPIENT'}
         </Text>
         <View></View>
         {/* <Menu

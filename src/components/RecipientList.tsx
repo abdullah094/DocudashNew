@@ -148,12 +148,20 @@ const RecipientList = ({ data, setData }) => {
   };
 
   return (
-    <View style={tw`flex-1 bg-white`}>
+    <View style={tw`flex-1`}>
       <View row center style={tw`p-2`}>
-        <Button onPress={() => navigation.navigate('AddRecipient', { Recipients: items })}>
+        <Button
+          mode="contained"
+          onPress={() => navigation.navigate('AddRecipient', { Recipients: items })}
+        >
           Add Recipient
         </Button>
-        <Button disabled={selectedItems.length === 0} marginL-s3 onPress={removeSelectedItems}>
+        <Button
+          mode="contained"
+          disabled={selectedItems.length === 0}
+          marginL-s3
+          onPress={removeSelectedItems}
+        >
           Remove Recipient
         </Button>
       </View>

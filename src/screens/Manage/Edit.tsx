@@ -4,6 +4,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken } from '@stores/Slices';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   GenerateSignature,
   GenerateSignatureDetailsImage,
@@ -16,12 +17,13 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
 import mime from 'mime';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
   Image,
   Platform,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -43,6 +45,7 @@ import DropDown from 'react-native-paper-dropdown';
 import { Wizard } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
+import COLORS from '@constants/colors';
 
 interface uploadType {
   uri: string;
@@ -165,70 +168,72 @@ const Edit = () => {
     if (Recipients) {
       setData(Recipients);
     }
-    if (envelope) {
-      axios
-        .get(
-          'https://docudash.net/api/generate-signature/upload-document/' +
-            envelope.uniqid +
-            '/' +
-            envelope.id,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          const data: UploadDocumentAPI = response.data;
-          console.log('', response.data);
-          if (data.generateSignatureDetails.length > 0) {
-            const fixData = data.generateSignatureDetails.map((x) => {
-              return {
-                ...x,
-                recipients_update_id: x.id,
-                showDropDown: false,
-                visible: false,
-                showAccessCode: false,
-                showPrivateMessage: false,
-              };
-            });
-            setEmailMessage(fixData[0].emailMessage);
-            setEmailSubject(fixData[0].emailSubject);
+    if (!generateSignature) {
+      if (envelope) {
+        axios
+          .get(
+            'https://docudash.net/api/generate-signature/upload-document/' +
+              envelope.uniqid +
+              '/' +
+              envelope.id,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then((response) => {
+            const data: UploadDocumentAPI = response.data;
+            console.log('', response.data);
+            if (data.generateSignatureDetails.length > 0) {
+              const fixData = data.generateSignatureDetails.map((x) => {
+                return {
+                  ...x,
+                  recipients_update_id: x.id,
+                  showDropDown: false,
+                  visible: false,
+                  showAccessCode: false,
+                  showPrivateMessage: false,
+                };
+              });
+              setEmailMessage(fixData[0].emailMessage);
+              setEmailSubject(fixData[0].emailSubject);
+              // @ts-ignore
+              setData(fixData);
+            }
             // @ts-ignore
-            setData(fixData);
-          }
-          // @ts-ignore
-          const generate: GenerateSignature = {
-            signature_id: data.signature_id,
-            uniqid: data.uniqid,
-          };
-          setGenerateSignature(generate);
-          if (data.generateSignatureDetailsImages.length > 0) {
-            setGenerateSignatureDetailsImages(data.generateSignatureDetailsImages);
-          }
+            const generate: GenerateSignature = {
+              signature_id: data.signature_id,
+              uniqid: data.uniqid,
+            };
+            setGenerateSignature(generate);
+            if (data.generateSignatureDetailsImages.length > 0) {
+              setGenerateSignatureDetailsImages(data.generateSignatureDetailsImages);
+            }
 
-          console.log('getting already Existing envelope', data);
-        });
-    } else {
-      const url = 'https://docudash.net/api/generate-signature/create';
-      axios
-        .post(
-          url,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          const data: GenerateSignature = response.data;
-          setGenerateSignature(data);
-          console.log('Data----', data);
-        })
-        .catch((error) => {
-          console.log('Error----', error);
-        });
+            console.log('getting already Existing envelope', data);
+          });
+      } else {
+        const url = 'https://docudash.net/api/generate-signature/create';
+        axios
+          .post(
+            url,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then((response) => {
+            const data: GenerateSignature = response.data;
+            setGenerateSignature(data);
+            console.log('Data----', data);
+          })
+          .catch((error) => {
+            console.log('Error----', error);
+          });
+      }
     }
   }, [route]);
   console.log([...documents]);
@@ -428,79 +433,82 @@ const Edit = () => {
     );
   };
   const renderAddRecipient = () => (
-    <View style={tw`flex-1`}>
+    <>
       <RecipientList data={data} setData={setData} />
       <View style={tw`gap-2 justify-end flex-row mx-2`}>{renderNextButton()}</View>
-    </View>
+    </>
   );
 
   const renderAddMessage = () => (
-    <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
-      <Text variant="headlineSmall">Add Message</Text>
-      <View>
-        <TextInput
-          mode="outlined"
-          label="Email Subject"
-          value={emailSubject}
-          onChangeText={(text) => setEmailSubject(text)}
-        />
-        <HelperText type={80 - emailSubject.length >= 0 ? 'info' : 'error'}>
-          Characters remaining: {80 - emailSubject.length}
-        </HelperText>
+    <>
+      <View style={tw`flex-1 gap-2 p-2 m-2 `}>
+        <Text variant="headlineSmall">Add Message</Text>
+        <View>
+          <TextInput
+            mode="outlined"
+            label="Email Subject"
+            value={emailSubject}
+            onChangeText={(text) => setEmailSubject(text)}
+          />
+          <HelperText type={80 - emailSubject.length >= 0 ? 'info' : 'error'}>
+            Characters remaining: {80 - emailSubject.length}
+          </HelperText>
+        </View>
+        <View>
+          <TextInput
+            mode="outlined"
+            label="Email Message"
+            value={emailMessage}
+            multiline
+            numberOfLines={4}
+            onChangeText={(text) => setEmailMessage(text)}
+          />
+          <HelperText type={1000 - emailMessage.length >= 0 ? 'info' : 'error'}>
+            Characters remaining: {1000 - emailMessage.length}
+          </HelperText>
+        </View>
       </View>
-      <View>
-        <TextInput
-          mode="outlined"
-          label="Email Message"
-          value={emailMessage}
-          multiline
-          numberOfLines={4}
-          onChangeText={(text) => setEmailMessage(text)}
-        />
-        <HelperText type={1000 - emailMessage.length >= 0 ? 'info' : 'error'}>
-          Characters remaining: {1000 - emailMessage.length}
-        </HelperText>
-      </View>
-      <View style={tw`flex-1 gap-2 justify-end flex-row mx-2`}>
+      <View style={tw` gap-2 justify-end flex-row mx-2`}>
         {renderPrevButton()}
         {renderNextButton()}
       </View>
-    </View>
+    </>
   );
   const renderAddDocument = () => (
-    <View style={tw`flex-1 gap-2 p-2 border border-gray-500 m-2 rounded-lg`}>
-      <Text variant="headlineSmall">Add Documents</Text>
-      <View style={tw`bg-white `}>
-        <UploadView documents={documents} setDocuments={setDocuments} />
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={generateSignatureDetailsImages}
-          renderItem={({ item }) => {
-            let imageUrl = '';
-            if (item.image?.includes('pdf')) {
-              item.image.split('.')[0] + '-1.jpg';
-              imageUrl =
-                'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-                item.image.split('.')[0] +
-                '-1.jpg';
-            } else {
-              imageUrl =
-                'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-            }
-            return (
-              <Image
-                source={{
-                  uri: imageUrl,
-                }}
-                style={tw`h-20 w-20 m-2 rounded-lg`}
-              />
-            );
-          }}
-        />
+    <>
+      <View style={tw`flex-1 gap-2 p-2  m-2 `}>
+        <Text variant="headlineSmall">Add Documents</Text>
+        <View style={tw`bg-white `}>
+          <UploadView documents={documents} setDocuments={setDocuments} />
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={generateSignatureDetailsImages}
+            renderItem={({ item }) => {
+              let imageUrl = '';
+              if (item.image?.includes('pdf')) {
+                item.image.split('.')[0] + '-1.jpg';
+                imageUrl =
+                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+                  item.image.split('.')[0] +
+                  '-1.jpg';
+              } else {
+                imageUrl =
+                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
+              }
+              return (
+                <Image
+                  source={{
+                    uri: imageUrl,
+                  }}
+                  style={tw`h-20 w-20 m-2 rounded-lg`}
+                />
+              );
+            }}
+          />
+        </View>
       </View>
-
-      <View style={tw`flex-1 gap-2 justify-end flex-row mx-2`}>
+      <View style={tw`gap-2 justify-end flex-row mx-2`}>
         {renderPrevButton()}
         <Button
           loading={loading}
@@ -513,7 +521,7 @@ const Edit = () => {
           Create
         </Button>
       </View>
-    </View>
+    </>
   );
   const [visible, setVisible] = React.useState(false);
 
@@ -548,10 +556,12 @@ const Edit = () => {
       });
   };
   return (
-    <View style={tw`flex-1`}>
-      <Appbar.Header mode="small">
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title={envelope ? 'Editing Envelope' : 'Creating New Envelope'} />
+    <SafeAreaView style={tw`h-full`}>
+      <View style={tw`flex-row p-5 justify-between items-center`}>
+        <Icon name="arrow-left" size={28} onPress={() => navigation.goBack()} />
+        <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>
+          {envelope ? 'Editing Envelope' : 'Creating New Envelope'}
+        </Text>
         <Menu
           anchorPosition="bottom"
           visible={visible}
@@ -566,7 +576,7 @@ const Edit = () => {
             title="Void"
           />
         </Menu>
-      </Appbar.Header>
+      </View>
       <Wizard activeIndex={state.activeIndex} onActiveIndexChanged={onActiveIndexChanged}>
         <Wizard.Step
           state={getStepState(0)}
@@ -584,9 +594,12 @@ const Edit = () => {
           label={'Add Document'}
         />
       </Wizard>
-
       {renderCurrentStep()}
-    </View>
+      {/* <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
+        <Text style={tw`text-4 font-semibold`}>Needs to sign</Text>
+        <Button mode="outlined">hello</Button>
+      </View> */}
+    </SafeAreaView>
   );
 };
 
