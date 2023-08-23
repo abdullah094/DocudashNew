@@ -22,7 +22,17 @@ import {
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
-import { Appbar, Avatar, Badge, Button, IconButton, Text } from 'react-native-paper';
+import {
+  Appbar,
+  Avatar,
+  Badge,
+  Button,
+  Chip,
+  Divider,
+  IconButton,
+  Menu,
+  Text,
+} from 'react-native-paper';
 import { Carousel } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
@@ -93,6 +103,12 @@ const DocumentEditor = () => {
   const [images, setImages] = useState<GenerateSignatureDetails[]>();
   const envelope: GenerateSignature = route.params.Envelope;
   const [index, setIndex] = useState(0);
+
+  const [visible, setVisible] = React.useState(false);
+
+  const openMenu = () => setVisible(true);
+
+  const closeMenu = () => setVisible(false);
   console.log(images);
 
   const carousel = useRef<typeof Carousel>();
@@ -241,7 +257,7 @@ const DocumentEditor = () => {
         <View style={tw`flex-1`}>
           <Carousel
             ref={carousel}
-            horizontal={false}
+            // horizontal={false}
             onChangePage={(currentPage: number) => setIndex(currentPage)}
           >
             {images?.map((item) => {
@@ -541,6 +557,9 @@ const DocumentEditor = () => {
               );
             })}
           </Carousel>
+          <Chip style={tw`absolute top-1 right-1 `}>
+            <Text variant="labelLarge">{` ${index + 1} / ${images?.length} `}</Text>
+          </Chip>
           {/* <FlatList
             data={images}
             renderItem={({ item, index }) => {
@@ -1066,32 +1085,56 @@ const DocumentEditor = () => {
             </View>
           </ScrollView>
         </View>
-        <View style={tw`flex-row  bg-white  items-center justify-between`}>
-          <View style={tw`flex-row`}>
-            <TouchableOpacity>
-              <IconButton
-                icon="chevron-down"
-                onPress={() => {
-                  carousel.current?.goToPage(index + 1, true);
-                }}
-              ></IconButton>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <IconButton
-                icon="chevron-up"
-                onPress={() => {
-                  carousel.current?.goToPage(index - 1, true);
-                }}
-              ></IconButton>
-            </TouchableOpacity>
+        <View style={tw`flex-row  bg-white items-center justify-between`}>
+          <View style={tw`flex-row items-center`}>
+            <IconButton
+              icon="chevron-down"
+              onPress={() => {
+                carousel.current?.goToPage(index + 1, true);
+              }}
+            ></IconButton>
+
+            <IconButton
+              icon="chevron-up"
+              onPress={() => {
+                carousel.current?.goToPage(index - 1, true);
+              }}
+            ></IconButton>
+            <Text variant="labelLarge">{` ${index + 1} / ${images?.length} documents`}</Text>
           </View>
           <View style={tw`flex-row `}>
-            <TouchableOpacity>
-              <IconButton icon="magnify" onPress={() => {}}></IconButton>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <IconButton icon="dots-horizontal" onPress={() => {}}></IconButton>
-            </TouchableOpacity>
+            <IconButton icon="magnify" onPress={() => {}}></IconButton>
+            <Menu
+              // anchorPosition="top"
+              visible={visible}
+              onDismiss={closeMenu}
+              anchor={<IconButton icon="dots-horizontal" onPress={openMenu}></IconButton>}
+            >
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                }}
+                title="Save and close"
+              />
+              <Divider />
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                }}
+                title="Discard"
+              />
+              <Divider />
+              <Menu.Item onPress={() => {}} title="Edit message" />
+              <Divider />
+              <Menu.Item onPress={() => {}} title="Edit Recipient" />
+              <Divider />
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                }}
+                title="Edit document"
+              />
+            </Menu>
           </View>
         </View>
       </SafeAreaView>
