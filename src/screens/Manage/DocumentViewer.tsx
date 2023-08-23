@@ -101,7 +101,6 @@ const DocumentViewer = () => {
   const signItem: SignaturePreview = route.params?.item || undefined;
   const stampItem = route.params?.stamp || undefined;
   const [signState, setSignState] = useState<SignaturePreview | undefined>();
-  const [initialState, setInitialState] = useState();
   const [stampState, setStampState] = useState();
   const [dateActiveted, setDateActivated] = useState(false);
   const [nameActivated, setNameActivated] = useState(false);
@@ -111,17 +110,48 @@ const DocumentViewer = () => {
   const [imageSizes, setImageSizes] = useState<{ width: number; height: number }[]>(new Array());
   console.log('Imagesizes', imageSizes);
   useEffect(() => {
-    if (signItem != undefined) setSignState(signItem);
-
-    if (stampItem != undefined) setStampState(stampItem);
+    if (signItem != undefined) {
+      setSignState(signItem);
+      let _newIni = draggedElArr.initial.map((element) => ({
+        ...element,
+        backgorund: signItem.initial,
+      }));
+      let _newSign = draggedElArr.signature.map((element) => ({
+        ...element,
+        background: signItem.signature,
+      }));
+      setDraggedElArr({ ...draggedElArr, initial: _newIni, signature: _newSign });
+    }
+    if (stampItem != undefined) {
+      setStampState(stampItem);
+      let _newStamp = draggedElArr.stamp.map((element) => ({
+        ...element,
+        background: stampItem.image_base64,
+      }));
+      setDraggedElArr({ ...draggedElArr, stamp: _newStamp });
+    }
   }, [route, navigation]);
+  draggedElArr.initial.forEach((element, index) => {
+    console.log('element', element);
+  });
 
-  console.log('draggedElArr', draggedElArr.initial);
+  // useEffect(() => {
+  //   if (signState) {
+  //     let _new = draggedElArr.initial;
+  //     const new2 = _new.map((element) => ({
+  //       ...element,
+  //       background: signState.initial,
+  //     }));
+  //     console.log('new2', new2);
+  //     setDraggedElArr((prev) => ({ ...prev, initial: new2 }));
+  //   }
+  // }, [signState, stampState]);
+  // console.log('draggableElr', signState?.initial);
+
   const date = new Date();
   const cureentDate = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
 
   const carousel = useRef<typeof Carousel>();
-  console.log('stampItem', stampItem);
 
   const fetchData = async () => {
     setLoading(true);
@@ -158,7 +188,6 @@ const DocumentViewer = () => {
               title: generateSignatureDetailsFinalise.draggedElArr.title ?? [],
             };
             setDraggedElArr(draggable);
-            console.log('draggedElArr', draggedElArr);
           }
           setRecipients(generateSignatureDetails);
           setImages(generateSignatureDetailsImages);
@@ -187,7 +216,6 @@ const DocumentViewer = () => {
     data.append('draggedElArr', JSON.stringify(draggedElArr));
     data.append('save_type', '0');
 
-    console.log(JSON.stringify(data));
     axios
       .post(url + envelope.uniqid + '/' + envelope.signature_id, data, {
         headers: {
