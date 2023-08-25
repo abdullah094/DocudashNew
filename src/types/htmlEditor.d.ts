@@ -48,6 +48,7 @@ export interface DraggedElement {
   element_container_id: string;
   selected_user_id: string;
   colors: Colors;
+  background: string
 }
 
 export interface Colors {
