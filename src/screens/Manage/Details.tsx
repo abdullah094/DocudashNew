@@ -31,6 +31,7 @@ const Details = () => {
   const navigation = useNavigation<RootStackScreenProps<'Details'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'Details'>['route']>();
   const inbox: Envelope = route.params?.Envelope;
+  const heading: string = route.params?.heading;
   const [data, setData] = useState<ViewDocument>();
   const [dataLoader, setDataLoader] = useState(true);
 
@@ -57,8 +58,9 @@ const Details = () => {
 
     console.log(url + inbox.uniqid + '/' + inbox.signature_id);
     console.log(`Bearer ${accessToken}`);
+
     axios
-      .get(url + inbox.uniqid + '/' + inbox.signature_id, {
+      .get(url + inbox.uniqid + '/' + (heading == 'Sent' ? inbox.id : inbox.signature_id), {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -98,27 +100,6 @@ const Details = () => {
       .catch((error) => {
         console.log('Error----', error);
       });
-  };
-  useEffect(() => {
-    SignOrView();
-  }, [data]);
-
-  const SignOrView = () => {
-    data?.generateSignatureDetails.forEach((element, index) => {
-      if (element?.recEmail?.toLowerCase() == user?.email.toLowerCase()) {
-        console.log('element.sign_type', element.sign_type);
-
-        element.sign_type == '1' ? setNeedToSignButton('Sign') : setNeedToSignButton('View');
-      }
-    });
-  };
-  const SignOrViewButton = () => {
-    if (needToSignButton === 'View') {
-      //@ts-ignore
-      navigation.navigate('DocumentViewer', { Envelope: generate });
-    } else if (needToSignButton === 'Sign') {
-      navigation.navigate('DocumentEditor', { Envelope: generate });
-    }
   };
 
   if (dataLoader) return <Loader />;
@@ -323,12 +304,29 @@ const Details = () => {
           </View>
         </View>
       </ScrollView>
-      <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
-        <Text style={tw`text-4 font-semibold`}>Needs to sign</Text>
-        <Button onPress={SignOrViewButton} mode="outlined">
-          {needToSignButton}
-        </Button>
-      </View>
+      {data?.generateSignatureDetails
+        .filter((item) => item.recEmail.toLowerCase() == user.email.toLowerCase())
+        .map((item) => (
+          <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
+            <Text style={tw`text-4 font-semibold`}>
+              {item.sign_type == '1'
+                ? 'Need to Sign'
+                : item.sign_type == '2'
+                ? 'In Person Signer'
+                : item.sign_type === '3'
+                ? 'Receives a Copy'
+                : 'Needs to View'}
+            </Text>
+            <Button
+              onPress={() => {
+                navigation.navigate('DocumentViewer', { Envelope: generate });
+              }}
+              mode="outlined"
+            >
+              {item.sign_type == '1' ? 'Sign' : 'View'}
+            </Button>
+          </View>
+        ))}
       <SafeAreaView style={tw`flex-1 bg-gray-200`}></SafeAreaView>
     </Fragment>
   );

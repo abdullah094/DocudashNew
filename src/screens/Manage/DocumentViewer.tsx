@@ -289,7 +289,7 @@ const DocumentViewer = () => {
 
               console.log(imageUrl);
               return (
-                <View id={index + '_'} style={tw`my-2`}>
+                <View id={index + '_'} style={tw`my-2 `}>
                   <AutoHeightImage
                     onLoad={({
                       nativeEvent: {
