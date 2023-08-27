@@ -238,6 +238,64 @@ const Edit = () => {
   }, [route]);
   console.log([...documents]);
 
+  // React.useEffect(
+  //   () =>
+  //     navigation.addListener('beforeRemove', (e) => {
+  //       if (!generateSignature) {
+  //         // If we don't have unsaved changes, then we don't need to do anything
+  //         return;
+  //       }
+
+  //       // Prevent default behavior of leaving the screen
+  //       e.preventDefault();
+
+  //       // Prompt the user before leaving the screen
+  //       Alert.alert(
+  //         'Discard changes?',
+  //         'You have unsaved changes. Are you sure to discard them and leave the screen?',
+  //         [
+  //           { text: "Don't leave", style: 'cancel', onPress: () => {} },
+  //           {
+  //             text: 'Discard',
+  //             style: 'destructive',
+  //             // If the user confirmed, then we dispatch the action we blocked earlier
+  //             // This will continue the action that had triggered the removal of the screen
+  //             onPress: () => {
+  //               deleteDraft(e);
+  //             },
+  //           },
+  //         ]
+  //       );
+  //     }),
+  //   [navigation, generateSignature]
+  // );
+
+  const deleteDraft = (e) => {
+    let data = new FormData();
+    data.append('id', generateSignature.signature_id);
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'https://docudash.net/api/generate-signature/deleteDraftEmail',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        navigation.dispatch(e.data.action);
+      })
+      .catch((error) => {
+        console.log(error);
+        navigation.dispatch(e.data.action);
+      });
+  };
+
   const save = () => {
     if (!generateSignature) return;
     if (emailSubject == '') {

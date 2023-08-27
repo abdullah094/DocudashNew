@@ -132,7 +132,7 @@ const RecipientList = ({ data, setData }) => {
           <View style={tw`flex-1`}>
             <Text variant="labelLarge">{item.recName}</Text>
             <Text variant="bodySmall">
-              {item.recEmail == '' ? `Host: ${item.hostEmail}` : item.recEmail}
+              {item.sign_type != '1' ? `Host: ${item.hostEmail}` : item.recEmail}
             </Text>
             <Text variant="bodySmall">{actionList[item.sign_type].label}</Text>
           </View>

@@ -29,7 +29,7 @@ export type RootStackParamList = {
   };
   Details: {
     Envelope: Envelope;
-    heading: string
+    heading: string;
   };
   Stamps: {} | undefined;
   AddStamp: { Stamp?: StampPreview };

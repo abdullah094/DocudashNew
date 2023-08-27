@@ -11,14 +11,17 @@ import {
 } from '@type/index';
 import axios from 'axios';
 import FormData from 'form-data';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Dimensions,
+  FlatList,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
+  ViewToken,
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
@@ -40,6 +43,17 @@ import tw from 'twrnc';
 import { Item } from 'react-native-paper/lib/typescript/src/components/Drawer/Drawer';
 
 const { width, height } = Dimensions.get('window');
+
+const icons = {
+  company: 'office-building',
+  date: 'calendar',
+  email: 'email',
+  initial: 'signature-text',
+  name: 'face-man',
+  signature: 'draw',
+  stamp: 'stamper',
+  title: 'briefcase',
+};
 
 const color = [
   {
@@ -103,7 +117,14 @@ const DocumentEditor = () => {
   const [selectedRecipient, setSelectedRecipient] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<GenerateSignatureDetails[]>();
-  const envelope: GenerateSignature = route.params.Envelope;
+  const [imageSizes, setImageSizes] = useState<{ width: number; height: number }[]>(new Array());
+  console.log('Imagesizes', imageSizes);
+  const FlatListRef = useRef<FlatList>();
+  // const envelope: GenerateSignature = route.params?.Envelope;
+  const envelope: GenerateSignature = {
+    uniqid: 'a9b8ff85878e5d36920543b2b3d4aa69',
+    signature_id: '407',
+  };
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
@@ -114,7 +135,9 @@ const DocumentEditor = () => {
 
   const fetchData = async () => {
     setLoading(true);
+
     const url = 'https://docudash.net/api/generate-signature/html-editor/';
+    const testurl = url + 'a9b8ff85878e5d36920543b2b3d4aa69' + '/' + 407;
     console.log(url + envelope.uniqid + '/' + envelope.signature_id);
 
     axios
@@ -166,7 +189,7 @@ const DocumentEditor = () => {
     }
   }, []);
 
-  const save = () => {
+  const save = (type: number) => {
     const url = 'https://docudash.net/api/generate-signature/html-editor/';
     console.log(`Bearer ${accessToken}`);
     console.log('post', url + envelope.uniqid + '/' + envelope.signature_id);
@@ -174,7 +197,8 @@ const DocumentEditor = () => {
     data.append('uniqid', envelope.uniqid);
     data.append('signature_id', envelope.signature_id);
     data.append('draggedElArr', JSON.stringify(draggedElArr));
-    data.append('save_type', '0');
+    // save for 0 send for 1
+    data.append('save_type', type);
 
     console.log('data', JSON.stringify(data));
 
@@ -201,7 +225,22 @@ const DocumentEditor = () => {
         console.log('error', err);
       });
   };
-  console.log('draggedElArr', draggedElArr);
+
+  const _onViewableItemsChanged = useCallback(
+    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
+      console.log('Visible items are', viewableItems[0]?.index);
+      setIndex(viewableItems[0]?.index ?? 0);
+      // console.log('Changed in this iteration', changed);
+    },
+    []
+  );
+
+  // useEffect(() => {
+  //   FlatListRef?.current?.scrollToIndex({
+  //     animated: true,
+  //     index: index + 1,
+  //   });
+  // }, [index]);
 
   return (
     <View style={tw`h-full `}>
@@ -215,7 +254,13 @@ const DocumentEditor = () => {
             </View>
           }
         />
-        <Button onPress={save}>Save</Button>
+        <Button
+          onPress={() => {
+            save(0);
+          }}
+        >
+          Send
+        </Button>
       </Appbar.Header>
       <SafeAreaView style={tw`flex-1 bg-white `}>
         <View style={tw` bg-white bottom-0 `}>
@@ -257,15 +302,16 @@ const DocumentEditor = () => {
           </ScrollView>
         </View>
         <View style={tw`flex-1`}>
-          <Carousel
-            ref={carousel}
-            horizontal={false}
-            onChangePage={(currentPage: number) => setIndex(currentPage)}
-          >
-            {images?.map((item) => {
+          <FlatList
+            ref={FlatListRef}
+            data={images}
+            onViewableItemsChanged={_onViewableItemsChanged}
+            viewabilityConfig={{
+              itemVisiblePercentThreshold: 50,
+            }}
+            renderItem={({ item, index }) => {
               let imageUrl = '';
               if (item.image?.includes('pdf')) {
-                item.image.split('.')[0] + '-1.jpg';
                 imageUrl =
                   'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
                   item.image.split('.')[0] +
@@ -276,64 +322,56 @@ const DocumentEditor = () => {
               }
               console.log(imageUrl);
               return (
-                <View id={index + '_'}>
+                <View id={index + '_'} style={tw`my-2 relative `}>
                   <AutoHeightImage
                     width={width}
                     source={{
                       uri: imageUrl,
                     }}
+                    style={tw`border`}
+                    onLoad={({
+                      nativeEvent: {
+                        source: { width, height },
+                      },
+                    }) => {
+                      setImageSizes((prev) => [...prev, { width, height }]);
+                    }}
                   />
-                  {draggedElArr?.company
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
 
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="office-building"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Company</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.date
+                  {[
+                    // ...draggedElArr?.company,
+                    // ...draggedElArr?.date,
+                    // ...draggedElArr?.email,
+                    // ...draggedElArr?.initial,
+                    // ...draggedElArr?.name,
+                    ...draggedElArr?.signature,
+                    // ...draggedElArr?.stamp,
+                    // ...draggedElArr?.title,
+                  ]
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
                         x.selected_user_id == String(recipients?.[selectedRecipient]?.id)
                     )
-                    .map((item, index) => {
+                    .map((item, elementIndex) => {
                       // console.log(
                       //   ((Number.parseInt(item.left) * 100) / width) * 15,
                       //   ((Number.parseInt(item.top) * 100) / width) * 15
                       // );
                       console.log(Number.parseFloat(item.left), item.top);
+                      console.log(icons[item.type]);
+                      console.log('image Height and width', imageSizes[index]);
 
                       return (
                         <Draggable
                           x={((Number.parseInt(item.left) * 100) / width) * 15}
                           y={((Number.parseInt(item.top) * 100) / width) * 15}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            console.log('pageX', nativeEvent.pageX);
+                            console.log('pageY', nativeEvent.pageY);
+                          }}
                           // renderColor="red"
                           renderText={item.type}
                           onDragRelease={(event) => {
@@ -353,516 +391,9 @@ const DocumentEditor = () => {
                             <IconButton
                               size={10}
                               style={tw`m-0 `}
-                              icon="calendar"
-                              onPress={() => {}}
+                              icon={icons[item.type]}
                             ></IconButton>
-                            <Text style={tw`text-[10px] `}>Date</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.email
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="email"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Email</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.initial
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="signature-text"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Initial</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.name
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="face-man"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Name</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.signature
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log('rerender', `bg-[${color[index].bg}]`);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="draw"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Signature</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.stamp
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="stamper"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Stamp</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.title
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="briefcase"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Title</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                </View>
-              );
-            })}
-          </Carousel>
-          <Chip style={tw`absolute top-1 right-1 `}>
-            <Text variant="labelLarge">{` ${index + 1} / ${images?.length} `}</Text>
-          </Chip>
-          {/* <FlatList
-            data={images}
-            renderItem={({ item, index }) => {
-              let imageUrl = '';
-              if (item.image?.includes('pdf')) {
-                item.image.split('.')[0] + '-1.jpg';
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-                  item.image.split('.')[0] +
-                  '-1.jpg';
-              } else {
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-              }
-              console.log(imageUrl);
-              return (
-                <View id={index + '_'}>
-                  <AutoHeightImage
-                    width={width}
-                    source={{
-                      uri: imageUrl,
-                    }}
-                  />
-                  {draggedElArr?.company
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="office-building"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Company</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.date
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="calendar"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Date</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.email
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="email"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Email</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.initial
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="signature-text"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Initial</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.name
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="face-man"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Name</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.signature
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log('rerender', `bg-[${color[index].bg}]`);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="draw"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Signature</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.stamp
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="stamper"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Stamp</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.title
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return (
-                        <Draggable
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="briefcase"
-                              onPress={() => {}}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Title</Text>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
                           </View>
                         </Draggable>
                       );
@@ -870,7 +401,10 @@ const DocumentEditor = () => {
                 </View>
               );
             }}
-          /> */}
+          />
+          <Chip style={tw`absolute top-1 right-1 `}>
+            <Text variant="labelLarge">{` ${index + 1} / ${images?.length} `}</Text>
+          </Chip>
         </View>
         <View style={tw` bg-white bottom-0 `}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -1102,14 +636,15 @@ const DocumentEditor = () => {
             <IconButton
               icon="chevron-down"
               onPress={() => {
-                carousel.current?.goToPage(index + 1, true);
+                if (index < images.length - 1) setIndex((prev) => prev + 1);
               }}
             ></IconButton>
 
             <IconButton
               icon="chevron-up"
               onPress={() => {
-                carousel.current?.goToPage(index - 1, true);
+                console.log(index, images.length);
+                if (index >= images.length - 1) setIndex((prev) => prev - 1);
               }}
             ></IconButton>
             <Text variant="labelLarge">{` ${index + 1} / ${images?.length} documents`}</Text>
@@ -1125,8 +660,16 @@ const DocumentEditor = () => {
               <Menu.Item
                 onPress={() => {
                   closeMenu();
+                  save(0);
                 }}
                 title="Save and close"
+              />
+              <Menu.Item
+                onPress={() => {
+                  closeMenu();
+                  save(1);
+                }}
+                title="Send and close"
               />
               <Divider />
               <Menu.Item

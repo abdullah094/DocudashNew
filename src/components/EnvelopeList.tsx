@@ -9,7 +9,9 @@ import { Divider } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import EnvelopeListItem from './EnvelopeListItem';
+import { useNavigation } from '@react-navigation/native';
 export default function EnvelopeList({ heading }: { heading: string }) {
+  const navigation = useNavigation();
   const accessToken = useSelector(selectAccessToken);
   const [data, setData] = useState<Array<Envelope>>();
   const [loading, setLoading] = useState(false);
