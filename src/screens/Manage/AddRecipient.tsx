@@ -12,6 +12,7 @@ import {
   Menu,
   Divider,
   Chip,
+  Checkbox,
 } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
 import COLORS from '@constants/colors';
@@ -211,9 +212,14 @@ export default function AddRecipient() {
             }}
             style={tw`h-16`}
             title={
-              <View>
-                <Text variant="titleSmall">Enter Access Code</Text>
-                <Text variant="bodySmall">Enter a code that only you and this recipient know.</Text>
+              <View style={tw`flex-row items-center`}>
+                <Checkbox status={recipient.showAccessCode ? 'checked' : 'unchecked'} />
+                <View>
+                  <Text variant="titleSmall">Enter Access Code</Text>
+                  <Text variant="bodySmall">
+                    Enter a code that only you and this recipient know.
+                  </Text>
+                </View>
               </View>
             }
           ></Menu.Item>
@@ -228,9 +234,12 @@ export default function AddRecipient() {
             }}
             style={tw`h-16`}
             title={
-              <View>
-                <Text variant="titleSmall">Add private message</Text>
-                <Text variant="bodySmall">Include a personal note with this recipient.</Text>
+              <View style={tw`flex-row items-center`}>
+                <Checkbox status={recipient.showPrivateMessage ? 'checked' : 'unchecked'} />
+                <View>
+                  <Text variant="titleSmall">Add private message</Text>
+                  <Text variant="bodySmall">Include a personal note with this recipient.</Text>
+                </View>
               </View>
             }
           />

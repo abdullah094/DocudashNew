@@ -19,6 +19,7 @@ import {
 import { Appbar, Avatar, Button, Divider, IconButton, Menu } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
+import { repeat } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/repeat';
 
 interface IButton {
   text: string;
@@ -31,9 +32,10 @@ const Details = () => {
   const navigation = useNavigation<RootStackScreenProps<'Details'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'Details'>['route']>();
   const inbox: Envelope = route.params?.Envelope;
+  const heading = route.params?.heading;
   const [data, setData] = useState<ViewDocument>();
   const [dataLoader, setDataLoader] = useState(true);
-
+  const [needToSignVisible, setNeedToSignVisible] = useState(false);
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
@@ -52,22 +54,35 @@ const Details = () => {
     signature_id: inbox.signature_id,
     uniqid: inbox.uniqid,
   };
+  const updateClientResponse = () => {
+    axios
+      .post('https://docudash.net/api/updateClientResponse/37', {
+        id: inbox.signature_id,
+        viewFinalResponseArr: '',
+      })
+      .then((response) => {})
+      .catch((error) => {});
+  };
   useEffect(() => {
     const url = 'https://docudash.net/api/generate-signature/manage-doc-view/';
-
-    console.log(url + inbox.uniqid + '/' + inbox.signature_id);
+    const id = heading === 'Sent' ? inbox.id : inbox.signature_id;
+    console.log('url', url + inbox.id + '/' + inbox.signature_id);
     console.log(`Bearer ${accessToken}`);
     axios
-      .get(url + inbox.uniqid + '/' + inbox.signature_id, {
+      .get(url + inbox.uniqid + '/' + id, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
         const data: ViewDocument = response.data;
-        console.log('Data----', data);
-        setData(data);
-        setDataLoader(false);
+        console.log('DAta api', data);
+        if (data.success) {
+          setData(data);
+          setDataLoader(false);
+        } else {
+          navigation.goBack();
+        }
       })
       .catch((error) => {
         console.log('Error----', error);
@@ -104,7 +119,7 @@ const Details = () => {
   }, [data]);
 
   const SignOrView = () => {
-    data?.generateSignatureDetails.forEach((element, index) => {
+    data?.generateSignatureDetails?.forEach((element, index) => {
       if (element?.recEmail?.toLowerCase() == user?.email.toLowerCase()) {
         console.log('element.sign_type', element.sign_type);
 
@@ -120,7 +135,17 @@ const Details = () => {
       navigation.navigate('DocumentEditor', { Envelope: generate });
     }
   };
-
+  // console.log('obj', data?.generateSignatureDetails);
+  // console.log(data?.generateSignature.any((x: any) => x.recEmail == user.email));
+  if (data) {
+    data?.generateSignatureDetails.forEach((element) => {
+      if (element.recEmail.toLowerCase() == user.email.toLowerCase()) {
+        setTimeout(() => {
+          setNeedToSignVisible(true);
+        }, 500);
+      }
+    });
+  }
   if (dataLoader) return <Loader />;
 
   return (
@@ -297,6 +322,9 @@ const Details = () => {
                     </Text>
                   </View>
                   <Text style={tw`font-thin text-black`}>{item.recEmail}</Text>
+                  <Text style={tw` text-black`}>
+                    Status: {item.complete_incomplete === 0 ? 'pending' : 'Completed'}
+                  </Text>
                 </View>
                 <View style={tw`flex-row items-center flex-0.6 `}>
                   <Image style={tw`w-5 h-5 mx-2`} source={require('@assets/NeedToSign.png')} />
@@ -323,12 +351,14 @@ const Details = () => {
           </View>
         </View>
       </ScrollView>
-      <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
-        <Text style={tw`text-4 font-semibold`}>Needs to sign</Text>
-        <Button onPress={SignOrViewButton} mode="outlined">
-          {needToSignButton}
-        </Button>
-      </View>
+      {needToSignVisible && (
+        <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
+          <Text style={tw`text-4 font-semibold`}>Needs to sign</Text>
+          <Button onPress={SignOrViewButton} mode="outlined">
+            {needToSignButton}
+          </Button>
+        </View>
+      )}
       <SafeAreaView style={tw`flex-1 bg-gray-200`}></SafeAreaView>
     </Fragment>
   );

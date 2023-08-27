@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
+import Dragable2 from '@components/Dragable';
 import {
   Appbar,
   Avatar,
@@ -36,6 +37,7 @@ import {
 import { Carousel } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
+import { Item } from 'react-native-paper/lib/typescript/src/components/Drawer/Drawer';
 
 const { width, height } = Dimensions.get('window');
 
@@ -103,14 +105,10 @@ const DocumentEditor = () => {
   const [images, setImages] = useState<GenerateSignatureDetails[]>();
   const envelope: GenerateSignature = route.params.Envelope;
   const [index, setIndex] = useState(0);
-
   const [visible, setVisible] = React.useState(false);
-
   const openMenu = () => setVisible(true);
-
   const closeMenu = () => setVisible(false);
   console.log(images);
-
   const carousel = useRef<typeof Carousel>();
   console.log(envelope);
 
@@ -191,7 +189,6 @@ const DocumentEditor = () => {
         const { status, message }: { status: boolean; message: string } = response.data;
         if (status) {
           alert(message);
-
           navigation.navigate('Home', {
             screen: 'INBOX',
             params: { heading: 'Sent' },
@@ -204,6 +201,7 @@ const DocumentEditor = () => {
         console.log('error', err);
       });
   };
+  console.log('draggedElArr', draggedElArr);
 
   return (
     <View style={tw`h-full `}>
@@ -323,7 +321,7 @@ const DocumentEditor = () => {
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient]?.id)
                     )
                     .map((item, index) => {
                       // console.log(
@@ -338,6 +336,16 @@ const DocumentEditor = () => {
                           y={((Number.parseInt(item.top) * 100) / width) * 15}
                           // renderColor="red"
                           renderText={item.type}
+                          onDragRelease={(event) => {
+                            const left = event.nativeEvent.pageX;
+                            const top = event.nativeEvent.pageY;
+                            let _data = draggedElArr.date[index];
+                            _data.left = `${String(Math.trunc((left / width) * 100))}%`;
+                            _data.top = `${String(Math.trunc((top / height) * 100))}%`;
+                            let drag = draggedElArr.date;
+                            drag[index] = _data;
+                            setDraggedElArr((prev) => ({ ...prev, date: drag }));
+                          }}
                         >
                           <View
                             style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
