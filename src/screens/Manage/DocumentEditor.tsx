@@ -42,7 +42,7 @@ import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import { Item } from 'react-native-paper/lib/typescript/src/components/Drawer/Drawer';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const icons = {
   company: 'office-building',
@@ -367,32 +367,35 @@ const DocumentEditor = () => {
                     //   }
                     // }}
                   />
-
-                  {[
-                    // ...draggedElArr?.company,
-                    // ...draggedElArr?.date,
-                    // ...draggedElArr?.email,
-                    // ...draggedElArr?.initial,
-                    // ...draggedElArr?.name,
-                    ...draggedElArr?.signature,
-                    // ...draggedElArr?.stamp,
-                    // ...draggedElArr?.title,
-                  ]
+                  {/* [
+                      // ...draggedElArr?.company,
+                      // ...draggedElArr?.date,
+                      // ...draggedElArr?.email,
+                      // ...draggedElArr?.initial,
+                      // ...draggedElArr?.name,
+                      ...draggedElArr?.signature,
+                      // ...draggedElArr?.stamp,
+                      // ...draggedElArr?.title,
+                    ] */}
+                  {draggedElArr?.signature
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
                         x.selected_user_id == String(recipients?.[selectedRecipient]?.id)
                     )
                     .map((item, elementIndex) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      // console.log(Number.parseFloat(item.left), item.top);
                       // console.log(icons[item.type]);
-                      console.log('image Height and width', imageSizes[index]);
+
+                      // console.log('image Height and width', imageSizes[index]);
 
                       const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
 
                       return (
                         <Draggable
@@ -403,20 +406,46 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / height) * 15}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
-                            console.log('pageX', nativeEvent.pageX);
-                            console.log('pageY', nativeEvent.pageY);
-                            console.log('ChangedPageX', nativeEvent.pageX);
-                            console.log(
-                              'ChangedPageY',
-                              nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
-                                ? 0
-                                : nativeEvent.pageY - imageSizes[0].pageY + scrollY
-                            );
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              signature: prev.signature.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
                           }}
                           minX={0}
                           maxX={0 + width}
