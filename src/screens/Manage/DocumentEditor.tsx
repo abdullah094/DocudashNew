@@ -124,11 +124,11 @@ const DocumentEditor = () => {
   const FlatListRef = useRef<FlatList>();
   const marker = useRef<View[]>([]);
 
-  // const envelope: GenerateSignature = route.params?.Envelope;
-  const envelope: GenerateSignature = {
-    uniqid: '6548ab57315fc20a5bc10f70d033fbd3',
-    signature_id: 1,
-  };
+  const envelope: GenerateSignature = route.params?.Envelope;
+  // const envelope: GenerateSignature = {
+  //   uniqid: '21d57d0cd0223eaf274e44101dc8a263',
+  //   signature_id: 12,
+  // };
   const [index, setIndex] = useState(0);
 
   const [visible, setVisible] = React.useState(false);
@@ -241,14 +241,14 @@ const DocumentEditor = () => {
     setScrollY(positionY);
     console.log(positionY);
   };
-  // const _onViewableItemsChanged = useCallback(
-  //   ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
-  //     console.log('Visible items are', viewableItems[0]?.index);
-  //     setIndex(viewableItems[0]?.index ?? 0);
-  //     // console.log('Changed in this iteration', changed);
-  //   },
-  //   []
-  // );
+  const _onViewableItemsChanged = useCallback(
+    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
+      console.log('Visible items are', viewableItems[0]?.index);
+      setIndex(viewableItems[0]?.index ?? 0);
+      // console.log('Changed in this iteration', changed);
+    },
+    []
+  );
 
   // useEffect(() => {
   //   FlatListRef?.current?.scrollToIndex({
@@ -265,7 +265,7 @@ const DocumentEditor = () => {
           title={
             <View style={tw`items-center`}>
               <Text variant="titleSmall">Editing Document</Text>
-              <Text variant="labelSmall">Subtitle</Text>
+              <Text variant="labelSmall">subtitle</Text>
             </View>
           }
         />
@@ -321,41 +321,17 @@ const DocumentEditor = () => {
             ref={FlatListRef}
             data={images}
             scrollEnabled={scroll}
-            onLayout={() => {
-              marker.current.forEach((marker) => {
-                marker.measure((x, y, width, height, pageX, pageY) => {
-                  setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                });
-              });
-            }}
             onScroll={handleScroll}
-            // onViewableItemsChanged={_onViewableItemsChanged}
-            // viewabilityConfig={{
-            //   itemVisiblePercentThreshold: 50,
-            // }}
+            onViewableItemsChanged={_onViewableItemsChanged}
+            viewabilityConfig={{
+              itemVisiblePercentThreshold: 60,
+            }}
             renderItem={({ item, index }) => {
-              // let imageUrl = '';
-              // if (item.image?.includes('pdf')) {
-              //   imageUrl =
-              //     'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-              //     item.image.split('.')[0] +
-              //     '-1.jpg';
-              // } else {
-              //   imageUrl =
-              //     'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-              // }
-              // console.log(imageUrl);
               return (
                 <View
                   id={index + '_'}
                   ref={(el) => (marker.current[index] = el)}
                   style={tw`my-2 relative `}
-                  // ref={(ref) => { marker = ref }}
-                  // onLayout={({ nativeEvent }) => {
-                  //   marker.current.measure((x, y, width, height, pageX, pageY) => {
-                  //     setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                  //   });
-                  // }}
                 >
                   <AutoHeightImage
                     width={width}
@@ -363,13 +339,13 @@ const DocumentEditor = () => {
                       uri: item,
                     }}
                     style={tw`border`}
-                    // onLoad={() => {
-                    //   if (marker) {
-                    //     marker.current.measure((x, y, width, height, pageX, pageY) => {
-                    //       setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                    //     });
-                    //   }
-                    // }}
+                    onLoad={() => {
+                      if (marker.current[index]) {
+                        marker.current[index].measure((x, y, width, height, pageX, pageY) => {
+                          setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                        });
+                      }
+                    }}
                   />
                   {/* [
                       // ...draggedElArr?.company,
@@ -388,10 +364,7 @@ const DocumentEditor = () => {
                         x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', imageSizes[index]);
-
+                      if (imageSizes[index] == undefined) return;
                       const { x, y, width, height, pageX, pageY } = imageSizes[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
@@ -404,7 +377,6 @@ const DocumentEditor = () => {
                       return (
                         <Draggable
                           onPressIn={() => {
-                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
                             setScroll(false); // important step to disable scroll when long press this button
                           }}
                           onPressOut={() => {
@@ -415,15 +387,6 @@ const DocumentEditor = () => {
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
-                            // console.log('pageX', nativeEvent.pageX);
-                            // console.log('pageY', nativeEvent.pageY);
-                            // console.log('ChangedPageX', nativeEvent.pageX);
-                            // console.log(
-                            //   'ChangedPageY',
-                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
-                            //     ? 0
-                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
-                            // );
                             let top = 0;
                             if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
                               top = height;

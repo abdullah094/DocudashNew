@@ -49,7 +49,7 @@ export default function StackNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <Stack.Group>
-          <Stack.Screen name="DocumentEditor" component={DocumentEditor} />
+          {/* <Stack.Screen name="DocumentEditor" component={DocumentEditor} /> */}
           <Stack.Screen name="Home" component={DrawerNavigator} />
           <Stack.Screen name="Signatures" component={Signatures} />
           <Stack.Screen name="AddSignature" component={AddSignature} />
@@ -59,7 +59,7 @@ export default function StackNavigator() {
           <Stack.Screen name="Details" component={Details} />
           <Stack.Screen name="Edit" component={Edit} />
           <Stack.Screen name="AddRecipient" component={AddRecipient} />
-          {/* <Stack.Screen name="DocumentEditor" component={DocumentEditor} /> */}
+          <Stack.Screen name="DocumentEditor" component={DocumentEditor} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="DocumentViewer" component={DocumentViewer} />
           <Stack.Screen name="SignatureSelection" component={SignatureSelection} />

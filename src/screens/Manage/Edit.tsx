@@ -238,37 +238,38 @@ const Edit = () => {
   }, [route]);
   console.log([...documents]);
 
-  // React.useEffect(
-  //   () =>
-  //     navigation.addListener('beforeRemove', (e) => {
-  //       if (!generateSignature) {
-  //         // If we don't have unsaved changes, then we don't need to do anything
-  //         return;
-  //       }
+  React.useEffect(
+    () =>
+      navigation.addListener('beforeRemove', (e) => {
+        console.log(e);
+        if (e.data.action.type != 'GO_BACK') {
+          // If we don't have unsaved changes, then we don't need to do anything
+          return;
+        }
 
-  //       // Prevent default behavior of leaving the screen
-  //       e.preventDefault();
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
 
-  //       // Prompt the user before leaving the screen
-  //       Alert.alert(
-  //         'Discard changes?',
-  //         'You have unsaved changes. Are you sure to discard them and leave the screen?',
-  //         [
-  //           { text: "Don't leave", style: 'cancel', onPress: () => {} },
-  //           {
-  //             text: 'Discard',
-  //             style: 'destructive',
-  //             // If the user confirmed, then we dispatch the action we blocked earlier
-  //             // This will continue the action that had triggered the removal of the screen
-  //             onPress: () => {
-  //               deleteDraft(e);
-  //             },
-  //           },
-  //         ]
-  //       );
-  //     }),
-  //   [navigation, generateSignature]
-  // );
+        // Prompt the user before leaving the screen
+        Alert.alert(
+          'Discard changes?',
+          'You have unsaved changes. Are you sure to discard them and leave the screen?',
+          [
+            { text: "Don't leave", style: 'cancel', onPress: () => {} },
+            {
+              text: 'Discard',
+              style: 'destructive',
+              // If the user confirmed, then we dispatch the action we blocked earlier
+              // This will continue the action that had triggered the removal of the screen
+              onPress: () => {
+                deleteDraft(e);
+              },
+            },
+          ]
+        );
+      }),
+    [navigation]
+  );
 
   const deleteDraft = (e) => {
     let data = new FormData();
