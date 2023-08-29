@@ -116,12 +116,13 @@ const DocumentEditor = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<string[]>();
   const [scroll, setScroll] = useState(true);
+  const [scrollY, setScrollY] = useState(0);
   const [imageSizes, setImageSizes] = useState<
     { x: number; y: number; width: number; height: number; pageX: number; pageY: number }[]
   >(new Array());
-  console.log('Imagesizes', imageSizes);
+  // console.log('Imagesizes', imageSizes);
   const FlatListRef = useRef<FlatList>();
-  const marker = useRef<View>();
+  const marker = useRef<View[]>([]);
 
   // const envelope: GenerateSignature = route.params?.Envelope;
   const envelope: GenerateSignature = {
@@ -234,14 +235,20 @@ const DocumentEditor = () => {
       });
   };
 
-  const _onViewableItemsChanged = useCallback(
-    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
-      console.log('Visible items are', viewableItems[0]?.index);
-      setIndex(viewableItems[0]?.index ?? 0);
-      // console.log('Changed in this iteration', changed);
-    },
-    []
-  );
+  const handleScroll = (event) => {
+    const positionX = event.nativeEvent.contentOffset.x;
+    const positionY = event.nativeEvent.contentOffset.y;
+    setScrollY(positionY);
+    console.log(positionY);
+  };
+  // const _onViewableItemsChanged = useCallback(
+  //   ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
+  //     console.log('Visible items are', viewableItems[0]?.index);
+  //     setIndex(viewableItems[0]?.index ?? 0);
+  //     // console.log('Changed in this iteration', changed);
+  //   },
+  //   []
+  // );
 
   // useEffect(() => {
   //   FlatListRef?.current?.scrollToIndex({
@@ -282,7 +289,7 @@ const DocumentEditor = () => {
               ?.filter((x) => x.sign_type == '1')
               .slice(0, 5)
               ?.map((item, index) => (
-                <View style={[styles.botton_view_buttons]}>
+                <View key={index + '$'} style={[styles.botton_view_buttons]}>
                   {index == selectedRecipient ? (
                     <Badge style={tw`absolute top-0 right-2 z-1`}>✓</Badge>
                   ) : null}
@@ -314,10 +321,18 @@ const DocumentEditor = () => {
             ref={FlatListRef}
             data={images}
             scrollEnabled={scroll}
-            onViewableItemsChanged={_onViewableItemsChanged}
-            viewabilityConfig={{
-              itemVisiblePercentThreshold: 50,
+            onLayout={() => {
+              marker.current.forEach((marker) => {
+                marker.measure((x, y, width, height, pageX, pageY) => {
+                  setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                });
+              });
             }}
+            onScroll={handleScroll}
+            // onViewableItemsChanged={_onViewableItemsChanged}
+            // viewabilityConfig={{
+            //   itemVisiblePercentThreshold: 50,
+            // }}
             renderItem={({ item, index }) => {
               // let imageUrl = '';
               // if (item.image?.includes('pdf')) {
@@ -333,11 +348,13 @@ const DocumentEditor = () => {
               return (
                 <View
                   id={index + '_'}
-                  ref={marker}
+                  ref={(el) => (marker.current[index] = el)}
                   style={tw`my-2 relative `}
                   // ref={(ref) => { marker = ref }}
                   // onLayout={({ nativeEvent }) => {
-
+                  //   marker.current.measure((x, y, width, height, pageX, pageY) => {
+                  //     setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                  //   });
                   // }}
                 >
                   <AutoHeightImage
@@ -346,14 +363,13 @@ const DocumentEditor = () => {
                       uri: item,
                     }}
                     style={tw`border`}
-                    onLoad={() => {
-                      if (marker) {
-                        marker.current.measure((x, y, width, height, pageX, pageY) => {
-                          setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                          console.log('data of the view', x, y, width, height, pageX, pageY);
-                        });
-                      }
-                    }}
+                    // onLoad={() => {
+                    //   if (marker) {
+                    //     marker.current.measure((x, y, width, height, pageX, pageY) => {
+                    //       setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                    //     });
+                    //   }
+                    // }}
                   />
 
                   {[
@@ -380,6 +396,8 @@ const DocumentEditor = () => {
                       // console.log(icons[item.type]);
                       console.log('image Height and width', imageSizes[index]);
 
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+
                       return (
                         <Draggable
                           onPressIn={() => {
@@ -390,17 +408,24 @@ const DocumentEditor = () => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
                           x={((Number.parseInt(item.left) * 100) / width) * 15}
-                          y={((Number.parseInt(item.top) * 100) / width) * 15}
+                          y={((Number.parseInt(item.top) * 100) / height) * 15}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
                             console.log('pageX', nativeEvent.pageX);
                             console.log('pageY', nativeEvent.pageY);
+                            console.log('ChangedPageX', nativeEvent.pageX);
+                            console.log(
+                              'ChangedPageY',
+                              nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                                ? 0
+                                : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            );
                           }}
                           minX={0}
                           maxX={0 + width}
-                          minY={imageSizes[index].y}
-                          maxY={imageSizes[index].y + imageSizes[index].height - 60}
+                          minY={y}
+                          maxY={y + height - 12}
                           // renderColor="red"
                           renderText={item.type}
                         >
