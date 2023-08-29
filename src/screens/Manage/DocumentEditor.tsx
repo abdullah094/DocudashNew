@@ -25,7 +25,6 @@ import {
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
-import Dragable2 from '@components/Dragable';
 import {
   Appbar,
   Avatar,
@@ -40,7 +39,6 @@ import {
 import { Carousel } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
-import { Item } from 'react-native-paper/lib/typescript/src/components/Drawer/Drawer';
 
 const { width } = Dimensions.get('window');
 
@@ -116,7 +114,7 @@ const DocumentEditor = () => {
   const [recipients, setRecipients] = useState<GenerateSignatureDetail[]>();
   const [selectedRecipient, setSelectedRecipient] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<GenerateSignatureDetails[]>();
+  const [images, setImages] = useState<string[]>();
   const [scroll, setScroll] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [imageSizes, setImageSizes] = useState<
@@ -128,14 +126,17 @@ const DocumentEditor = () => {
 
   const envelope: GenerateSignature = route.params?.Envelope;
   // const envelope: GenerateSignature = {
-  //   uniqid: '6548ab57315fc20a5bc10f70d033fbd3',
-  //   signature_id: 1,
+  //   uniqid: '21d57d0cd0223eaf274e44101dc8a263',
+  //   signature_id: 12,
   // };
   const [index, setIndex] = useState(0);
+
   const [visible, setVisible] = React.useState(false);
+
   const openMenu = () => setVisible(true);
+
   const closeMenu = () => setVisible(false);
-  console.log(images);
+  // console.log(images);
 
   const carousel = useRef<typeof Carousel>();
   // console.log(envelope);
@@ -180,7 +181,7 @@ const DocumentEditor = () => {
             console.log('draggedElArr', draggedElArr);
           }
           setRecipients(generateSignatureDetails);
-          setImages(generateSignatureDetailsImages);
+          setImages(generateSignatureDetailsImages.map((x) => x.filesArr).flat());
         } else {
           alert(message);
         }
@@ -220,6 +221,7 @@ const DocumentEditor = () => {
         const { status, message }: { status: boolean; message: string } = response.data;
         if (status) {
           alert(message);
+
           navigation.navigate('Home', {
             screen: 'INBOX',
             params: { heading: 'Sent' },
@@ -239,14 +241,14 @@ const DocumentEditor = () => {
     setScrollY(positionY);
     console.log(positionY);
   };
-  // const _onViewableItemsChanged = useCallback(
-  //   ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
-  //     console.log('Visible items are', viewableItems[0]?.index);
-  //     setIndex(viewableItems[0]?.index ?? 0);
-  //     // console.log('Changed in this iteration', changed);
-  //   },
-  //   []
-  // );
+  const _onViewableItemsChanged = useCallback(
+    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
+      console.log('Visible items are', viewableItems[0]?.index);
+      setIndex(viewableItems[0]?.index ?? 0);
+      // console.log('Changed in this iteration', changed);
+    },
+    []
+  );
 
   // useEffect(() => {
   //   FlatListRef?.current?.scrollToIndex({
@@ -254,7 +256,6 @@ const DocumentEditor = () => {
   //     index: index + 1,
   //   });
   // }, [index]);
-  console.log(draggedElArr.signature);
 
   return (
     <View style={tw`h-full `}>
@@ -320,19 +321,29 @@ const DocumentEditor = () => {
             ref={FlatListRef}
             data={images}
             scrollEnabled={scroll}
-            onLayout={() => {
-              marker.current.forEach((marker) => {
-                marker.measure((x, y, width, height, pageX, pageY) => {
-                  setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                });
-              });
-            }}
-            onScroll={handleScroll}
-            // onViewableItemsChanged={_onViewableItemsChanged}
-            // viewabilityConfig={{
-            //   itemVisiblePercentThreshold: 50,
+            // onLayout={() => {
+            //   marker.current.forEach((marker) => {
+            //     marker.measure((x, y, width, height, pageX, pageY) => {
+            //       setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+            //     });
+            //   });
             // }}
+            onScroll={handleScroll}
+            onViewableItemsChanged={_onViewableItemsChanged}
+            viewabilityConfig={{
+              itemVisiblePercentThreshold: 60,
+            }}
             renderItem={({ item, index }) => {
+              // let imageUrl = '';
+              // if (item.image?.includes('pdf')) {
+              //   imageUrl =
+              //     'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+              //     item.image.split('.')[0] +
+              //     '-1.jpg';
+              // } else {
+              //   imageUrl =
+              //     'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
+              // }
               // console.log(imageUrl);
               return (
                 <View
@@ -341,43 +352,37 @@ const DocumentEditor = () => {
                   style={tw`my-2 relative `}
                   // ref={(ref) => { marker = ref }}
                   // onLayout={({ nativeEvent }) => {
-
+                  //   marker.current.measure((x, y, width, height, pageX, pageY) => {
+                  //     setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                  //   });
                   // }}
                 >
                   <AutoHeightImage
                     width={width}
                     source={{
-                      uri: imageUrl,
+                      uri: item,
                     }}
                     style={tw`border`}
-                    // onLoad={() => {
-                    //   if (marker) {
-                    //     marker.current.measure((x, y, width, height, pageX, pageY) => {
-                    //       setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                    //     });
-                    //   }
-                    // }}
+                    onLoad={() => {
+                      if (marker.current[index]) {
+                        marker.current[index].measure((x, y, width, height, pageX, pageY) => {
+                          setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                        });
+                      }
+                    }}
                   />
-                  {/* [
-                      // ...draggedElArr?.company,
-                      // ...draggedElArr?.date,
-                      // ...draggedElArr?.email,
-                      // ...draggedElArr?.initial,
-                      // ...draggedElArr?.name,
-                      ...draggedElArr?.signature,
-                      // ...draggedElArr?.stamp,
-                      // ...draggedElArr?.title,
-                    ] */}
+
                   {draggedElArr?.signature
                     ?.filter(
                       (x) =>
                         x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient]?.id)
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
                       // console.log('image Height and width', imageSizes[index]);
+
                       if (imageSizes[index] == undefined) return;
                       const { x, y, width, height, pageX, pageY } = imageSizes[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
@@ -427,6 +432,643 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               signature: prev.signature.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
+                          }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={y}
+                          maxY={y + height - 12}
+                          // renderColor="red"
+                          renderText={item.type}
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon={icons[item.type]}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
+                          </View>
+                        </Draggable>
+                      );
+                    })}
+                  {draggedElArr?.initial
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, elementIndex) => {
+                      // console.log(icons[item.type]);
+
+                      // console.log('image Height and width', imageSizes[index]);
+
+                      if (imageSizes[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
+
+                      return (
+                        <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              initial: prev.initial.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
+                          }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={y}
+                          maxY={y + height - 12}
+                          // renderColor="red"
+                          renderText={item.type}
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon={icons[item.type]}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
+                          </View>
+                        </Draggable>
+                      );
+                    })}
+                  {draggedElArr?.stamp
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, elementIndex) => {
+                      // console.log(icons[item.type]);
+
+                      // console.log('image Height and width', imageSizes[index]);
+
+                      if (imageSizes[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
+
+                      return (
+                        <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              stamp: prev.stamp.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
+                          }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={y}
+                          maxY={y + height - 12}
+                          // renderColor="red"
+                          renderText={item.type}
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon={icons[item.type]}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
+                          </View>
+                        </Draggable>
+                      );
+                    })}
+                  {draggedElArr?.date
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, elementIndex) => {
+                      // console.log(icons[item.type]);
+
+                      // console.log('image Height and width', imageSizes[index]);
+
+                      if (imageSizes[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
+
+                      return (
+                        <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              date: prev.date.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
+                          }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={y}
+                          maxY={y + height - 12}
+                          // renderColor="red"
+                          renderText={item.type}
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon={icons[item.type]}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
+                          </View>
+                        </Draggable>
+                      );
+                    })}
+                  {draggedElArr?.name
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, elementIndex) => {
+                      // console.log(icons[item.type]);
+
+                      // console.log('image Height and width', imageSizes[index]);
+
+                      if (imageSizes[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
+
+                      return (
+                        <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              name: prev.name.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
+                          }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={y}
+                          maxY={y + height - 12}
+                          // renderColor="red"
+                          renderText={item.type}
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon={icons[item.type]}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
+                          </View>
+                        </Draggable>
+                      );
+                    })}
+                  {draggedElArr?.email
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, elementIndex) => {
+                      // console.log(icons[item.type]);
+
+                      // console.log('image Height and width', imageSizes[index]);
+
+                      if (imageSizes[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
+
+                      return (
+                        <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              email: prev.email.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
+                          }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={y}
+                          maxY={y + height - 12}
+                          // renderColor="red"
+                          renderText={item.type}
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon={icons[item.type]}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
+                          </View>
+                        </Draggable>
+                      );
+                    })}
+                  {draggedElArr?.company
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, elementIndex) => {
+                      // console.log(icons[item.type]);
+
+                      // console.log('image Height and width', imageSizes[index]);
+
+                      if (imageSizes[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
+
+                      return (
+                        <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              company: prev.company.map((sig, si) =>
+                                si == elementIndex
+                                  ? {
+                                      ...sig,
+                                      left:
+                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
+                                      top: Number.parseInt((top / height) * 100) + '%',
+                                    }
+                                  : { ...sig }
+                              ),
+                            }));
+                          }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={y}
+                          maxY={y + height - 12}
+                          // renderColor="red"
+                          renderText={item.type}
+                        >
+                          <View
+                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                          >
+                            <IconButton
+                              size={10}
+                              style={tw`m-0 `}
+                              icon={icons[item.type]}
+                            ></IconButton>
+                            <Text style={tw`text-[10px] `}>{item.type}</Text>
+                          </View>
+                        </Draggable>
+                      );
+                    })}
+                  {draggedElArr?.title
+                    ?.filter(
+                      (x) =>
+                        x.element_container_id == `canvasInner-${index}` &&
+                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
+                    )
+                    .map((item, elementIndex) => {
+                      // console.log(icons[item.type]);
+
+                      // console.log('image Height and width', imageSizes[index]);
+
+                      if (imageSizes[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      console.log('left in percent', item.left, 'top in percent', item.top);
+                      console.log(
+                        'left in pixel',
+                        (Number.parseInt(item.left) * 100) / width,
+                        'top in pixel',
+                        (Number.parseInt(item.top) * 100) / height
+                      );
+
+                      return (
+                        <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
+                          x={(Number.parseInt(item.left) * 100) / width}
+                          y={(Number.parseInt(item.top) * 100) / height}
+                          key={elementIndex}
+                          onDragRelease={(event, gestureState, bounds) => {
+                            const nativeEvent = event.nativeEvent;
+                            // console.log('pageX', nativeEvent.pageX);
+                            // console.log('pageY', nativeEvent.pageY);
+                            // console.log('ChangedPageX', nativeEvent.pageX);
+                            // console.log(
+                            //   'ChangedPageY',
+                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //     ? 0
+                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            // );
+                            let top = 0;
+                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                              top = height;
+                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                              top = 0;
+                            } else {
+                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                            }
+                            console.log('left', nativeEvent.pageX);
+                            console.log('top', top);
+                            console.log('left', (nativeEvent.pageX / width) * 100);
+                            console.log('top', (top / height) * 100);
+
+                            setDraggedElArr((prev) => ({
+                              ...prev,
+                              title: prev.title.map((sig, si) =>
                                 si == elementIndex
                                   ? {
                                       ...sig,
