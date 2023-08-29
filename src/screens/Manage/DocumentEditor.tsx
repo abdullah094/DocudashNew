@@ -126,11 +126,11 @@ const DocumentEditor = () => {
   const FlatListRef = useRef<FlatList>();
   const marker = useRef<View[]>([]);
 
-  // const envelope: GenerateSignature = route.params?.Envelope;
-  const envelope: GenerateSignature = {
-    uniqid: '6548ab57315fc20a5bc10f70d033fbd3',
-    signature_id: 1,
-  };
+  const envelope: GenerateSignature = route.params?.Envelope;
+  // const envelope: GenerateSignature = {
+  //   uniqid: '6548ab57315fc20a5bc10f70d033fbd3',
+  //   signature_id: 1,
+  // };
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
@@ -254,6 +254,7 @@ const DocumentEditor = () => {
   //     index: index + 1,
   //   });
   // }, [index]);
+  console.log(draggedElArr.signature);
 
   return (
     <View style={tw`h-full `}>
@@ -332,16 +333,6 @@ const DocumentEditor = () => {
             //   itemVisiblePercentThreshold: 50,
             // }}
             renderItem={({ item, index }) => {
-              let imageUrl = '';
-              if (item.image?.includes('pdf')) {
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-                  item.image.split('.')[0] +
-                  '-1.jpg';
-              } else {
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-              }
               // console.log(imageUrl);
               return (
                 <View
@@ -387,7 +378,7 @@ const DocumentEditor = () => {
                       // console.log(icons[item.type]);
 
                       // console.log('image Height and width', imageSizes[index]);
-
+                      if (imageSizes[index] == undefined) return;
                       const { x, y, width, height, pageX, pageY } = imageSizes[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
@@ -453,16 +444,6 @@ const DocumentEditor = () => {
                           maxY={y + height - 12}
                           // renderColor="red"
                           renderText={item.type}
-                          onDragRelease={(event) => {
-                            const left = event.nativeEvent.pageX;
-                            const top = event.nativeEvent.pageY;
-                            let _data = draggedElArr.date[index];
-                            _data.left = `${String(Math.trunc((left / width) * 100))}%`;
-                            _data.top = `${String(Math.trunc((top / height) * 100))}%`;
-                            let drag = draggedElArr.date;
-                            drag[index] = _data;
-                            setDraggedElArr((prev) => ({ ...prev, date: drag }));
-                          }}
                         >
                           <View
                             style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
