@@ -190,7 +190,7 @@ const DocumentViewer = () => {
             setDraggedElArr(draggable);
           }
           setRecipients(generateSignatureDetails);
-          setImages(generateSignatureDetailsImages);
+          setImages(generateSignatureDetailsImages.map((x) => x.filesArr).flat());
         } else {
           alert(message);
         }
@@ -303,19 +303,6 @@ const DocumentViewer = () => {
             //   itemVisiblePercentThreshold: 50,
             // }}
             renderItem={({ item, index }) => {
-              let imageUrl = '';
-              if (item.image?.includes('pdf') || item.image?.includes('docx')) {
-                item.image.split('.')[0] + '-1.jpg';
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-                  item.image.split('.')[0] +
-                  '-1.jpg';
-              } else {
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-              }
-
-              console.log(imageUrl);
               return (
                 <View id={index + '_'} style={tw`my-2 `}>
                   <AutoHeightImage
@@ -326,7 +313,7 @@ const DocumentViewer = () => {
                     }) => setImageSizes((prev) => [...prev, { width, height }])}
                     width={width}
                     source={{
-                      uri: imageUrl,
+                      uri: item,
                     }}
                   />
                   {draggedElArr?.company

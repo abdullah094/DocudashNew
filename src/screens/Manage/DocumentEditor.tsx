@@ -129,11 +129,6 @@ const DocumentEditor = () => {
   //   uniqid: '21d57d0cd0223eaf274e44101dc8a263',
   //   signature_id: 12,
   // };
-  const envelope: GenerateSignature = route.params?.Envelope;
-  // const envelope: GenerateSignature = {
-  //   uniqid: '21d57d0cd0223eaf274e44101dc8a263',
-  //   signature_id: 12,
-  // };
   const [index, setIndex] = useState(0);
 
   const [visible, setVisible] = React.useState(false);
@@ -246,14 +241,6 @@ const DocumentEditor = () => {
     setScrollY(positionY);
     console.log(positionY);
   };
-  const _onViewableItemsChanged = useCallback(
-    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
-      console.log('Visible items are', viewableItems[0]?.index);
-      setIndex(viewableItems[0]?.index ?? 0);
-      // console.log('Changed in this iteration', changed);
-    },
-    []
-  );
   const _onViewableItemsChanged = useCallback(
     ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
       console.log('Visible items are', viewableItems[0]?.index);

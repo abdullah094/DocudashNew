@@ -1,3 +1,4 @@
+
 // Html Editor
 
 export interface HtmlEditorAPI {
@@ -24,7 +25,6 @@ export interface GenerateSignatureDetails {
   updated_at: string;
   image?: string;
   base64_encode_image?: null;
-  filesArr?: string[];
 }
 
 export interface DraggedElArr {
@@ -48,7 +48,7 @@ export interface DraggedElement {
   element_container_id: string;
   selected_user_id: string;
   colors: Colors;
-  background: string;
+  background: string
 }
 
 export interface Colors {
