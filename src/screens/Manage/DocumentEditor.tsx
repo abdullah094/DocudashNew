@@ -117,28 +117,34 @@ const DocumentEditor = () => {
   const [selectedRecipient, setSelectedRecipient] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<GenerateSignatureDetails[]>();
-  const [imageSizes, setImageSizes] = useState<{ width: number; height: number }[]>(new Array());
+  const [scroll, setScroll] = useState(true);
+  const [imageSizes, setImageSizes] = useState<
+    { x: number; y: number; width: number; height: number; pageX: number; pageY: number }[]
+  >(new Array());
   console.log('Imagesizes', imageSizes);
   const FlatListRef = useRef<FlatList>();
+  const marker = useRef<View>();
+
   // const envelope: GenerateSignature = route.params?.Envelope;
   const envelope: GenerateSignature = {
-    uniqid: 'a9b8ff85878e5d36920543b2b3d4aa69',
-    signature_id: '407',
+    uniqid: '6548ab57315fc20a5bc10f70d033fbd3',
+    signature_id: 1,
   };
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
   console.log(images);
+
   const carousel = useRef<typeof Carousel>();
-  console.log(envelope);
+  // console.log(envelope);
 
   const fetchData = async () => {
     setLoading(true);
 
     const url = 'https://docudash.net/api/generate-signature/html-editor/';
     const testurl = url + 'a9b8ff85878e5d36920543b2b3d4aa69' + '/' + 407;
-    console.log(url + envelope.uniqid + '/' + envelope.signature_id);
+    // console.log(url + envelope.uniqid + '/' + envelope.signature_id);
 
     axios
       .get(url + envelope.uniqid + '/' + envelope.signature_id, {
@@ -226,14 +232,14 @@ const DocumentEditor = () => {
       });
   };
 
-  const _onViewableItemsChanged = useCallback(
-    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
-      console.log('Visible items are', viewableItems[0]?.index);
-      setIndex(viewableItems[0]?.index ?? 0);
-      // console.log('Changed in this iteration', changed);
-    },
-    []
-  );
+  // const _onViewableItemsChanged = useCallback(
+  //   ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
+  //     console.log('Visible items are', viewableItems[0]?.index);
+  //     setIndex(viewableItems[0]?.index ?? 0);
+  //     // console.log('Changed in this iteration', changed);
+  //   },
+  //   []
+  // );
 
   // useEffect(() => {
   //   FlatListRef?.current?.scrollToIndex({
@@ -305,10 +311,12 @@ const DocumentEditor = () => {
           <FlatList
             ref={FlatListRef}
             data={images}
-            onViewableItemsChanged={_onViewableItemsChanged}
-            viewabilityConfig={{
-              itemVisiblePercentThreshold: 50,
-            }}
+            scrollEnabled={scroll}
+            // onViewableItemsChanged={_onViewableItemsChanged}
+            // viewabilityConfig={{
+            //   itemVisiblePercentThreshold: 50,
+            // }}
+
             renderItem={({ item, index }) => {
               let imageUrl = '';
               if (item.image?.includes('pdf')) {
@@ -320,22 +328,28 @@ const DocumentEditor = () => {
                 imageUrl =
                   'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
               }
-              console.log(imageUrl);
+              // console.log(imageUrl);
               return (
-                <View id={index + '_'} style={tw`my-2 relative `}>
+                <View
+                  id={index + '_'}
+                  ref={marker}
+                  style={tw`my-2 relative `}
+                  // ref={(ref) => { marker = ref }}
+                  onLayout={({ nativeEvent }) => {
+                    if (marker) {
+                      marker.current.measure((x, y, width, height, pageX, pageY) => {
+                        setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                        console.log('data of the view', x, y, width, height, pageX, pageY);
+                      });
+                    }
+                  }}
+                >
                   <AutoHeightImage
                     width={width}
                     source={{
                       uri: imageUrl,
                     }}
                     style={tw`border`}
-                    onLoad={({
-                      nativeEvent: {
-                        source: { width, height },
-                      },
-                    }) => {
-                      setImageSizes((prev) => [...prev, { width, height }]);
-                    }}
                   />
 
                   {[
@@ -358,12 +372,19 @@ const DocumentEditor = () => {
                       //   ((Number.parseInt(item.left) * 100) / width) * 15,
                       //   ((Number.parseInt(item.top) * 100) / width) * 15
                       // );
-                      console.log(Number.parseFloat(item.left), item.top);
-                      console.log(icons[item.type]);
+                      // console.log(Number.parseFloat(item.left), item.top);
+                      // console.log(icons[item.type]);
                       console.log('image Height and width', imageSizes[index]);
 
                       return (
                         <Draggable
+                          onPressIn={() => {
+                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
+                            setScroll(false); // important step to disable scroll when long press this button
+                          }}
+                          onPressOut={() => {
+                            setScroll(true); // important step to enable scroll when release or stop drag
+                          }}
                           x={((Number.parseInt(item.left) * 100) / width) * 15}
                           y={((Number.parseInt(item.top) * 100) / width) * 15}
                           key={elementIndex}
@@ -372,6 +393,9 @@ const DocumentEditor = () => {
                             console.log('pageX', nativeEvent.pageX);
                             console.log('pageY', nativeEvent.pageY);
                           }}
+                          minX={0}
+                          maxX={0 + width}
+                          minY={imageSizes[index].y}
                           // renderColor="red"
                           renderText={item.type}
                           onDragRelease={(event) => {

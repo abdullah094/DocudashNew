@@ -68,6 +68,11 @@ export default function EnvelopeList({ heading }: { heading: string }) {
       refreshing={loading}
       ItemSeparatorComponent={Divider}
       contentContainerStyle={[tw`pb-25 py-5`, { alignSelf: 'stretch' }]}
+      ListEmptyComponent={
+        <View>
+          <Text style={tw`text-center text-gray-500`}>No {heading} items Found</Text>
+        </View>
+      }
       //   keyExtractor={(item) => item.id + '_'}
       renderItem={({ item }) =>
         loading ? <Skeleton /> : <EnvelopeListItem item={item} heading={heading} />

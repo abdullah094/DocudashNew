@@ -128,7 +128,8 @@ const AddSignature = () => {
         } = response.data;
         console.log(response.data);
         if (success) {
-          navigation.navigate('Signatures', {});
+          navigation.goBack();
+          // navigation.navigate('Signatures', {});
         } else {
           Alert.alert(message);
         }

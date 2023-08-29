@@ -1,5 +1,5 @@
 import HomeHeader from '@components/HomeHeader';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken } from '@stores/Slices';
 import { RootStackScreenProps, StampListAPI, StampPreview } from '@type/index';
 import { colors } from '@utils/Colors';
@@ -16,6 +16,7 @@ export default function List() {
   const [isFetching, setIsFetching] = React.useState(false);
   const navigation = useNavigation<RootStackScreenProps<'Stamps'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'Stamps'>['route']>();
+  const focused = useIsFocused();
 
   const fetchList = () => {
     setIsFetching(true);
@@ -40,7 +41,7 @@ export default function List() {
   };
   React.useEffect(() => {
     fetchList();
-  }, [route]);
+  }, [focused]);
 
   const Delete = (id: number) => {
     axios

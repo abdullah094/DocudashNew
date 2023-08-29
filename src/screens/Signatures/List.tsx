@@ -1,5 +1,5 @@
 import HomeHeader from '@components/HomeHeader';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken } from '@stores/Slices';
 import { RootStackScreenProps, SignaturePreview, SignaturesListAPI } from '@type/index';
 import { colors } from '@utils/Colors';
@@ -15,7 +15,7 @@ export default function List() {
   const [list, setList] = React.useState<SignaturePreview[]>();
   const [isFetching, setIsFetching] = React.useState(false);
   const navigation = useNavigation<RootStackScreenProps<'Signatures'>['navigation']>();
-
+  const focused = useIsFocused();
   const route = useRoute();
 
   const fetchList = () => {
@@ -46,7 +46,7 @@ export default function List() {
   };
   React.useEffect(() => {
     fetchList();
-  }, [route]);
+  }, [focused]);
 
   const Delete = (id: number) => {
     axios

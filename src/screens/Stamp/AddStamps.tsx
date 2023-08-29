@@ -91,7 +91,8 @@ const AddStamp = () => {
       .then((response) => {
         const { status, message }: { status: boolean; message: string } = response.data;
         if (status) {
-          navigation.navigate('Stamps', {});
+          navigation.goBack();
+          // navigation.navigate('Stamps', {});
         } else {
           // @ts-ignore
           if (message.stamp_photo) {
