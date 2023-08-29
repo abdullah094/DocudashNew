@@ -114,7 +114,7 @@ const DocumentEditor = () => {
   const [recipients, setRecipients] = useState<GenerateSignatureDetail[]>();
   const [selectedRecipient, setSelectedRecipient] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<GenerateSignatureDetails[]>();
+  const [images, setImages] = useState<string[]>();
   const [scroll, setScroll] = useState(true);
   const [imageSizes, setImageSizes] = useState<
     { x: number; y: number; width: number; height: number; pageX: number; pageY: number }[]
@@ -180,7 +180,7 @@ const DocumentEditor = () => {
             console.log('draggedElArr', draggedElArr);
           }
           setRecipients(generateSignatureDetails);
-          setImages(generateSignatureDetailsImages);
+          setImages(generateSignatureDetailsImages.map((x) => x.filesArr).flat());
         } else {
           alert(message);
         }
@@ -234,14 +234,14 @@ const DocumentEditor = () => {
       });
   };
 
-  // const _onViewableItemsChanged = useCallback(
-  //   ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
-  //     console.log('Visible items are', viewableItems[0]?.index);
-  //     setIndex(viewableItems[0]?.index ?? 0);
-  //     // console.log('Changed in this iteration', changed);
-  //   },
-  //   []
-  // );
+  const _onViewableItemsChanged = useCallback(
+    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
+      console.log('Visible items are', viewableItems[0]?.index);
+      setIndex(viewableItems[0]?.index ?? 0);
+      // console.log('Changed in this iteration', changed);
+    },
+    []
+  );
 
   // useEffect(() => {
   //   FlatListRef?.current?.scrollToIndex({
@@ -314,22 +314,21 @@ const DocumentEditor = () => {
             ref={FlatListRef}
             data={images}
             scrollEnabled={scroll}
-            // onViewableItemsChanged={_onViewableItemsChanged}
-            // viewabilityConfig={{
-            //   itemVisiblePercentThreshold: 50,
-            // }}
-
+            onViewableItemsChanged={_onViewableItemsChanged}
+            viewabilityConfig={{
+              itemVisiblePercentThreshold: 50,
+            }}
             renderItem={({ item, index }) => {
-              let imageUrl = '';
-              if (item.image?.includes('pdf')) {
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
-                  item.image.split('.')[0] +
-                  '-1.jpg';
-              } else {
-                imageUrl =
-                  'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
-              }
+              // let imageUrl = '';
+              // if (item.image?.includes('pdf')) {
+              //   imageUrl =
+              //     'https://docudash.net/public/uploads/generateSignature/photos/converted/' +
+              //     item.image.split('.')[0] +
+              //     '-1.jpg';
+              // } else {
+              //   imageUrl =
+              //     'https://docudash.net/public/uploads/generateSignature/photos/' + item.image;
+              // }
               // console.log(imageUrl);
               return (
                 <View
@@ -337,21 +336,24 @@ const DocumentEditor = () => {
                   ref={marker}
                   style={tw`my-2 relative `}
                   // ref={(ref) => { marker = ref }}
-                  onLayout={({ nativeEvent }) => {
-                    if (marker) {
-                      marker.current.measure((x, y, width, height, pageX, pageY) => {
-                        setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                        console.log('data of the view', x, y, width, height, pageX, pageY);
-                      });
-                    }
-                  }}
+                  // onLayout={({ nativeEvent }) => {
+
+                  // }}
                 >
                   <AutoHeightImage
                     width={width}
                     source={{
-                      uri: imageUrl,
+                      uri: item,
                     }}
                     style={tw`border`}
+                    onLoad={() => {
+                      if (marker) {
+                        marker.current.measure((x, y, width, height, pageX, pageY) => {
+                          setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                          console.log('data of the view', x, y, width, height, pageX, pageY);
+                        });
+                      }
+                    }}
                   />
 
                   {[
@@ -398,6 +400,7 @@ const DocumentEditor = () => {
                           minX={0}
                           maxX={0 + width}
                           minY={imageSizes[index].y}
+                          maxY={imageSizes[index].y + imageSizes[index].height - 60}
                           // renderColor="red"
                           renderText={item.type}
                         >
