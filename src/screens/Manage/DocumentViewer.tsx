@@ -79,7 +79,6 @@ const color = [
 const DocumentViewer = () => {
   const accessToken = useSelector(selectAccessToken);
   const profileData = useSelector(selectProfileData);
-  console.log('profileData', profileData);
 
   const navigation = useNavigation<RootStackScreenProps<'DocumentViewer'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'DocumentViewer'>['route']>();
@@ -187,6 +186,7 @@ const DocumentViewer = () => {
               company: generateSignatureDetailsFinalise.draggedElArr.company ?? [],
               title: generateSignatureDetailsFinalise.draggedElArr.title ?? [],
             };
+            console.log('draggable', draggable);
             setDraggedElArr(draggable);
           }
           setRecipients(generateSignatureDetails);
@@ -535,13 +535,13 @@ const DocumentViewer = () => {
                       //   ((Number.parseInt(item.left) * 100) / width) * 15,
                       //   ((Number.parseInt(item.top) * 100) / width) * 15
                       // );
-                      console.log('rerender', `bg-[${color[index].bg}]`);
-
+                      // console.log('rerender', `bg-[${color[index].bg}]`);
+                      console.log(item.left, item.top);
                       return (
                         <>
                           {signState ? (
                             <View
-                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              style={tw`absolute bg-red-200 top-[${item.top}] left-[${item.left}]`}
                               // renderColor="red"
                             >
                               <Image
@@ -555,7 +555,7 @@ const DocumentViewer = () => {
                             </View>
                           ) : (
                             <View
-                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              style={tw`absolute bg-red-200 top-[${item.top}] left-[${item.left}]`}
                               // renderColor="red"
                             >
                               <View

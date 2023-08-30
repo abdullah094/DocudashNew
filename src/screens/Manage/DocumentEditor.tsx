@@ -39,7 +39,7 @@ import {
 import { Carousel } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
-
+import * as Crypto from 'expo-crypto';
 const { width } = Dimensions.get('window');
 
 const icons = {
@@ -117,18 +117,17 @@ const DocumentEditor = () => {
   const [images, setImages] = useState<string[]>();
   const [scroll, setScroll] = useState(true);
   const [scrollY, setScrollY] = useState(0);
-  const [imageSizes, setImageSizes] = useState<
-    { x: number; y: number; width: number; height: number; pageX: number; pageY: number }[]
-  >(new Array());
-  // console.log('Imagesizes', imageSizes);
   const FlatListRef = useRef<FlatList>();
   const marker = useRef<View[]>([]);
+  const markerDimensions = useRef<
+    { x: number; y: number; width: number; height: number; pageX: number; pageY: number }[]
+  >([]);
 
-  const envelope: GenerateSignature = route.params?.Envelope;
-  // const envelope: GenerateSignature = {
-  //   uniqid: '21d57d0cd0223eaf274e44101dc8a263',
-  //   signature_id: 12,
-  // };
+  // const envelope: GenerateSignature = route.params?.Envelope;
+  const envelope: GenerateSignature = {
+    uniqid: '209c8f5ae14a8c4339d296fc8245fa70',
+    signature_id: 31,
+  };
   const [index, setIndex] = useState(0);
 
   const [visible, setVisible] = React.useState(false);
@@ -136,10 +135,10 @@ const DocumentEditor = () => {
   const openMenu = () => setVisible(true);
 
   const closeMenu = () => setVisible(false);
-  // console.log(images);
+  console.log('markerDiment', markerDimensions.current);
 
   const carousel = useRef<typeof Carousel>();
-  // console.log(envelope);
+  console.log(draggedElArr);
 
   const fetchData = async () => {
     setLoading(true);
@@ -244,7 +243,7 @@ const DocumentEditor = () => {
   const _onViewableItemsChanged = useCallback(
     ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
       console.log('Visible items are', viewableItems[0]?.index);
-      setIndex(viewableItems[0]?.index ?? 0);
+      if (viewableItems[0]) setIndex(viewableItems[0].index);
       // console.log('Changed in this iteration', changed);
     },
     []
@@ -342,14 +341,7 @@ const DocumentEditor = () => {
                     onLoad={() => {
                       if (marker.current[index]) {
                         marker.current[index].measure((x, y, width, height, pageX, pageY) => {
-                          setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
-                        });
-                      }
-                    }}
-                    onLoad={() => {
-                      if (marker.current[index]) {
-                        marker.current[index].measure((x, y, width, height, pageX, pageY) => {
-                          setImageSizes((prev) => [...prev, { x, y, width, height, pageX, pageY }]);
+                          markerDimensions.current[index] = { x, y, width, height, pageX, pageY };
                         });
                       }
                     }}
@@ -362,8 +354,8 @@ const DocumentEditor = () => {
                         x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, elementIndex) => {
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -380,19 +372,26 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
-                            let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
-                              top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
-                            }
+                            let top =
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
+                            // if (
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                            //   height
+                            // ) {
+                            //   top = height;
+                            // } else if (
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                            //   0
+                            // ) {
+                            //   top = 0;
+                            // } else {
+                            //   top = ;
+                            // }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
                             console.log('left', (nativeEvent.pageX / width) * 100);
@@ -400,8 +399,8 @@ const DocumentEditor = () => {
 
                             setDraggedElArr((prev) => ({
                               ...prev,
-                              signature: prev.signature.map((sig, si) =>
-                                si == elementIndex
+                              signature: prev.signature.map((sig) =>
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -428,6 +427,8 @@ const DocumentEditor = () => {
                               icon={icons[item.type]}
                             ></IconButton>
                             <Text style={tw`text-[10px] `}>{item.type}</Text>
+                            <Text style={tw`text-[10px] `}>left :{item.left}</Text>
+                            <Text style={tw`text-[10px] `}>top:{item.top}</Text>
                           </View>
                         </Draggable>
                       );
@@ -441,10 +442,10 @@ const DocumentEditor = () => {
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
-                      // console.log('image Height and width', imageSizes[index]);
+                      // console.log('image Height and width', markerDimensions.current[index]);
 
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -461,18 +462,24 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
                             let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                            if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                              height
+                            ) {
                               top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                            } else if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                              0
+                            ) {
                               top = 0;
                             } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
                             }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
@@ -482,7 +489,7 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               initial: prev.initial.map((sig, si) =>
-                                si == elementIndex
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -522,10 +529,10 @@ const DocumentEditor = () => {
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
-                      // console.log('image Height and width', imageSizes[index]);
+                      // console.log('image Height and width', markerDimensions.current[index]);
 
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -543,8 +550,8 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
@@ -553,17 +560,23 @@ const DocumentEditor = () => {
                             // console.log('ChangedPageX', nativeEvent.pageX);
                             // console.log(
                             //   'ChangedPageY',
-                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
                             //     ? 0
-                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
                             // );
                             let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                            if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                              height
+                            ) {
                               top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                            } else if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                              0
+                            ) {
                               top = 0;
                             } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
                             }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
@@ -573,7 +586,7 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               stamp: prev.stamp.map((sig, si) =>
-                                si == elementIndex
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -613,10 +626,10 @@ const DocumentEditor = () => {
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
-                      // console.log('image Height and width', imageSizes[index]);
+                      // console.log('image Height and width', markerDimensions.current[index]);
 
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -634,8 +647,8 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
@@ -644,17 +657,23 @@ const DocumentEditor = () => {
                             // console.log('ChangedPageX', nativeEvent.pageX);
                             // console.log(
                             //   'ChangedPageY',
-                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
                             //     ? 0
-                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
                             // );
                             let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                            if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                              height
+                            ) {
                               top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                            } else if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                              0
+                            ) {
                               top = 0;
                             } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
                             }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
@@ -664,7 +683,7 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               date: prev.date.map((sig, si) =>
-                                si == elementIndex
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -704,10 +723,10 @@ const DocumentEditor = () => {
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
-                      // console.log('image Height and width', imageSizes[index]);
+                      // console.log('image Height and width', markerDimensions.current[index]);
 
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -725,8 +744,8 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
@@ -735,17 +754,23 @@ const DocumentEditor = () => {
                             // console.log('ChangedPageX', nativeEvent.pageX);
                             // console.log(
                             //   'ChangedPageY',
-                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
                             //     ? 0
-                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
                             // );
                             let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                            if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                              height
+                            ) {
                               top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                            } else if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                              0
+                            ) {
                               top = 0;
                             } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
                             }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
@@ -755,7 +780,7 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               name: prev.name.map((sig, si) =>
-                                si == elementIndex
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -795,10 +820,10 @@ const DocumentEditor = () => {
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
-                      // console.log('image Height and width', imageSizes[index]);
+                      // console.log('image Height and width', markerDimensions.current[index]);
 
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -816,8 +841,8 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
@@ -826,17 +851,23 @@ const DocumentEditor = () => {
                             // console.log('ChangedPageX', nativeEvent.pageX);
                             // console.log(
                             //   'ChangedPageY',
-                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
                             //     ? 0
-                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
                             // );
                             let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                            if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                              height
+                            ) {
                               top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                            } else if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                              0
+                            ) {
                               top = 0;
                             } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
                             }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
@@ -846,7 +877,7 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               email: prev.email.map((sig, si) =>
-                                si == elementIndex
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -886,10 +917,10 @@ const DocumentEditor = () => {
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
-                      // console.log('image Height and width', imageSizes[index]);
+                      // console.log('image Height and width', markerDimensions.current[index]);
 
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -907,8 +938,8 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
@@ -917,17 +948,23 @@ const DocumentEditor = () => {
                             // console.log('ChangedPageX', nativeEvent.pageX);
                             // console.log(
                             //   'ChangedPageY',
-                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
                             //     ? 0
-                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
                             // );
                             let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                            if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                              height
+                            ) {
                               top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                            } else if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                              0
+                            ) {
                               top = 0;
                             } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
                             }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
@@ -937,7 +974,7 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               company: prev.company.map((sig, si) =>
-                                si == elementIndex
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -977,10 +1014,10 @@ const DocumentEditor = () => {
                     .map((item, elementIndex) => {
                       // console.log(icons[item.type]);
 
-                      // console.log('image Height and width', imageSizes[index]);
+                      // console.log('image Height and width', markerDimensions.current[index]);
 
-                      if (imageSizes[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = imageSizes[index];
+                      if (markerDimensions.current[index] == undefined) return;
+                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
                       console.log('left in percent', item.left, 'top in percent', item.top);
                       console.log(
                         'left in pixel',
@@ -998,8 +1035,8 @@ const DocumentEditor = () => {
                           onPressOut={() => {
                             setScroll(true); // important step to enable scroll when release or stop drag
                           }}
-                          x={(Number.parseInt(item.left) * 100) / width}
-                          y={(Number.parseInt(item.top) * 100) / height}
+                          x={(Number.parseInt(item.left) / 100) * width}
+                          y={(Number.parseInt(item.top) / 100) * height}
                           key={elementIndex}
                           onDragRelease={(event, gestureState, bounds) => {
                             const nativeEvent = event.nativeEvent;
@@ -1008,17 +1045,23 @@ const DocumentEditor = () => {
                             // console.log('ChangedPageX', nativeEvent.pageX);
                             // console.log(
                             //   'ChangedPageY',
-                            //   nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0
+                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
                             //     ? 0
-                            //     : nativeEvent.pageY - imageSizes[0].pageY + scrollY
+                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
                             // );
                             let top = 0;
-                            if (nativeEvent.pageY - imageSizes[0].pageY + scrollY > height) {
+                            if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
+                              height
+                            ) {
                               top = height;
-                            } else if (nativeEvent.pageY - imageSizes[0].pageY + scrollY < 0) {
+                            } else if (
+                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
+                              0
+                            ) {
                               top = 0;
                             } else {
-                              top = nativeEvent.pageY - imageSizes[0].pageY + scrollY;
+                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
                             }
                             console.log('left', nativeEvent.pageX);
                             console.log('top', top);
@@ -1028,7 +1071,7 @@ const DocumentEditor = () => {
                             setDraggedElArr((prev) => ({
                               ...prev,
                               title: prev.title.map((sig, si) =>
-                                si == elementIndex
+                                sig.uuid == item.uuid
                                   ? {
                                       ...sig,
                                       left:
@@ -1082,7 +1125,7 @@ const DocumentEditor = () => {
                       top: '10%',
                       icon: 'fa fa-user-circle-o',
                       name: 'Signature',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1110,7 +1153,7 @@ const DocumentEditor = () => {
                       top: '20%',
                       icon: 'fa fa-user-circle-o',
                       name: 'initial',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1137,7 +1180,7 @@ const DocumentEditor = () => {
                       top: '30%',
                       icon: 'fa fa-user-circle-o',
                       name: 'stamp',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1165,7 +1208,7 @@ const DocumentEditor = () => {
                       top: '40%',
                       icon: 'fa fa-user-circle-o',
                       name: 'date',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1192,7 +1235,7 @@ const DocumentEditor = () => {
                       top: '40%',
                       icon: 'fa fa-user-circle-o',
                       name: 'name',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1220,7 +1263,7 @@ const DocumentEditor = () => {
                       top: '40%',
                       icon: 'fa fa-user-circle-o',
                       name: 'email',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1248,7 +1291,7 @@ const DocumentEditor = () => {
                       top: '40%',
                       icon: 'fa fa-user-circle-o',
                       name: 'company',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1275,7 +1318,7 @@ const DocumentEditor = () => {
                       top: '40%',
                       icon: 'fa fa-user-circle-o',
                       name: 'title',
-                      uuid: 0,
+                      uuid: Crypto.randomUUID(),
                       selected_user_id: String(
                         recipients?.find((x, i) => i == selectedRecipient)?.id
                       ),
@@ -1297,7 +1340,11 @@ const DocumentEditor = () => {
             <IconButton
               icon="chevron-down"
               onPress={() => {
-                if (index < images.length - 1) setIndex((prev) => prev + 1);
+                if (index < images?.length - 1)
+                  FlatListRef?.current?.scrollToIndex({
+                    animated: true,
+                    index: index + 1,
+                  });
               }}
             ></IconButton>
 
@@ -1305,7 +1352,11 @@ const DocumentEditor = () => {
               icon="chevron-up"
               onPress={() => {
                 console.log(index, images.length);
-                if (index >= images.length - 1) setIndex((prev) => prev - 1);
+                if (index > 0)
+                  FlatListRef?.current?.scrollToIndex({
+                    animated: true,
+                    index: index - 1,
+                  });
               }}
             ></IconButton>
             <Text variant="labelLarge">{` ${index + 1} / ${images?.length} documents`}</Text>
