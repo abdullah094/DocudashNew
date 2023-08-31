@@ -95,25 +95,17 @@ const DocumentViewer = () => {
   const [recipients, setRecipients] = useState<GenerateSignatureDetail[]>();
   const [selectedRecipient, setSelectedRecipient] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<GenerateSignatureDetails[]>();
+  const [images, setImages] = useState<string[]>();
   const envelope: GenerateSignature = route.params.Envelope;
   const signItem: SignaturePreview = route.params?.item || undefined;
   const stampItem = route.params?.stamp || undefined;
-  const [signState, setSignState] = useState<SignaturePreview | undefined>();
-  const [stampState, setStampState] = useState();
-  const [dateActiveted, setDateActivated] = useState(false);
-  const [nameActivated, setNameActivated] = useState(false);
-  const [emailActivated, setEmailActivated] = useState(false);
-  const [companyActivated, setCompanyActivated] = useState(false);
-  const [titleActivated, setTitleActivated] = useState(false);
   const [imageSizes, setImageSizes] = useState<{ width: number; height: number }[]>(new Array());
   console.log('Imagesizes', imageSizes);
   useEffect(() => {
     if (signItem != undefined) {
-      setSignState(signItem);
       let _newIni = draggedElArr.initial.map((element) => ({
         ...element,
-        backgorund: signItem.initial,
+        background: signItem.initial,
       }));
       let _newSign = draggedElArr.signature.map((element) => ({
         ...element,
@@ -122,7 +114,6 @@ const DocumentViewer = () => {
       setDraggedElArr({ ...draggedElArr, initial: _newIni, signature: _newSign });
     }
     if (stampItem != undefined) {
-      setStampState(stampItem);
       let _newStamp = draggedElArr.stamp.map((element) => ({
         ...element,
         background: stampItem.image_base64,
@@ -134,23 +125,8 @@ const DocumentViewer = () => {
     console.log('element', element);
   });
 
-  // useEffect(() => {
-  //   if (signState) {
-  //     let _new = draggedElArr.initial;
-  //     const new2 = _new.map((element) => ({
-  //       ...element,
-  //       background: signState.initial,
-  //     }));
-  //     console.log('new2', new2);
-  //     setDraggedElArr((prev) => ({ ...prev, initial: new2 }));
-  //   }
-  // }, [signState, stampState]);
-  // console.log('draggableElr', signState?.initial);
-
   const date = new Date();
   const cureentDate = date.getMonth() + '/' + date.getDate() + '/' + date.getFullYear();
-
-  const carousel = useRef<typeof Carousel>();
 
   const fetchData = async () => {
     setLoading(true);
@@ -175,7 +151,15 @@ const DocumentViewer = () => {
         }: HtmlEditorAPI = response.data;
 
         if (status) {
-          if (generateSignatureDetailsFinalise && generateSignatureDetailsFinalise.draggedElArr) {
+          if (generateSignatureDetails[0].view_final_response) {
+            const abayYAKiyahy = JSON.parse(generateSignatureDetails[0].view_final_response);
+
+            console.log('draggable', abayYAKiyahy);
+            setDraggedElArr(abayYAKiyahy);
+          } else if (
+            generateSignatureDetailsFinalise &&
+            generateSignatureDetailsFinalise.draggedElArr
+          ) {
             const draggable = {
               signature: generateSignatureDetailsFinalise.draggedElArr.signature ?? [],
               initial: generateSignatureDetailsFinalise.draggedElArr.initial ?? [],
@@ -207,17 +191,20 @@ const DocumentViewer = () => {
   }, []);
 
   const save = () => {
-    const url = 'https://docudash.net/api/generate-signature/html-editor/';
-    console.log(`Bearer ${accessToken}`);
-    console.log('post', url + envelope.uniqid + '/' + envelope.signature_id);
+    const url = 'https://docudash.net/api/updateClientResponse/';
+    // console.log('draggedElArr', draggedElArr);
+    console.log('post', url + envelope.signature_id);
+    console.log('selected recipient', recipients[selectedRecipient].id);
+    console.log('viewFinalResponseArr', draggedElArr);
+
     const data = new FormData();
-    data.append('uniqid', envelope.uniqid);
-    data.append('signature_id', envelope.signature_id);
-    data.append('draggedElArr', JSON.stringify(draggedElArr));
-    data.append('save_type', '0');
+    data.append('id', recipients[selectedRecipient].id);
+    // data.append('signature_id', envelope.signature_id);
+    data.append('viewFinalResponseArr', JSON.stringify(draggedElArr));
+    // data.append('save_type', '0');
 
     axios
-      .post(url + envelope.uniqid + '/' + envelope.signature_id, data, {
+      .post(url + envelope.signature_id, data, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'multipart/form-data',
@@ -228,10 +215,7 @@ const DocumentViewer = () => {
         if (status) {
           alert(message);
 
-          navigation.navigate('Home', {
-            screen: 'INBOX',
-            params: { heading: 'Sent' },
-          });
+          navigation.navigate('Home');
         } else {
           alert(message);
         }
@@ -324,30 +308,39 @@ const DocumentViewer = () => {
                     )
                     .map((item, index) => {
                       console.log(Number.parseFloat(item.left), item.top);
-
-                      return companyActivated ? (
+                      return (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
                         >
-                          <TextInput style={tw`w-30 h-10`} />
-                        </View>
-                      ) : (
-                        <View
-                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
-                          // renderColor="red"
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="office-building"
-                              onPress={() => setCompanyActivated(true)}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Company</Text>
-                          </View>
+                          {item.content == undefined ? (
+                            <TouchableOpacity
+                              onPress={() =>
+                                setDraggedElArr((prev) => ({
+                                  ...prev,
+                                  date: prev.date.map((x) => ({
+                                    ...x,
+                                    content: profileData.company,
+                                  })),
+                                }))
+                              }
+                              style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                            >
+                              <IconButton
+                                size={10}
+                                style={tw`m-0 `}
+                                icon="office-building"
+                              ></IconButton>
+                              <Text style={tw`text-[10px] `}>Company</Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Text style={tw`text-4 text-black font-medium`}>{item.content}</Text>
+                            </View>
+                          )}
                         </View>
                       );
                     })}
@@ -358,35 +351,32 @@ const DocumentViewer = () => {
                         x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item, index) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
-                      console.log(Number.parseFloat(item.left), item.top);
-
-                      return dateActiveted ? (
+                      return (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
                         >
-                          <Text style={tw`text-4 text-black font-medium`}>{cureentDate}</Text>
-                        </View>
-                      ) : (
-                        <View
-                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
-                          // renderColor="red"
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="calendar"
-                              onPress={() => setDateActivated(true)}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Date</Text>
-                          </View>
+                          {item.content == undefined ? (
+                            <TouchableOpacity
+                              onPress={() =>
+                                setDraggedElArr((prev) => ({
+                                  ...prev,
+                                  date: prev.date.map((x) => ({ ...x, content: cureentDate })),
+                                }))
+                              }
+                              style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                            >
+                              <IconButton size={10} style={tw`m-0 `} icon="calendar"></IconButton>
+                              <Text style={tw`text-[10px] `}>Date</Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Text style={tw`text-4 text-black font-medium`}>{item.content}</Text>
+                            </View>
+                          )}
                         </View>
                       );
                     })}
@@ -403,32 +393,39 @@ const DocumentViewer = () => {
                       // );
                       console.log(Number.parseFloat(item.left), item.top);
 
-                      return emailActivated ? (
+                      return (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
                         >
-                          <Text style={tw`text-4 text-black font-medium`}>{profileData.email}</Text>
-                        </View>
-                      ) : (
-                        <View
-                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
-                          // renderColor="red"
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="email"
-                              onPress={() => setEmailActivated(true)}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Email</Text>
-                          </View>
+                          {item.content == undefined ? (
+                            <TouchableOpacity
+                              onPress={() =>
+                                setDraggedElArr((prev) => ({
+                                  ...prev,
+                                  date: prev.date.map((x) => ({
+                                    ...x,
+                                    content: profileData.email,
+                                  })),
+                                }))
+                              }
+                              style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                            >
+                              <IconButton size={10} style={tw`m-0 `} icon="email"></IconButton>
+                              <Text style={tw`text-[10px] `}>Email</Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Text style={tw`text-4 text-black font-medium`}>{item.content}</Text>
+                            </View>
+                          )}
                         </View>
                       );
                     })}
+
                   {draggedElArr?.initial
                     ?.filter(
                       (x) =>
@@ -444,18 +441,15 @@ const DocumentViewer = () => {
 
                       return (
                         <>
-                          {signState ? (
+                          {item.background ? (
                             <View
                               style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                               // renderColor="red"
                             >
                               <Image
                                 resizeMode="contain"
-                                style={[
-                                  tw`w-14 h-8 bg-black`,
-                                  { tintColor: 'white', zIndex: 999, borderWidth: 2 },
-                                ]}
-                                source={{ uri: signState.initial }}
+                                style={[tw`w-14 h-8 bg-grey-500`, { zIndex: 999 }]}
+                                source={{ uri: item.background }}
                               />
                             </View>
                           ) : (
@@ -496,31 +490,35 @@ const DocumentViewer = () => {
                       // );
                       console.log(Number.parseFloat(item.left), item.top);
 
-                      return nameActivated ? (
+                      return (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
                         >
-                          <Text style={tw`text-4 text-black font-medium`}>
-                            {profileData.first_name + ' ' + profileData.last_name}
-                          </Text>
-                        </View>
-                      ) : (
-                        <View
-                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
-                          // renderColor="red"
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="face-man"
-                              onPress={() => setNameActivated(true)}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Name</Text>
-                          </View>
+                          {item.content == undefined ? (
+                            <TouchableOpacity
+                              onPress={() =>
+                                setDraggedElArr((prev) => ({
+                                  ...prev,
+                                  date: prev.date.map((x) => ({
+                                    ...x,
+                                    content: profileData.first_name + ' ' + profileData.last_name,
+                                  })),
+                                }))
+                              }
+                              style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                            >
+                              <IconButton size={10} style={tw`m-0 `} icon="face-man"></IconButton>
+                              <Text style={tw`text-[10px] `}>Name</Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Text style={tw`text-4 text-black font-medium`}>{item.content}</Text>
+                            </View>
+                          )}
                         </View>
                       );
                     })}
@@ -539,41 +537,34 @@ const DocumentViewer = () => {
                       console.log(item.left, item.top);
                       return (
                         <>
-                          {signState ? (
+                          {item.background ? (
                             <View
-                              style={tw`absolute bg-red-200 top-[${item.top}] left-[${item.left}]`}
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                               // renderColor="red"
                             >
                               <Image
                                 resizeMode="contain"
-                                style={[
-                                  tw`w-14 h-8 bg-black`,
-                                  { tintColor: 'white', zIndex: 999, borderWidth: 2 },
-                                ]}
-                                source={{ uri: signState.signature }}
+                                style={[tw`w-14 h-8 bg-grey-500`, { zIndex: 999 }]}
+                                source={{ uri: item.background }}
                               />
                             </View>
                           ) : (
-                            <View
-                              style={tw`absolute bg-red-200 top-[${item.top}] left-[${item.left}]`}
+                            <TouchableOpacity
+                              onPress={() =>
+                                navigation.navigate('SignatureSelection', {
+                                  Envelope: envelope,
+                                })
+                              }
+                              style={tw`absolute  top-[${item.top}] left-[${item.left}]`}
                               // renderColor="red"
                             >
                               <View
                                 style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
                               >
-                                <IconButton
-                                  size={10}
-                                  style={tw`m-0 `}
-                                  icon="draw"
-                                  onPress={() =>
-                                    navigation.navigate('SignatureSelection', {
-                                      Envelope: envelope,
-                                    })
-                                  }
-                                ></IconButton>
+                                <IconButton size={10} style={tw`m-0 `} icon="draw"></IconButton>
                                 <Text style={tw`text-[10px] `}>Signature</Text>
                               </View>
-                            </View>
+                            </TouchableOpacity>
                           )}
                         </>
                       );
@@ -593,15 +584,15 @@ const DocumentViewer = () => {
 
                       return (
                         <>
-                          {stampState ? (
+                          {item.background ? (
                             <View
                               style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                               // renderColor="red"
                             >
                               <Image
-                                resizeMode="contain"
-                                style={[tw`w-14 h-8 bg-black`, { zIndex: 999, borderWidth: 2 }]}
-                                source={{ uri: stampState.image_base64 }}
+                                resizeMode="cover"
+                                style={[tw`w-8 h-8 rounded-full bg-grey-500`, { zIndex: 999 }]}
+                                source={{ uri: item.background }}
                               />
                             </View>
                           ) : (
@@ -634,35 +625,36 @@ const DocumentViewer = () => {
                         x.selected_user_id == String(recipients?.[selectedRecipient].id)
                     )
                     .map((item) => {
-                      // console.log(
-                      //   ((Number.parseInt(item.left) * 100) / width) * 15,
-                      //   ((Number.parseInt(item.top) * 100) / width) * 15
-                      // );
                       console.log(Number.parseFloat(item.left), item.top);
-
-                      return titleActivated ? (
+                      return (
                         <View
                           style={tw`absolute top-[${item.top}] left-[${item.left}]`}
                           // renderColor="red"
                         >
-                          <TextInput style={tw`w-30 h-10`} />
-                        </View>
-                      ) : (
-                        <View
-                          style={tw`absolute top-[${item.top}] left-[${item.left}]`}
-                          // renderColor="red"
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon="briefcase"
-                              onPress={() => setTitleActivated(true)}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>Title</Text>
-                          </View>
+                          {item.content == undefined ? (
+                            <TouchableOpacity
+                              onPress={() =>
+                                setDraggedElArr((prev) => ({
+                                  ...prev,
+                                  date: prev.date.map((x) => ({
+                                    ...x,
+                                    content: profileData.first_name,
+                                  })),
+                                }))
+                              }
+                              style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
+                            >
+                              <IconButton size={10} style={tw`m-0 `} icon="briefcase"></IconButton>
+                              <Text style={tw`text-[10px] `}>Title</Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <View
+                              style={tw`absolute top-[${item.top}] left-[${item.left}]`}
+                              // renderColor="red"
+                            >
+                              <Text style={tw`text-4 text-black font-medium`}>{item.content}</Text>
+                            </View>
+                          )}
                         </View>
                       );
                     })}

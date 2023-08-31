@@ -37,6 +37,7 @@ export default function EnvelopeListItem({ item, heading }: IEnvelopeListItem) {
           source={require('@assets/PaperClip.png')}
         />
         <Text style={tw`font-thin text-gray-900`}>From: {item?.created_by}</Text>
+        {/* <Text style={tw`font-thin text-gray-900`}>to: {JSON.stringify(item)}</Text> */}
       </View>
     </TouchableOpacity>
   );

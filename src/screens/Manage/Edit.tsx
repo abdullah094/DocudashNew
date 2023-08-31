@@ -236,7 +236,6 @@ const Edit = () => {
       }
     }
   }, [route]);
-  console.log([...documents]);
 
   React.useEffect(
     () =>
@@ -605,7 +604,7 @@ const Edit = () => {
       .then((response) => {
         const { status, message }: { status: boolean; message: string } = response.data;
         console.log(response.data);
-        if (status) navigation.navigate('Inbox', { heading: 'draft' });
+        if (status) navigation.navigate('Home');
         else {
           alert(message);
         }
@@ -632,7 +631,7 @@ const Edit = () => {
               closeMenu();
               voidEnvelope();
             }}
-            title="Void"
+            title="Delete Envelope"
           />
         </Menu>
       </View>

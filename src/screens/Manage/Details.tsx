@@ -20,6 +20,7 @@ import { Appbar, Avatar, Button, Divider, IconButton, Menu } from 'react-native-
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import { repeat } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/repeat';
+import VoidEnvelopeModel from '@components/VoidEnvelopeModel';
 
 interface IButton {
   text: string;
@@ -89,14 +90,23 @@ const Details = () => {
         console.log('Error----', error);
       });
   }, []);
-  const voidEnvelope = () => {
+  const DeleteEnvelope = () => {
     if (inbox.signature_id == undefined) return;
-
-    const url = 'https://docudash.net/api/generate-signature/deleteEmailInbox';
+    var url = 'https://docudash.net/api/generate-signature/';
+    if (heading == 'Inbox') {
+      url = url + 'deleteEmailInbox';
+    } else if (heading == 'Sent') {
+      url = url + 'deleteEmailSent';
+    } else if (heading == 'Trash') {
+      url = url + 'deleteEmailTrash';
+    } else {
+      url = url + 'deleteDraftEmail';
+    }
+    console.log(url, heading);
     axios
       .post(
         url,
-        { id: inbox.signature_id },
+        { id: inbox.id },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -106,8 +116,39 @@ const Details = () => {
       .then((response) => {
         const { status, message }: { status: boolean; message: string } = response.data;
         console.log(response.data);
-        if (status) navigation.navigate('Inbox', { heading: 'Inbox' });
+        if (status) navigation.navigate('Home');
         else {
+          alert(message);
+        }
+      })
+      .catch((error) => {
+        console.log('Error----', error);
+      });
+  };
+
+  const ResendEmail = () => {
+    if (inbox.signature_id == undefined) return;
+    var url = 'https://docudash.net/api/generate-signature/ResendEmail';
+    console.log(url, heading);
+    axios
+      .post(
+        url,
+        {
+          id: inbox.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        const { status, message }: { status: boolean; message: string } = response.data;
+
+        if (status) {
+          alert(message);
+          navigation.navigate('Home');
+        } else {
           alert(message);
         }
       })
@@ -130,14 +171,15 @@ const Details = () => {
           anchorPosition="bottom"
           visible={visibleMoreHeader}
           onDismiss={closeMenuMoreHeader}
-          anchor={<IconButton icon="dots-vertical"></IconButton>}
+          anchor={
+            <IconButton icon="dots-vertical" onPress={(_) => openMenuMoreHeader()}></IconButton>
+          }
         >
-          <Menu.Item
-            onPress={() => {
-              closeMenuMoreHeader();
-            }}
-            title="Void"
-          />
+          <VoidEnvelopeModel inbox={inbox} navigation={navigation} />
+          <Divider />
+          <Menu.Item onPress={DeleteEnvelope} title="Delete" />
+          <Divider />
+          <Menu.Item onPress={ResendEmail} title="Resend Email" />
         </Menu>
       </View>
       <ScrollView>
@@ -210,15 +252,21 @@ const Details = () => {
           {/* Buttons */}
           <View style={tw`py-5`}>
             <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
-              <Button
-                mode="elevated"
-                onPress={() => {
-                  //@ts-ignore
-                  navigation.navigate('DocumentViewer', { Envelope: generate });
-                }}
-              >
-                Sign
-              </Button>
+              {data?.generateSignatureDetails.filter(
+                (item) =>
+                  item.recEmail.toLowerCase() == user.email.toLowerCase() &&
+                  item.complete_incomplete === 0
+              ).length > 0 && (
+                <Button
+                  mode="elevated"
+                  onPress={() => {
+                    //@ts-ignore
+                    navigation.navigate('DocumentViewer', { Envelope: generate });
+                  }}
+                >
+                  Sign
+                </Button>
+              )}
 
               <Button
                 mode="elevated"
@@ -230,12 +278,7 @@ const Details = () => {
               </Button>
             </View>
             <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
-              <Button
-                mode="elevated"
-                onPress={() => {
-                  console.log('Resend');
-                }}
-              >
+              <Button mode="elevated" onPress={ResendEmail}>
                 Resend
               </Button>
               <Menu
@@ -252,6 +295,8 @@ const Details = () => {
                   </Button>
                 }
               >
+                <VoidEnvelopeModel inbox={inbox} navigation={navigation} />
+                <Divider />
                 <Menu.Item onPress={() => {}} title="Copy" />
                 <Divider />
                 <Menu.Item onPress={() => {}} title="Save as Template" />
@@ -262,7 +307,7 @@ const Details = () => {
                 <Divider />
                 <Menu.Item onPress={() => {}} title="Export as CSV" />
                 <Divider />
-                <Menu.Item onPress={() => {}} title="Delete" />
+                <Menu.Item onPress={DeleteEnvelope} title="Delete" />
               </Menu>
             </View>
             <View style={tw`flex-row items-center gap-5 py-2 justify-center`}></View>
@@ -322,7 +367,11 @@ const Details = () => {
         </View>
       </ScrollView>
       {data?.generateSignatureDetails
-        .filter((item) => item.recEmail.toLowerCase() == user.email.toLowerCase())
+        .filter(
+          (item) =>
+            item.recEmail.toLowerCase() == user.email.toLowerCase() &&
+            item.complete_incomplete === 0
+        )
         .map((item) => (
           <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
             <Text style={tw`text-4 font-semibold`}>
