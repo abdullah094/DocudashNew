@@ -151,7 +151,10 @@ const DocumentViewer = () => {
         }: HtmlEditorAPI = response.data;
 
         if (status) {
-          if (generateSignatureDetails[0].view_final_response) {
+          if (
+            generateSignatureDetails.length > 0 &&
+            generateSignatureDetails[0].view_final_response != undefined
+          ) {
             const abayYAKiyahy = JSON.parse(generateSignatureDetails[0].view_final_response);
 
             console.log('draggable', abayYAKiyahy);

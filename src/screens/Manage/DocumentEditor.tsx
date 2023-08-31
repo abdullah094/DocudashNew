@@ -40,6 +40,7 @@ import { Carousel } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import * as Crypto from 'expo-crypto';
+import PlayGround from '@components/PlayGround';
 const { width } = Dimensions.get('window');
 
 const icons = {
@@ -111,22 +112,16 @@ const DocumentEditor = () => {
     company: [],
     title: [],
   });
+  const refDraggedElArr = useRef<DraggedElArr>();
   const [recipients, setRecipients] = useState<GenerateSignatureDetail[]>();
   const [selectedRecipient, setSelectedRecipient] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<string[]>();
-  const [scroll, setScroll] = useState(true);
-  const [scrollY, setScrollY] = useState(0);
-  const FlatListRef = useRef<FlatList>();
-  const marker = useRef<View[]>([]);
-  const markerDimensions = useRef<
-    { x: number; y: number; width: number; height: number; pageX: number; pageY: number }[]
-  >([]);
 
   // const envelope: GenerateSignature = route.params?.Envelope;
   const envelope: GenerateSignature = {
-    uniqid: '209c8f5ae14a8c4339d296fc8245fa70',
-    signature_id: 31,
+    uniqid: 'd4e421647a894ba55dd90f9857e76b50',
+    signature_id: 41,
   };
   const [index, setIndex] = useState(0);
 
@@ -135,10 +130,10 @@ const DocumentEditor = () => {
   const openMenu = () => setVisible(true);
 
   const closeMenu = () => setVisible(false);
-  console.log('markerDiment', markerDimensions.current);
+  // console.log('markerDiment', markerDimensions);
 
   const carousel = useRef<typeof Carousel>();
-  console.log(draggedElArr);
+  // console.log(draggedElArr);
 
   const fetchData = async () => {
     setLoading(true);
@@ -177,6 +172,7 @@ const DocumentEditor = () => {
               title: generateSignatureDetailsFinalise.draggedElArr.title ?? [],
             };
             setDraggedElArr(draggable);
+            refDraggedElArr.current = draggable;
             console.log('draggedElArr', draggedElArr);
           }
           setRecipients(generateSignatureDetails);
@@ -197,13 +193,16 @@ const DocumentEditor = () => {
   }, []);
 
   const save = (type: number) => {
+    console.log('refDraggedElArr', JSON.stringify(refDraggedElArr.current));
+    // return;
+
     const url = 'https://docudash.net/api/generate-signature/html-editor/';
     console.log(`Bearer ${accessToken}`);
     console.log('post', url + envelope.uniqid + '/' + envelope.signature_id);
     const data = new FormData();
     data.append('uniqid', envelope.uniqid);
     data.append('signature_id', envelope.signature_id);
-    data.append('draggedElArr', JSON.stringify(draggedElArr));
+    data.append('draggedElArr', JSON.stringify(refDraggedElArr.current));
     // save for 0 send for 1
     data.append('save_type', type);
 
@@ -221,10 +220,7 @@ const DocumentEditor = () => {
         if (status) {
           alert(message);
 
-          navigation.navigate('Home', {
-            screen: 'INBOX',
-            params: { heading: 'Sent' },
-          });
+          navigation.navigate('Home');
         } else {
           alert(message);
         }
@@ -233,21 +229,35 @@ const DocumentEditor = () => {
         console.log('error', err);
       });
   };
-
-  const handleScroll = (event) => {
-    const positionX = event.nativeEvent.contentOffset.x;
-    const positionY = event.nativeEvent.contentOffset.y;
-    setScrollY(positionY);
-    console.log(positionY);
+  const DeleteEnvelope = () => {
+    var url = 'https://docudash.net/api/generate-signature/deleteDraftEmail';
+    axios
+      .post(
+        url,
+        { id: envelope.id },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        const { status, message }: { status: boolean; message: string } = response.data;
+        console.log(response.data);
+        if (status) navigation.navigate('Home');
+        else {
+          alert(message);
+        }
+      })
+      .catch((error) => {
+        console.log('Error----', error);
+      });
   };
-  const _onViewableItemsChanged = useCallback(
-    ({ viewableItems, changed }: { changed: ViewToken[]; viewableItems: ViewToken[] }) => {
-      console.log('Visible items are', viewableItems[0]?.index);
-      if (viewableItems[0]) setIndex(viewableItems[0].index);
-      // console.log('Changed in this iteration', changed);
-    },
-    []
-  );
+
+  useEffect(() => {
+    if (refDraggedElArr.current) setDraggedElArr(refDraggedElArr.current);
+    console.log('refDraggedElArr', JSON.stringify(refDraggedElArr));
+  }, [index]);
 
   // useEffect(() => {
   //   FlatListRef?.current?.scrollToIndex({
@@ -270,1141 +280,388 @@ const DocumentEditor = () => {
         />
         <Button
           onPress={() => {
-            save(0);
+            save(1);
           }}
         >
           Send
         </Button>
       </Appbar.Header>
-      <SafeAreaView style={tw`flex-1 bg-white `}>
-        <View style={tw` bg-white bottom-0 `}>
-          <ScrollView
-            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-          >
-            {/* draw */}
-            {recipients
-              ?.filter((x) => x.sign_type == '1')
-              .slice(0, 5)
-              ?.map((item, index) => (
-                <View key={index + '$'} style={[styles.botton_view_buttons]}>
-                  {index == selectedRecipient ? (
-                    <Badge style={tw`absolute top-0 right-2 z-1`}>✓</Badge>
-                  ) : null}
-                  <View style={styles.yellow_round}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setSelectedRecipient(index);
-                      }}
-                    >
-                      <Avatar.Text
-                        size={48}
-                        style={tw`bg-[${color[index].background}]`}
-                        // color={color[index].background}
-                        label={item.recName
-                          .replace(/\b(\w)\w+/g, '$1.')
-                          .replace(/\s/g, '')
-                          .replace(/\.$/, '')
-                          .toUpperCase()}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <Text style={styles.yellow_round_text}>{item.recName}</Text>
-                </View>
-              ))}
-          </ScrollView>
-        </View>
-        <View style={tw`flex-1`}>
-          <FlatList
-            ref={FlatListRef}
-            data={images}
-            scrollEnabled={scroll}
-            onScroll={handleScroll}
-            onViewableItemsChanged={_onViewableItemsChanged}
-            viewabilityConfig={{
-              itemVisiblePercentThreshold: 60,
-            }}
-            renderItem={({ item, index }) => {
-              return (
-                <View
-                  id={index + '_'}
-                  ref={(el) => (marker.current[index] = el)}
-                  style={tw`my-2 relative `}
-                >
-                  <AutoHeightImage
-                    width={width}
-                    source={{
-                      uri: item,
+
+      <View style={tw` bg-white bottom-0 `}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
+          {/* draw */}
+          {recipients
+            ?.filter((x) => x.sign_type == '1')
+            .slice(0, 5)
+            ?.map((item, index) => (
+              <View key={index + '$'} style={[styles.botton_view_buttons]}>
+                {index == selectedRecipient ? (
+                  <Badge style={tw`absolute top-0 right-2 z-1`}>✓</Badge>
+                ) : null}
+                <View style={styles.yellow_round}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedRecipient(index);
                     }}
-                    style={tw`border`}
-                    onLoad={() => {
-                      if (marker.current[index]) {
-                        marker.current[index].measure((x, y, width, height, pageX, pageY) => {
-                          markerDimensions.current[index] = { x, y, width, height, pageX, pageY };
-                        });
-                      }
-                    }}
-                  />
-
-                  {draggedElArr?.signature
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            let top =
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            // if (
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                            //   height
-                            // ) {
-                            //   top = height;
-                            // } else if (
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                            //   0
-                            // ) {
-                            //   top = 0;
-                            // } else {
-                            //   top = ;
-                            // }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              signature: prev.signature.map((sig) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                            <Text style={tw`text-[10px] `}>left :{item.left}</Text>
-                            <Text style={tw`text-[10px] `}>top:{item.top}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.initial
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', markerDimensions.current[index]);
-
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            let top = 0;
-                            if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                              height
-                            ) {
-                              top = height;
-                            } else if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                              0
-                            ) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              initial: prev.initial.map((sig, si) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.stamp
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', markerDimensions.current[index]);
-
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            // console.log('pageX', nativeEvent.pageX);
-                            // console.log('pageY', nativeEvent.pageY);
-                            // console.log('ChangedPageX', nativeEvent.pageX);
-                            // console.log(
-                            //   'ChangedPageY',
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
-                            //     ? 0
-                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
-                            // );
-                            let top = 0;
-                            if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                              height
-                            ) {
-                              top = height;
-                            } else if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                              0
-                            ) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              stamp: prev.stamp.map((sig, si) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.date
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', markerDimensions.current[index]);
-
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            // console.log('pageX', nativeEvent.pageX);
-                            // console.log('pageY', nativeEvent.pageY);
-                            // console.log('ChangedPageX', nativeEvent.pageX);
-                            // console.log(
-                            //   'ChangedPageY',
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
-                            //     ? 0
-                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
-                            // );
-                            let top = 0;
-                            if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                              height
-                            ) {
-                              top = height;
-                            } else if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                              0
-                            ) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              date: prev.date.map((sig, si) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.name
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', markerDimensions.current[index]);
-
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            // console.log('pageX', nativeEvent.pageX);
-                            // console.log('pageY', nativeEvent.pageY);
-                            // console.log('ChangedPageX', nativeEvent.pageX);
-                            // console.log(
-                            //   'ChangedPageY',
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
-                            //     ? 0
-                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
-                            // );
-                            let top = 0;
-                            if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                              height
-                            ) {
-                              top = height;
-                            } else if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                              0
-                            ) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              name: prev.name.map((sig, si) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.email
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', markerDimensions.current[index]);
-
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            // console.log('pageX', nativeEvent.pageX);
-                            // console.log('pageY', nativeEvent.pageY);
-                            // console.log('ChangedPageX', nativeEvent.pageX);
-                            // console.log(
-                            //   'ChangedPageY',
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
-                            //     ? 0
-                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
-                            // );
-                            let top = 0;
-                            if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                              height
-                            ) {
-                              top = height;
-                            } else if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                              0
-                            ) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              email: prev.email.map((sig, si) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.company
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', markerDimensions.current[index]);
-
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            // console.log('pageX', nativeEvent.pageX);
-                            // console.log('pageY', nativeEvent.pageY);
-                            // console.log('ChangedPageX', nativeEvent.pageX);
-                            // console.log(
-                            //   'ChangedPageY',
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
-                            //     ? 0
-                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
-                            // );
-                            let top = 0;
-                            if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                              height
-                            ) {
-                              top = height;
-                            } else if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                              0
-                            ) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              company: prev.company.map((sig, si) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
-                  {draggedElArr?.title
-                    ?.filter(
-                      (x) =>
-                        x.element_container_id == `canvasInner-${index}` &&
-                        x.selected_user_id == String(recipients?.[selectedRecipient].id)
-                    )
-                    .map((item, elementIndex) => {
-                      // console.log(icons[item.type]);
-
-                      // console.log('image Height and width', markerDimensions.current[index]);
-
-                      if (markerDimensions.current[index] == undefined) return;
-                      const { x, y, width, height, pageX, pageY } = markerDimensions.current[index];
-                      console.log('left in percent', item.left, 'top in percent', item.top);
-                      console.log(
-                        'left in pixel',
-                        (Number.parseInt(item.left) * 100) / width,
-                        'top in pixel',
-                        (Number.parseInt(item.top) * 100) / height
-                      );
-
-                      return (
-                        <Draggable
-                          onPressIn={() => {
-                            // Vibration.vibrate(); // Vibration from react-native, i.e vibrate to make it easy to understand for user
-                            setScroll(false); // important step to disable scroll when long press this button
-                          }}
-                          onPressOut={() => {
-                            setScroll(true); // important step to enable scroll when release or stop drag
-                          }}
-                          x={(Number.parseInt(item.left) / 100) * width}
-                          y={(Number.parseInt(item.top) / 100) * height}
-                          key={elementIndex}
-                          onDragRelease={(event, gestureState, bounds) => {
-                            const nativeEvent = event.nativeEvent;
-                            // console.log('pageX', nativeEvent.pageX);
-                            // console.log('pageY', nativeEvent.pageY);
-                            // console.log('ChangedPageX', nativeEvent.pageX);
-                            // console.log(
-                            //   'ChangedPageY',
-                            //   nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY < 0
-                            //     ? 0
-                            //     : nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY
-                            // );
-                            let top = 0;
-                            if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY >
-                              height
-                            ) {
-                              top = height;
-                            } else if (
-                              nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY <
-                              0
-                            ) {
-                              top = 0;
-                            } else {
-                              top = nativeEvent.pageY - markerDimensions.current[0].pageY + scrollY;
-                            }
-                            console.log('left', nativeEvent.pageX);
-                            console.log('top', top);
-                            console.log('left', (nativeEvent.pageX / width) * 100);
-                            console.log('top', (top / height) * 100);
-
-                            setDraggedElArr((prev) => ({
-                              ...prev,
-                              title: prev.title.map((sig, si) =>
-                                sig.uuid == item.uuid
-                                  ? {
-                                      ...sig,
-                                      left:
-                                        Number.parseInt((nativeEvent.pageX / width) * 100) + '%',
-                                      top: Number.parseInt((top / height) * 100) + '%',
-                                    }
-                                  : { ...sig }
-                              ),
-                            }));
-                          }}
-                          minX={0}
-                          maxX={0 + width}
-                          minY={y}
-                          maxY={y + height - 12}
-                          // renderColor="red"
-                          renderText={item.type}
-                        >
-                          <View
-                            style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
-                          >
-                            <IconButton
-                              size={10}
-                              style={tw`m-0 `}
-                              icon={icons[item.type]}
-                            ></IconButton>
-                            <Text style={tw`text-[10px] `}>{item.type}</Text>
-                          </View>
-                        </Draggable>
-                      );
-                    })}
+                  >
+                    <Avatar.Text
+                      size={48}
+                      style={tw`bg-[${color[index].background}]`}
+                      // color={color[index].background}
+                      label={item.recName
+                        .replace(/\b(\w)\w+/g, '$1.')
+                        .replace(/\s/g, '')
+                        .replace(/\.$/, '')
+                        .toUpperCase()}
+                    />
+                  </TouchableOpacity>
                 </View>
-              );
-            }}
+                <Text style={styles.yellow_round_text}>{item.recName}</Text>
+              </View>
+            ))}
+        </ScrollView>
+      </View>
+      <View style={tw`flex-1`}>
+        {images && (
+          <PlayGround
+            image={images[index]}
+            draggedElArr={draggedElArr}
+            setDraggedElArr={refDraggedElArr}
+            selectedRecipient={selectedRecipient}
+            index={index}
+            recipients={recipients}
           />
-          <Chip style={tw`absolute top-1 right-1 `}>
-            <Text variant="labelLarge">{` ${index + 1} / ${images?.length} `}</Text>
-          </Chip>
-        </View>
-        <View style={tw` bg-white bottom-0 `}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* draw */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="draw"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'signature',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '10%',
-                      top: '10%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'Signature',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      signature: [...prev?.signature, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Signature</Text>
-            </View>
-            {/* Initials */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="signature-text"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'initial',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '20%',
-                      top: '20%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'initial',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      initial: [...prev?.initial, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Initials</Text>
-            </View>
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="stamper"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'stamp',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '30%',
-                      top: '30%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'stamp',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      stamp: [...prev?.stamp, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Stamp</Text>
-            </View>
-            {/* Date */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="calendar"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'date',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'date',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      date: [...prev?.date, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Date</Text>
-            </View>
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="face-man"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'name',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'name',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      name: [...prev?.name, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Name</Text>
-            </View>
-            {/* Text box */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="email"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'email',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'email',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      email: [...prev?.email, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Email</Text>
-            </View>
-            {/* Name */}
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="office-building"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'company',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'company',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      company: [...prev?.company, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Company</Text>
-            </View>
-            <View style={styles.botton_view_buttons}>
-              <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
-                <IconButton
-                  icon="briefcase"
-                  onPress={() => {
-                    const newData: DraggedElement = {
-                      type: 'title',
-                      element_container_id: `canvasInner-${index}`,
-                      left: '40%',
-                      top: '40%',
-                      icon: 'fa fa-user-circle-o',
-                      name: 'title',
-                      uuid: Crypto.randomUUID(),
-                      selected_user_id: String(
-                        recipients?.find((x, i) => i == selectedRecipient)?.id
-                      ),
-                      colors: color[selectedRecipient],
-                    };
-                    setDraggedElArr((prev) => ({
-                      ...prev,
-                      title: [...prev?.title, newData],
-                    }));
-                  }}
-                ></IconButton>
-              </View>
-              <Text style={styles.yellow_round_text}>Title</Text>
-            </View>
-          </ScrollView>
-        </View>
-        <View style={tw`flex-row  bg-white items-center justify-between`}>
-          <View style={tw`flex-row items-center`}>
-            <IconButton
-              icon="chevron-down"
-              onPress={() => {
-                if (index < images?.length - 1)
-                  FlatListRef?.current?.scrollToIndex({
-                    animated: true,
-                    index: index + 1,
-                  });
-              }}
-            ></IconButton>
+        )}
 
-            <IconButton
-              icon="chevron-up"
-              onPress={() => {
-                console.log(index, images.length);
-                if (index > 0)
-                  FlatListRef?.current?.scrollToIndex({
-                    animated: true,
-                    index: index - 1,
-                  });
-              }}
-            ></IconButton>
-            <Text variant="labelLarge">{` ${index + 1} / ${images?.length} documents`}</Text>
+        <Chip style={tw`absolute top-1 right-1 `}>
+          <Text variant="labelLarge">{` ${index + 1} / ${images?.length} `}</Text>
+        </Chip>
+      </View>
+
+      <View style={tw` bg-white bottom-0 `}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {/* draw */}
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="draw"
+                onPress={() => {
+                  const newData: DraggedElement = {
+                    type: 'signature',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '10%',
+                    top: '10%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'Signature',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    signature: [...prev?.signature, newData],
+                  }));
+
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    signature: [...draggedElArr?.signature, newData],
+                  };
+                }}
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Signature</Text>
           </View>
-          <View style={tw`flex-row `}>
-            <IconButton icon="magnify" onPress={() => {}}></IconButton>
-            <Menu
-              // anchorPosition="top"
-              visible={visible}
-              onDismiss={closeMenu}
-              anchor={<IconButton icon="dots-horizontal" onPress={openMenu}></IconButton>}
-            >
-              <Menu.Item
+          {/* Initials */}
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="signature-text"
                 onPress={() => {
-                  closeMenu();
-                  save(0);
+                  const newData: DraggedElement = {
+                    type: 'initial',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '20%',
+                    top: '20%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'initial',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    initial: [...prev?.initial, newData],
+                  }));
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    initial: [...draggedElArr?.initial, newData],
+                  };
                 }}
-                title="Save and close"
-              />
-              <Menu.Item
-                onPress={() => {
-                  closeMenu();
-                  save(1);
-                }}
-                title="Send and close"
-              />
-              <Divider />
-              <Menu.Item
-                onPress={() => {
-                  closeMenu();
-                }}
-                title="Discard"
-              />
-              <Divider />
-              <Menu.Item onPress={() => {}} title="Edit message" />
-              <Divider />
-              <Menu.Item onPress={() => {}} title="Edit Recipient" />
-              <Divider />
-              <Menu.Item
-                onPress={() => {
-                  closeMenu();
-                }}
-                title="Edit document"
-              />
-            </Menu>
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Initials</Text>
           </View>
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="stamper"
+                onPress={() => {
+                  const newData: DraggedElement = {
+                    type: 'stamp',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '30%',
+                    top: '30%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'stamp',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    stamp: [...prev?.stamp, newData],
+                  }));
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    stamp: [...draggedElArr?.stamp, newData],
+                  };
+                }}
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Stamp</Text>
+          </View>
+          {/* Date */}
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="calendar"
+                onPress={() => {
+                  const newData: DraggedElement = {
+                    type: 'date',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '40%',
+                    top: '40%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'date',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    date: [...prev?.date, newData],
+                  }));
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    date: [...draggedElArr?.date, newData],
+                  };
+                }}
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Date</Text>
+          </View>
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="face-man"
+                onPress={() => {
+                  const newData: DraggedElement = {
+                    type: 'name',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '50%',
+                    top: '50%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'name',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    name: [...prev?.name, newData],
+                  }));
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    name: [...draggedElArr?.name, newData],
+                  };
+                }}
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Name</Text>
+          </View>
+          {/* Text box */}
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="email"
+                onPress={() => {
+                  const newData: DraggedElement = {
+                    type: 'email',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '60%',
+                    top: '60%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'email',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    email: [...prev?.email, newData],
+                  }));
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    email: [...draggedElArr?.email, newData],
+                  };
+                }}
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Email</Text>
+          </View>
+          {/* Name */}
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="office-building"
+                onPress={() => {
+                  const newData: DraggedElement = {
+                    type: 'company',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '70%',
+                    top: '70%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'company',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    company: [...prev?.company, newData],
+                  }));
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    company: [...draggedElArr?.company, newData],
+                  };
+                }}
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Company</Text>
+          </View>
+          <View style={styles.botton_view_buttons}>
+            <View style={[styles.yellow_round, tw`bg-[${color[selectedRecipient].background}]`]}>
+              <IconButton
+                icon="briefcase"
+                onPress={() => {
+                  const newData: DraggedElement = {
+                    type: 'title',
+                    element_container_id: `canvasInner-${index}`,
+                    left: '80%',
+                    top: '80%',
+                    icon: 'fa fa-user-circle-o',
+                    name: 'title',
+                    uuid: Crypto.randomUUID(),
+                    selected_user_id: String(
+                      recipients?.find((x, i) => i == selectedRecipient)?.id
+                    ),
+                    colors: color[selectedRecipient],
+                  };
+                  setDraggedElArr((prev) => ({
+                    ...prev,
+                    title: [...prev?.title, newData],
+                  }));
+                  refDraggedElArr.current = {
+                    ...draggedElArr,
+                    title: [...draggedElArr?.title, newData],
+                  };
+                }}
+              ></IconButton>
+            </View>
+            <Text style={styles.yellow_round_text}>Title</Text>
+          </View>
+        </ScrollView>
+      </View>
+      <View style={tw`flex-row  bg-white items-center justify-between`}>
+        <View style={tw`flex-row items-center`}>
+          <IconButton
+            icon="chevron-down"
+            onPress={() => {
+              if (index < images?.length - 1) setIndex(index + 1);
+            }}
+          ></IconButton>
+
+          <IconButton
+            icon="chevron-up"
+            onPress={() => {
+              console.log(index, images.length);
+              if (index > 0) setIndex(index - 1);
+            }}
+          ></IconButton>
+          <Text variant="labelLarge">{` ${index + 1} / ${images?.length} documents`}</Text>
         </View>
-      </SafeAreaView>
+        <View style={tw`flex-row `}>
+          <IconButton icon="magnify" onPress={() => {}}></IconButton>
+          <Menu
+            // anchorPosition="top"
+            visible={visible}
+            onDismiss={closeMenu}
+            anchor={<IconButton icon="dots-horizontal" onPress={openMenu}></IconButton>}
+          >
+            <Menu.Item
+              onPress={() => {
+                closeMenu();
+                save(0);
+              }}
+              title="Save and close"
+            />
+            <Menu.Item
+              onPress={() => {
+                closeMenu();
+                save(1);
+              }}
+              title="Send and close"
+            />
+            <Divider />
+            <Menu.Item
+              onPress={() => {
+                closeMenu();
+              }}
+              title="Discard"
+            />
+            <Divider />
+            <Menu.Item onPress={() => {}} title="Edit message" />
+            <Divider />
+            <Menu.Item onPress={() => {}} title="Edit Recipient" />
+            <Divider />
+            <Menu.Item
+              onPress={() => {
+                closeMenu();
+              }}
+              title="Edit document"
+            />
+          </Menu>
+        </View>
+      </View>
+      <SafeAreaView style={tw` bg-white `}></SafeAreaView>
     </View>
   );
 };
