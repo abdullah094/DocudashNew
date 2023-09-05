@@ -21,6 +21,8 @@ import SignatureSelection from '@screens/Manage/SignatureSelection';
 import StampSelection from '@screens/Manage/StampSelection';
 import AddRecipient from '@screens/Manage/AddRecipient';
 import EmailScreen from '@screens/SignUp1/Email';
+import Editcontact from '@screens/Contact/Editcontact';
+import AddContact from '@screens/Contact/AddContact';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
@@ -49,10 +51,12 @@ export default function StackNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <Stack.Group>
-          <Stack.Screen name="DocumentEditor" component={DocumentEditor} />
+          {/* <Stack.Screen name="DocumentEditor" component={DocumentEditor} /> */}
           <Stack.Screen name="Home" component={DrawerNavigator} />
           <Stack.Screen name="Signatures" component={Signatures} />
           <Stack.Screen name="AddSignature" component={AddSignature} />
+
+          <Stack.Screen name="AddContact" component={AddContact} />
           <Stack.Screen name="Stamps" component={Stamps} />
           <Stack.Screen name="AddStamp" component={AddStamp} />
           <Stack.Screen name="Browser" component={Browser} />

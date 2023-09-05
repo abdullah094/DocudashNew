@@ -1,3 +1,4 @@
+import { AddContact } from '@screens/Contact/AddContact';
 import type {
   CompositeScreenProps,
   NavigatorScreenParams,
@@ -8,6 +9,7 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { pet } from './pet';
 import { Envelope } from './envelope';
 import { Recipient } from './recipient';
+import { Contact } from './contact';
 
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeDrawerParamList>;
@@ -40,6 +42,8 @@ export type RootStackParamList = {
   SignatureSelection: envelope;
   StampSelection: envelope;
   AddRecipient: { Recipients: Recipient[]; Recipient: Recipient };
+  List: undefined
+  AddContact: {Contact?: Contact }
 };
 
 export type SignUpStackParamList = {

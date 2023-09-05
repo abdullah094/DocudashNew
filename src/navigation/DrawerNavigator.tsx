@@ -13,6 +13,7 @@ import SignatureList from '@screens/Signatures/List';
 import StampList from '@screens/Stamp/List';
 import { selectRouteName } from '@stores/Slices';
 import { useSelector } from 'react-redux';
+import List from '@screens/Contact/List';
 
 const Drawer = createDrawerNavigator();
 
@@ -88,6 +89,21 @@ const DrawerNavigator = () => {
             {(props) => (
               <DrawerScreenContainer {...props}>
                 <SignatureList />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+
+          <Drawer.Screen
+            name="Contact"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="contacts" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer {...props}>
+                <List />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
