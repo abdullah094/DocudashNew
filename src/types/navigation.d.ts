@@ -42,8 +42,8 @@ export type RootStackParamList = {
   SignatureSelection: envelope;
   StampSelection: envelope;
   AddRecipient: { Recipients: Recipient[]; Recipient: Recipient };
-  List: undefined
-  AddContact: {Contact?: Contact }
+  Contacts: {} | undefined;
+  AddContact: { Contact?: Contact };
 };
 
 export type SignUpStackParamList = {

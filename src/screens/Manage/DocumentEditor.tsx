@@ -350,7 +350,7 @@ const DocumentEditor = () => {
         />
         <Button
           onPress={() => {
-            save(1);
+            save(0);
           }}
         >
           Send
