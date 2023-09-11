@@ -8,7 +8,13 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar, Divider, Menu } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-export default function HomeHeader({ heading, addTarget }) {
+export default function HomeHeader({
+  heading,
+  addTarget,
+}: {
+  heading: string;
+  addTarget?: (ref: any, key: string) => void;
+}) {
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();
   const route = useRoute<HomeDrawerScreenProps<'HomeScreen'>['route']>();
   const [visible, setVisible] = React.useState(false);

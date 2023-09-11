@@ -14,6 +14,9 @@ import {
 import tw from 'twrnc';
 import { Text, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { selectAccessToken } from '@stores/Slices';
 
 interface Item extends SortableListItemProps {
   id: string;
@@ -61,6 +64,7 @@ const actionList = [
   },
 ];
 const RecipientList = ({ data, setData }) => {
+  const accessToken = useSelector(selectAccessToken);
   console.log('RecipientList', data);
   // const [data, setData] = useState<Item[]>([]);
   const navigation = useNavigation();
@@ -89,10 +93,46 @@ const RecipientList = ({ data, setData }) => {
   //     setItems(orderedItems.current);
   // }, [ setItems]);
 
+  const deleteRecipient = () => {
+    const item = items.find((item) => selectedItems.includes(item));
+    if (item.recipients_update_id == '0') {
+      setItems(items.filter((item) => !selectedItems.includes(item)));
+      return;
+    }
+    axios
+      .post(
+        'https://docudash.net/api/generate-signature/deleteReceipent',
+        { deleteId: item.recipients_update_id },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        const apiData: {
+          status: boolean;
+          message: string;
+          returnAffected: number;
+        } = response.data;
+        if (apiData.status) {
+          setItems(items.filter((item) => !selectedItems.includes(item)));
+          alert(apiData.message);
+        } else {
+          alert(apiData.message);
+        }
+        console.log('data', response.data);
+      })
+      .catch((error) => {
+        console.log('Error----', error);
+      });
+  };
+
   const removeSelectedItems = useCallback(() => {
     setSelectedItems([]);
     // orderedItems.current = data.current.filter((item) => !selectedItems.includes(item));
-    setItems(items.filter((item) => !selectedItems.includes(item)));
+    deleteRecipient();
+    // setItems(items.filter((item) => !selectedItems.includes(item)));
   }, [selectedItems, setItems, setSelectedItems]);
 
   const keyExtractor = useCallback((item: Item) => {
@@ -149,7 +189,7 @@ const RecipientList = ({ data, setData }) => {
 
   return (
     <View style={tw`flex-1`}>
-      <View row center style={tw`p-2`}>
+      <View row center style={tw`p-2 justify-around`}>
         <Button
           mode="contained"
           onPress={() => navigation.navigate('AddRecipient', { Recipients: items })}
@@ -159,7 +199,6 @@ const RecipientList = ({ data, setData }) => {
         <Button
           mode="contained"
           disabled={selectedItems.length === 0}
-          marginL-s3
           onPress={removeSelectedItems}
         >
           Remove Recipient
@@ -172,6 +211,11 @@ const RecipientList = ({ data, setData }) => {
           keyExtractor={keyExtractor}
           onOrderChange={onOrderChange}
           scale={1.02}
+          ListEmptyComponent={
+            <View style={tw`flex-1 h-20 justify-center items-center`}>
+              <Text>No Recipients</Text>
+            </View>
+          }
         />
       </View>
     </View>

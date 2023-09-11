@@ -124,11 +124,11 @@ const DocumentEditor = () => {
     type: '',
     uudid: '',
   });
-  // const envelope: GenerateSignature = route.params?.Envelope;
-  const envelope: GenerateSignature = {
-    uniqid: 'd4e421647a894ba55dd90f9857e76b50',
-    signature_id: 41,
-  };
+  const envelope: GenerateSignature = route.params?.Envelope;
+  // const envelope: GenerateSignature = {
+  //   uniqid: 'd4e421647a894ba55dd90f9857e76b50',
+  //   signature_id: 41,
+  // };
   const [index, setIndex] = useState(0);
   console.log('deleteModal', deleteModal);
 

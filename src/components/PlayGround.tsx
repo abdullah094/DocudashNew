@@ -166,7 +166,7 @@ export default function PlayGround({
               //   'top in pixel',
               //   (Number.parseInt(item.top) / 100) * height
               // );
-              const left = parseInt((parseInt(item.left) / 100) * imageRealSize.width + '');
+              const left = parseInt((parseInt(item.left) / 100) * width + '');
               const top = parseInt((parseInt(item.top) / 100) * imageRealSize.height + '');
               // console.log('left', left, item.left, 'top', top, item.top);
               return (
@@ -178,7 +178,7 @@ export default function PlayGround({
                     const nativeEvent = event.nativeEvent;
                     let top = nativeEvent.pageY - imageRealSize.pageY + scrollY;
 
-                    const newLeft = parseInt((nativeEvent.pageX / imageRealSize.width) * 100 + '');
+                    const newLeft = parseInt((nativeEvent.pageX / width) * 100 + '');
                     var newTop = parseInt((top / imageRealSize.height) * 100 + '');
                     if (newTop < 0) newTop = 0;
                     if (newTop > 100) newTop = 100;

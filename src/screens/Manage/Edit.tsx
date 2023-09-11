@@ -2,7 +2,7 @@ import RecipientList from '@components/RecipientList';
 import UploadView from '@components/UploadView';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken } from '@stores/Slices';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import {
@@ -33,6 +33,7 @@ import {
   Appbar,
   Badge,
   Button,
+  Chip,
   Divider,
   HelperText,
   IconButton,
@@ -52,6 +53,16 @@ interface uploadType {
   name: string;
   type: 'image' | 'video' | undefined | string;
 }
+const actionList = [
+  {
+    label: 'Every Day',
+    value: '1',
+  },
+  {
+    label: 'Every 2 Days',
+    value: '2',
+  },
+];
 interface State {
   activeIndex: number;
   completedStepIndex?: number;
@@ -75,34 +86,12 @@ const Edit = () => {
     customerName: undefined,
     toastMessage: undefined,
   });
-  const [data, setData] = useState([
-    // {
-    //   recName: '',
-    //   recEmail: '',
-    //   sign_type: '1',
-    //   hostName: '',
-    //   hostEmail: '',
-    //   access_code: '',
-    //   private_message: '',
-    //   recipients_update_id: '0',
-    //   showDropDown: false,
-    //   visible: false,
-    //   showAccessCode: false,
-    //   showPrivateMessage: false,
-    // },
-  ]);
+  const [data, setData] = useState([]);
 
   const [emailSubject, setEmailSubject] = useState('');
   const [emailMessage, setEmailMessage] = useState('');
-  // bottom sheets
-  const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ['35%', '45%'], []);
-  const handleSheetChanges = useCallback((index: number) => {}, []);
-  const handlePresentModalPress = useCallback(() => {
-    // @ts-ignore
-    bottomSheetRef.current?.present();
-  }, []);
-
+  const [frequencyOfReminder, setFrequencyOfReminder] = useState(1);
+  const [forVisible, setForVisible] = useState(false);
   const [documents, setDocuments] = useState<uploadType[]>(new Array());
   const [loading, setLoading] = useState(false);
   const [generateSignature, setGenerateSignature] = useState<GenerateSignature>();
@@ -113,62 +102,16 @@ const Edit = () => {
   const envelope = route.params?.Envelope;
   const files = route.params?.files;
   const Recipients = route.params?.Recipients;
-  console.log('Recipients', Recipients);
-
-  const addNewRecipient = () => {
-    setData([
-      ...data,
-      {
-        recName: '',
-        recEmail: '',
-        sign_type: '1',
-        hostName: '',
-        hostEmail: '',
-        access_code: '',
-        private_message: '',
-        recipients_update_id: '0',
-        showDropDown: false,
-        visible: false,
-        showAccessCode: false,
-        showPrivateMessage: false,
-      },
-    ]);
-  };
-
-  const actionList = [
-    {
-      label: 'Needs to Sign',
-      value: '1',
-    },
-    {
-      label: 'In Person Signer',
-      value: '2',
-    },
-    {
-      label: 'Receives a Copy',
-      value: '3',
-    },
-    {
-      label: 'Needs to View',
-      value: '4',
-    },
-  ];
+  const isFocused = useIsFocused();
   useEffect(() => {
-    setState({
-      activeIndex: 0,
-      completedStepIndex: undefined,
-      allTypesIndex: 0,
-      selectedFlavor: initialFlavor,
-      customerName: undefined,
-      toastMessage: undefined,
-    });
     if (files) {
       setDocuments(files);
     }
     if (Recipients) {
       setData(Recipients);
     }
-    if (!generateSignature) {
+    console.log('found', generateSignature);
+    if (!generateSignature || generateSignature == undefined) {
       if (envelope) {
         axios
           .get(
@@ -201,7 +144,6 @@ const Edit = () => {
               // @ts-ignore
               setData(fixData);
             }
-            // @ts-ignore
             const generate: GenerateSignature = {
               signature_id: data.signature_id,
               uniqid: data.uniqid,
@@ -237,63 +179,77 @@ const Edit = () => {
     }
   }, [route]);
 
-  React.useEffect(
-    () =>
-      navigation.addListener('beforeRemove', (e) => {
-        console.log(e);
-        if (e.data.action.type != 'GO_BACK') {
-          // If we don't have unsaved changes, then we don't need to do anything
-          return;
-        }
+  // useEffect(() => {
+  //   navigation.addListener('beforeRemove', (e) => {
+  //     if (e.data.action.type != 'GO_BACK') {
+  //       // If we don't have unsaved changes, then we don't need to do anything
+  //       return;
+  //     }
 
-        // Prevent default behavior of leaving the screen
-        e.preventDefault();
+  //     // Prevent default behavior of leaving the screen
+  //     e.preventDefault();
 
-        // Prompt the user before leaving the screen
-        Alert.alert(
-          'Discard changes?',
-          'You have unsaved changes. Are you sure to discard them and leave the screen?',
-          [
-            { text: "Don't leave", style: 'cancel', onPress: () => {} },
-            {
-              text: 'Discard',
-              style: 'destructive',
-              // If the user confirmed, then we dispatch the action we blocked earlier
-              // This will continue the action that had triggered the removal of the screen
-              onPress: () => {
-                deleteDraft(e);
-              },
-            },
-          ]
-        );
-      }),
-    [navigation]
-  );
+  //     // Prompt the user before leaving the screen
+  //     Alert.alert(
+  //       'Discard changes?',
+  //       'You have unsaved changes. Are you sure to discard them and leave the screen?',
+  //       [
+  //         { text: "Don't leave", style: 'cancel', onPress: () => {} },
+  //         {
+  //           text: 'Discard',
+  //           style: 'destructive',
+  //           // If the user confirmed, then we dispatch the action we blocked earlier
+  //           // This will continue the action that had triggered the removal of the screen
+  //           onPress: () => {
+  //             deleteDraft(e);
+  //           },
+  //         },
+  //       ]
+  //     );
+  //   });
+  // }, [navigation]);
 
-  const deleteDraft = (e) => {
-    let data = new FormData();
-    data.append('id', generateSignature.signature_id);
-
-    let config = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://docudash.net/api/generate-signature/deleteDraftEmail',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      data: data,
-    };
-
-    axios
-      .request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-        navigation.dispatch(e.data.action);
-      })
-      .catch((error) => {
-        console.log(error);
-        navigation.dispatch(e.data.action);
-      });
+  const deleteDraft = () => {
+    // Prompt the user before leaving the screen
+    Alert.alert(
+      'Discard changes?',
+      'You have unsaved changes. Are you sure to discard them and leave the screen?',
+      [
+        { text: "Don't leave", style: 'cancel', onPress: () => {} },
+        {
+          text: 'Discard',
+          style: 'destructive',
+          // If the user confirmed, then we dispatch the action we blocked earlier
+          // This will continue the action that had triggered the removal of the screen
+          onPress: () => {
+            const url = 'https://docudash.net/api/generate-signature/deleteDraftEmail';
+            axios
+              .post(
+                url,
+                { id: generateSignature.signature_id },
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              )
+              .then((response) => {
+                const { status, message }: { status: boolean; message: string } = response.data;
+                console.log(response.data);
+                if (status) navigation.navigate('Home');
+                else {
+                  alert(message);
+                }
+              })
+              .catch((error) => {
+                navigation.navigate('Home');
+                console.log('Error----', error);
+              });
+          },
+        },
+      ]
+    );
+    if (generateSignature == undefined) return;
   };
 
   const save = () => {
@@ -324,6 +280,7 @@ const Edit = () => {
     });
     formData.append('emailSubject', emailSubject);
     formData.append('emailMessage', emailMessage);
+    formData.append('frequency_of_reminders', frequencyOfReminder);
 
     [...documents].forEach((image, index) => {
       formData.append('photosID[' + index + ']', '0');
@@ -367,40 +324,6 @@ const Edit = () => {
       });
   };
 
-  const deleteRecipient = (index: number) => {
-    const item = data[index];
-    if (item.recipients_update_id == '0') {
-      setData(data.filter((_, i) => i !== index));
-      return;
-    }
-    axios
-      .post(
-        'https://docudash.net/api/generate-signature/deleteReceipent',
-        { deleteId: item.recipients_update_id },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
-      .then((response) => {
-        const apiData: {
-          status: boolean;
-          message: string;
-          returnAffected: number;
-        } = response.data;
-        if (apiData.status) {
-          setData(data.filter((_, i) => i !== index));
-          alert(apiData.message);
-        } else {
-          alert(apiData.message);
-        }
-        console.log('data', response.data);
-      })
-      .catch((error) => {
-        console.log('Error----', error);
-      });
-  };
   const onActiveIndexChanged = (activeIndex: number) => {
     setState((prev) => ({ ...prev, activeIndex }));
   };
@@ -493,6 +416,54 @@ const Edit = () => {
   const renderAddRecipient = () => (
     <>
       <RecipientList data={data} setData={setData} />
+      <View style={tw`flex-row items-center gap-2 px-4 pb-2`}>
+        <Text variant="labelLarge">Frequency of reminders :</Text>
+        <Menu
+          visible={forVisible}
+          // anchorPosition="top"
+          onDismiss={() => setForVisible(false)}
+          anchor={
+            <Chip
+              icon="chevron-down"
+              mode="outlined"
+              style={tw` p-1`}
+              onPress={() => {
+                setForVisible(true);
+              }}
+            >
+              {actionList[frequencyOfReminder - 1]?.label}
+            </Chip>
+          }
+        >
+          <Menu.Item
+            onPress={() => {
+              setFrequencyOfReminder(1);
+              setForVisible(false);
+            }}
+            title="Every Day"
+          />
+          <Divider />
+          <Menu.Item
+            onPress={() => {
+              setFrequencyOfReminder(2);
+              setForVisible(false);
+            }}
+            title="Every 2 Days"
+          />
+        </Menu>
+      </View>
+      {/* <DropDown
+        label={'Frequency Of Reminder'}
+        mode={'outlined'}
+        visible={forVisible}
+        showDropDown={() => setForVisible(true)}
+        onDismiss={() => setForVisible(false)}
+        value={String(frequencyOfReminder)}
+        setValue={(value) => {
+          setFrequencyOfReminder(value);
+        }}
+        list={actionList}
+      /> */}
       <View style={tw`gap-2 justify-end flex-row mx-2`}>{renderNextButton()}</View>
     </>
   );
@@ -616,7 +587,7 @@ const Edit = () => {
   return (
     <SafeAreaView style={tw`h-full`}>
       <View style={tw`flex-row p-5 justify-between items-center`}>
-        <Icon name="arrow-left" size={28} onPress={() => navigation.goBack()} />
+        <Icon name="arrow-left" size={28} onPress={() => deleteDraft()} />
         <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>
           {envelope ? 'Editing Envelope' : 'Creating New Envelope'}
         </Text>

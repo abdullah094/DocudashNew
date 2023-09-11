@@ -24,7 +24,7 @@ export type RootStackParamList = {
         Envelope?: Envelope;
         files?: DocumentPickerOptions.DocumentResult[];
         images?: ImagePicker.ImagePickerAsset[];
-        Recipients: Recipient[];
+        Recipients?: Recipient[];
       };
   DocumentEditor: {
     Envelope: GenerateSignature;
@@ -41,8 +41,8 @@ export type RootStackParamList = {
   DocumentViewer: { Envelope: envelope; item: SignaturePreview };
   SignatureSelection: envelope;
   StampSelection: envelope;
-  AddRecipient: { Recipients?: Recipient[]; Recipient?: Recipient;  Contact?:Contact} 
-  Contacts: {From?: string} ;
+  AddRecipient: { Recipients?: Recipient[]; Recipient?: Recipient; Contact?: Contact };
+  Contacts: { From?: string };
   AddContact: { Contact?: Contact };
 };
 
