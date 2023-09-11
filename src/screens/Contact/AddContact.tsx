@@ -7,6 +7,7 @@ import {
   Alert,
   FlatList,
   Image,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -159,7 +160,7 @@ const AddContact = () => {
     <View style={tw`h-full`}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Add Signature" />
+        <Appbar.Content title="Add Contact" />
         {Contact && <Appbar.Action icon="delete" onPress={deleteContact} />}
       </Appbar.Header>
       <View style={tw`mx-2 gap-2 flex-1`}>
@@ -179,7 +180,7 @@ const AddContact = () => {
           onChangeText={(text) => setContact((prev) => ({ ...prev, email: text }))}
         />
       </View>
-      <View style={tw`flex-row justify-end p-2`}>
+      <View style={tw`flex-row justify-end p-6 py-10`}>
         <Button mode="contained" onPress={createOrUpdate}>
           {Contact ? 'Update' : 'Add'}
         </Button>

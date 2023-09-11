@@ -93,6 +93,21 @@ const DrawerNavigator = () => {
           </Drawer.Screen>
 
           <Drawer.Screen
+            name="Contact"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="contacts" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer {...props}>
+                <ContactList />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+
+          <Drawer.Screen
             name="STAMPS"
             options={{
               drawerIcon: ({ color }) => (

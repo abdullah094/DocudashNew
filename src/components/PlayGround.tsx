@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, Image, ScrollView } from 'react-native';
+import { View, Text, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import AutoHeightImage from 'react-native-auto-height-image';
 import tw from 'twrnc';
@@ -70,6 +70,7 @@ export default function PlayGround({
   selectedRecipient,
   index,
   recipients,
+  setDeleteModal,
 }: {
   image: string;
   draggedElArr: DraggedElArr;
@@ -77,9 +78,14 @@ export default function PlayGround({
   selectedRecipient: number;
   index: number;
   recipients;
+  setDeleteModal;
 }) {
   const [scroll, setScroll] = useState(true);
   const [scrollY, setScrollY] = useState(0);
+  const [openModalDelete, setOpenModalDelete] = useState({
+    active: false,
+    type: '',
+  });
   const [imageRealSize, setImageRealSize] = useState<{
     x: number;
     y: number;
@@ -113,6 +119,8 @@ export default function PlayGround({
   //   }, [image]);
 
   //   if (loading) return <ActivityIndicator />;
+  console.log('scrollBool', scroll);
+
   return (
     <ScrollView scrollEnabled={scroll} onScroll={handleScroll}>
       <View ref={ref}>
@@ -163,12 +171,6 @@ export default function PlayGround({
               // console.log('left', left, item.left, 'top', top, item.top);
               return (
                 <Draggable
-                  onPressIn={() => {
-                    setScroll(false); // important step to disable scroll when long press this button
-                  }}
-                  onPressOut={() => {
-                    setScroll(true); // important step to enable scroll when release or stop drag
-                  }}
                   x={left}
                   y={top}
                   key={elementIndex + item.type}
@@ -267,7 +269,21 @@ export default function PlayGround({
                   // renderColor="red"
                   renderText={item.type}
                 >
-                  <View
+                  <TouchableOpacity
+                    onPressIn={() => {
+                      setScroll(false); // important step to disable scroll when long press this button
+                    }}
+                    onPressOut={() => {
+                      setScroll(true); // important step to enable scroll when release or stop drag
+                    }}
+                    onLongPress={() =>
+                      setDeleteModal((prev) => ({
+                        ...prev,
+                        active: true,
+                        type: item.type,
+                        uudid: item.uuid,
+                      }))
+                    }
                     style={tw`w-15 h-10  border border-[${color[selectedRecipient].border}] rounded-lg items-center bg-[${color[selectedRecipient].background}]`}
                   >
                     <IconButton size={10} style={tw`m-0 `} icon={icons[item.type]}></IconButton>
@@ -276,7 +292,7 @@ export default function PlayGround({
                     <Text style={tw`text-[10px] `}>top:{item.top}</Text>
                     <Text style={tw`text-[10px] `}>left:{left}</Text>
                     <Text style={tw`text-[10px] `}>top:{top}</Text> */}
-                  </View>
+                  </TouchableOpacity>
                 </Draggable>
               );
             })}

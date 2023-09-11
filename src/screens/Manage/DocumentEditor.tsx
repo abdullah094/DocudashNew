@@ -22,6 +22,7 @@ import {
   TouchableOpacity,
   View,
   ViewToken,
+  Modal,
 } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Draggable from 'react-native-draggable';
@@ -41,6 +42,7 @@ import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import * as Crypto from 'expo-crypto';
 import PlayGround from '@components/PlayGround';
+import { colors } from '@utils/Colors';
 const { width } = Dimensions.get('window');
 
 const icons = {
@@ -117,13 +119,18 @@ const DocumentEditor = () => {
   const [selectedRecipient, setSelectedRecipient] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<string[]>();
-
+  const [deleteModal, setDeleteModal] = useState({
+    active: false,
+    type: '',
+    uudid: '',
+  });
   // const envelope: GenerateSignature = route.params?.Envelope;
   const envelope: GenerateSignature = {
     uniqid: 'd4e421647a894ba55dd90f9857e76b50',
     signature_id: 41,
   };
   const [index, setIndex] = useState(0);
+  console.log('deleteModal', deleteModal);
 
   const [visible, setVisible] = React.useState(false);
 
@@ -268,6 +275,69 @@ const DocumentEditor = () => {
 
   return (
     <View style={tw`h-full `}>
+      <Modal visible={deleteModal.active} transparent={true} animationType="none">
+        <View
+          style={{
+            flex: 1,
+
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <View style={tw`p-5 bg-[${colors.green}] items-center gap-4 rounded-lg py-6`}>
+            <Text style={tw`font-semibold text-4 text-white`}>
+              Do you want to delete this {deleteModal.type}?
+            </Text>
+            <View style={tw`flex-row items-center`}>
+              <TouchableOpacity
+                style={styles.yesno_button}
+                onPress={() => {
+                  const type = deleteModal.type;
+                  const arr = draggedElArr[type];
+                  const filtered = arr.filter((x) => x.uudid == deleteModal.uudid);
+                  if (type == 'signature') {
+                    setDraggedElArr((prev) => ({ ...prev, signature: filtered }));
+                  }
+                  if (type == 'initial') {
+                    setDraggedElArr((prev) => ({ ...prev, initial: filtered }));
+                  }
+                  if (type == 'stamp') {
+                    setDraggedElArr((prev) => ({ ...prev, stamp: filtered }));
+                  }
+                  if (type == 'date') {
+                    setDraggedElArr((prev) => ({ ...prev, date: filtered }));
+                  }
+                  if (type == 'name') {
+                    setDraggedElArr((prev) => ({ ...prev, name: filtered }));
+                  }
+                  if (type == 'email') {
+                    setDraggedElArr((prev) => ({ ...prev, email: filtered }));
+                  }
+                  if (type == 'company') {
+                    setDraggedElArr((prev) => ({ ...prev, company: filtered }));
+                  }
+                  if (type == 'title') {
+                    setDraggedElArr((prev) => ({ ...prev, title: filtered }));
+                  }
+                  setDeleteModal({
+                    active: false,
+                    type: '',
+                    uudid: '',
+                  });
+                }}
+              >
+                <Text style={styles.yesno_text}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.yesno_button}
+                onPress={() => setDeleteModal((prev) => ({ ...prev, active: false, type: '' }))}
+              >
+                <Text style={styles.yesno_text}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <Appbar.Header mode="center-aligned">
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content
@@ -328,6 +398,7 @@ const DocumentEditor = () => {
       <View style={tw`flex-1`}>
         {images && (
           <PlayGround
+            setDeleteModal={setDeleteModal}
             image={images[index]}
             draggedElArr={draggedElArr}
             setDraggedElArr={refDraggedElArr}
@@ -672,4 +743,12 @@ const styles = StyleSheet.create({
   botton_view_buttons: tw`items-center mx-2 w-20 h-20 gap-1 justify-center`,
   yellow_round: tw`h-12 w-12 rounded-full bg-yellow-200 justify-center items-center`,
   yellow_round_text: tw``,
+  yesno_button: {
+    padding: 4,
+    marginHorizontal: 6,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  yesno_text: { fontSize: 16 },
 });
