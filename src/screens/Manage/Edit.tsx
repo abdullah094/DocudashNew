@@ -47,6 +47,7 @@ import { Wizard } from 'react-native-ui-lib';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import COLORS from '@constants/colors';
+import Loader from '@components/Loader';
 
 interface uploadType {
   uri: string;
@@ -112,6 +113,7 @@ const Edit = () => {
     }
     console.log('found', generateSignature);
     if (!generateSignature || generateSignature == undefined) {
+      setLoading(true);
       if (envelope) {
         axios
           .get(
@@ -127,6 +129,7 @@ const Edit = () => {
           )
           .then((response) => {
             const data: UploadDocumentAPI = response.data;
+            setLoading(false);
             console.log('', response.data);
             if (data.generateSignatureDetails.length > 0) {
               const fixData = data.generateSignatureDetails.map((x) => {
@@ -154,6 +157,9 @@ const Edit = () => {
             }
 
             console.log('getting already Existing envelope', data);
+          })
+          .catch((err) => {
+            setLoading(false);
           });
       } else {
         const url = 'https://docudash.net/api/generate-signature/create';
@@ -169,10 +175,13 @@ const Edit = () => {
           )
           .then((response) => {
             const data: GenerateSignature = response.data;
+            setLoading(false);
+
             setGenerateSignature(data);
             console.log('Data----', data);
           })
           .catch((error) => {
+            setLoading(false);
             console.log('Error----', error);
           });
       }
@@ -584,6 +593,8 @@ const Edit = () => {
         console.log('Error----', error);
       });
   };
+  if (loading) return <Loader />;
+
   return (
     <SafeAreaView style={tw`h-full`}>
       <View style={tw`flex-row p-5 justify-between items-center`}>
