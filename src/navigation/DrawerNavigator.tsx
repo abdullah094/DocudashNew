@@ -110,7 +110,7 @@ const DrawerNavigator = () => {
             name="CONTACTS"
             options={{
               drawerIcon: ({ color }) => (
-                <Icon name="stamper" size={25} style={{ marginRight: -20, color }} />
+                <Icon name="contacts" size={25} style={{ marginRight: -20, color }} />
               ),
             }}
           >

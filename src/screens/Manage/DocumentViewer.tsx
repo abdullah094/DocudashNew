@@ -503,7 +503,7 @@ const DocumentViewer = () => {
                               onPress={() =>
                                 setDraggedElArr((prev) => ({
                                   ...prev,
-                                  date: prev.date.map((x) => ({
+                                  name: prev.name.map((x) => ({
                                     ...x,
                                     content: profileData.first_name + ' ' + profileData.last_name,
                                   })),

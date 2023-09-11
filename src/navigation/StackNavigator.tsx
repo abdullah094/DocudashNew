@@ -23,6 +23,7 @@ import AddRecipient from '@screens/Manage/AddRecipient';
 import EmailScreen from '@screens/SignUp1/Email';
 import AddContact from '@screens/Contact/AddContact';
 import Contacts from '@screens/Contact/List';
+import FeatureHighlightScreen from '@screens/FeatureHighlightScreen';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
@@ -51,7 +52,7 @@ export default function StackNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <Stack.Group>
-          {/* <Stack.Screen name="DocumentEditor" component={DocumentEditor} /> */}
+          {/* <Stack.Screen name="Featured" component={FeatureHighlightScreen} /> */}
           <Stack.Screen name="Home" component={DrawerNavigator} />
           <Stack.Screen name="Signatures" component={Signatures} />
           <Stack.Screen name="AddSignature" component={AddSignature} />

@@ -47,9 +47,10 @@ interface IProgressModal {
   progress: number;
   obj: HeaderOption | undefined;
   steps: number | null;
+  addTarget: any;
 }
 const { width } = Dimensions.get('window');
-const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
+const ProgressModal = ({ progress, obj, steps, addTarget }: IProgressModal) => {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation<RootStackScreenProps<'Home'>['navigation']>();
   if (!obj) return <></>;
@@ -57,6 +58,7 @@ const ProgressModal = ({ progress, obj, steps }: IProgressModal) => {
   return (
     <>
       <TouchableOpacity
+        ref={(r) => addTarget(r, '2')}
         onPress={() => setModalVisible(true)}
         style={tw`bg-[${colors.blue}] p-3 px-5 mt-5 rounded-md`}
       >

@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import ProgressModal from './ProgressModal';
 
-export default function GettingStarted() {
+export default function GettingStarted({ addTarget }) {
   const [completeNumber, setCompleteNumber] = useState<number>(0);
   const [progressBar, setProgressBar] = useState<number>(0);
   const [Headers, setHeaders] = useState<HeaderOption>();
@@ -70,7 +70,12 @@ export default function GettingStarted() {
           borderColor={'#D9D9D9'}
         />
       </View>
-      <ProgressModal progress={progressBar} obj={Headers} steps={completeNumber} />
+      <ProgressModal
+        progress={progressBar}
+        obj={Headers}
+        steps={completeNumber}
+        addTarget={addTarget}
+      />
     </View>
   );
 }

@@ -6,9 +6,11 @@ import { selectAccessToken, setProfileData, setRouteName } from '@stores/Slices'
 import { DashboardAPI, HomeDrawerScreenProps, User } from '@type/index';
 import { colors } from '@utils/Colors';
 import axios from 'axios';
+import _ from 'lodash';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  AccessibilityInfo,
   Alert,
   Dimensions,
   Image,
@@ -16,15 +18,16 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  findNodeHandle,
 } from 'react-native';
+import { FeatureHighlight, Typography, View, Text, Colors } from 'react-native-ui-lib';
 import { ActivityIndicator, Avatar, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import COLORS from '../constants/colors';
 import mime from 'mime';
+
 const { height } = Dimensions.get('window');
 
 interface uploadType {
@@ -32,6 +35,26 @@ interface uploadType {
   name: string;
   type: 'image' | 'video' | undefined | string;
 }
+
+const titles = [
+  'Get Notified',
+  'Title two is a long title that will not get cut by default, but can be limited',
+  'Title number three',
+  // 'Title number four',
+  // 'Title number five',
+  // 'Welcome to Uilib demo!',
+];
+const messages = [
+  'Important notifications appear right on your clubs and groups. Tap them to get more information about the most' +
+    'important things that you should pay attention to.',
+  'Short message with information about the above highlighted feature',
+  'A long message, that will not get cut (but can be limited) with information about the highlighted feature.' +
+    ' Please note that if the message is too long and will cause the content box to render off screen, you will get a' +
+    ' warning about it',
+  // 'Very short message',
+  // 'Short message with information about the below highlighted feature',
+  // 'Here is where you can view demos of all Uilib components',
+];
 const HomeScreen = () => {
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();
   const route = useRoute<HomeDrawerScreenProps<'HomeScreen'>['route']>();
@@ -47,6 +70,93 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(false);
   const [signature, setSignature] = useState<any>();
   const accessToken = useSelector(selectAccessToken);
+
+  const viewRef = useRef(null);
+  const [targets, setTargets] = useState<{ [key: string]: any }>({});
+  const [state, setState] = useState({
+    showFTE: false,
+    currentTargetIndex: 0,
+  });
+  useEffect(() => {
+    setTimeout(() => {
+      showHighlight();
+    }, 1000);
+  }, []);
+
+  const closeHighlight = () => {
+    setState((prev) => ({ ...prev, showFTE: false }));
+    () => {
+      if (viewRef.current) {
+        const reactTag = findNodeHandle(viewRef.current);
+        reactTag && AccessibilityInfo.setAccessibilityFocus(reactTag);
+      }
+    };
+  };
+
+  const showHighlight = () => {
+    setState((prev) => ({ ...prev, showFTE: true }));
+  };
+
+  const addTarget = (ref: any, id: string) => {
+    if (ref && !targets[id]) {
+      targets[id] = ref;
+    }
+  };
+  const moveNext = () => {
+    const { currentTargetIndex } = state;
+    const newTargetIndex = currentTargetIndex + 1;
+
+    moveToPage(newTargetIndex);
+  };
+
+  const moveToPage = (index: number) => {
+    if (index < _.size(targets)) {
+      setState((prev) => ({ ...prev, currentTargetIndex: index }));
+    } else {
+      closeHighlight();
+    }
+  };
+
+  const getPageControlProps = () => {
+    return {
+      numOfPages: titles.length,
+      currentPage: state.currentTargetIndex,
+      onPagePress: onPagePress,
+      color: Colors.grey30,
+      inactiveColor: Colors.grey80,
+      size: 8,
+    };
+  };
+
+  const onPagePress = (index: number) => {
+    moveToPage(index);
+  };
+
+  const renderHighlighterOverlay = () => {
+    const { showFTE, currentTargetIndex } = state;
+    const lastPage = titles.length - 1;
+
+    return (
+      <FeatureHighlight
+        visible={showFTE}
+        title={titles[currentTargetIndex]}
+        message={messages[currentTargetIndex]}
+        titleStyle={currentTargetIndex === lastPage ? { ...Typography.text70 } : undefined}
+        messageStyle={
+          currentTargetIndex === lastPage
+            ? { ...Typography.text60, fontWeight: '900', lineHeight: 28 }
+            : undefined
+        }
+        confirmButtonProps={{ label: 'Got It', onPress: moveNext }}
+        onBackgroundPress={closeHighlight}
+        getTarget={() => targets[currentTargetIndex]}
+        // highlightFrame={{x: 30, y: 70, width: 150, height: 30}}
+        // highlightFrame={{x: 160, y: 336, width: 150, height: 56}}
+        borderRadius={_.includes([1, 2, 3, 4], currentTargetIndex) ? 4 : undefined}
+        pageControlProps={currentTargetIndex < lastPage ? getPageControlProps() : undefined}
+      />
+    );
+  };
 
   const fetchDashData = () => {
     axios
@@ -168,16 +278,16 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <HomeHeader heading={'DASHBOARD'} />
+      <HomeHeader heading={'DASHBOARD'} addTarget={addTarget} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={style.mainContainer}>
-          <GettingStarted />
+          <GettingStarted addTarget={addTarget} />
           <View style={tw`-mx-5 items-center mt-10 bg-[${colors.green}] py-10 gap-2`}>
             <View style={tw`flex-row items-center h-25`}>
               {loading ? (
                 <ActivityIndicator size={100} animating={true} />
               ) : (
-                <TouchableOpacity onPress={pickImage}>
+                <TouchableOpacity onPress={pickImage} ref={(r) => addTarget(r, '3')}>
                   <Avatar.Image
                     size={100}
                     style={tw`m-2`}
@@ -236,6 +346,21 @@ const HomeScreen = () => {
           ) : null}
         </View>
       </ScrollView>
+      {/* <View center padding-25>
+        <View ref={viewRef}>
+          <Text marginT-20>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown
+            printer took a galley of type and scrambled it to make a type specimen book. It has
+            survived not only five centuries, but also the leap into electronic typesetting,{' '}
+            <Text>remaining</Text> essentially unchanged.
+          </Text>
+        </View>
+        <View marginT-20 testID={'5'} ref={(r) => addTarget(r, '5')}>
+          <Button onPress={showHighlight}>Show Overlay</Button>
+        </View>
+      </View> */}
+      {renderHighlighterOverlay()}
     </SafeAreaView>
   );
 };
