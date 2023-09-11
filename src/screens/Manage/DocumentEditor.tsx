@@ -213,7 +213,7 @@ const DocumentEditor = () => {
     // save for 0 send for 1
     data.append('save_type', type);
 
-    console.log('data', JSON.stringify(data));
+    console.log('data', refDraggedElArr.current);
 
     axios
       .post(url + envelope.uniqid + '/' + envelope.signature_id, data, {

@@ -38,7 +38,7 @@ export type RootStackParamList = {
   Profile: undefined;
   SignUpIndex: undefined;
   Template: undefined;
-  DocumentViewer: { Envelope: envelope; item: SignaturePreview };
+  DocumentViewer: { Envelope: envelope; item?: SignaturePreview; stamp?: StampPreview };
   SignatureSelection: envelope;
   StampSelection: envelope;
   AddRecipient: { Recipients?: Recipient[]; Recipient?: Recipient; Contact?: Contact };

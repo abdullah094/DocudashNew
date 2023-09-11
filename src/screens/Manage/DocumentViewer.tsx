@@ -254,32 +254,38 @@ const DocumentViewer = () => {
             showsHorizontalScrollIndicator={false}
           >
             {/* draw */}
-            {recipients?.slice(0, 5)?.map((item, index) => (
-              <View style={[styles.botton_view_buttons]}>
-                {index == selectedRecipient ? (
-                  <Badge style={tw`absolute top-0 right-2 z-1`}>✓</Badge>
-                ) : null}
-                <View style={styles.yellow_round}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedRecipient(index);
-                    }}
-                  >
-                    <Avatar.Text
-                      size={48}
-                      style={tw`bg-[${color[index].background}]`}
-                      // color={color[index].background}
-                      label={item.recName
-                        .replace(/\b(\w)\w+/g, '$1.')
-                        .replace(/\s/g, '')
-                        .replace(/\.$/, '')
-                        .toUpperCase()}
-                    />
-                  </TouchableOpacity>
+            {recipients
+              ?.filter(
+                (item) => item.recEmail.toLowerCase() == profileData.email.toLowerCase()
+                // && item.complete_incomplete === 0
+              )
+              ?.slice(0, 5)
+              ?.map((item, index) => (
+                <View style={[styles.botton_view_buttons]}>
+                  {index == selectedRecipient ? (
+                    <Badge style={tw`absolute top-0 right-2 z-1`}>✓</Badge>
+                  ) : null}
+                  <View style={styles.yellow_round}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedRecipient(index);
+                      }}
+                    >
+                      <Avatar.Text
+                        size={48}
+                        style={tw`bg-[${color[index].background}]`}
+                        // color={color[index].background}
+                        label={item.recName
+                          .replace(/\b(\w)\w+/g, '$1.')
+                          .replace(/\s/g, '')
+                          .replace(/\.$/, '')
+                          .toUpperCase()}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.yellow_round_text}>{item.recName}</Text>
                 </View>
-                <Text style={styles.yellow_round_text}>{item.recName}</Text>
-              </View>
-            ))}
+              ))}
           </ScrollView>
         </View>
         <View style={tw`flex-1`}>
