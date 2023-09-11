@@ -1,3 +1,4 @@
+import Loader from '@components/Loader';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken, selectProfileData } from '@stores/Slices';
 import {
@@ -194,6 +195,7 @@ const DocumentViewer = () => {
   }, []);
 
   const save = () => {
+    setLoading(true);
     const url = 'https://docudash.net/api/updateClientResponse/';
     // console.log('draggedElArr', draggedElArr);
     console.log('post', url + envelope.signature_id);
@@ -217,14 +219,17 @@ const DocumentViewer = () => {
         const { status, message }: { status: boolean; message: string } = response.data;
         if (status) {
           alert(message);
+          setLoading(false);
 
           navigation.navigate('Home');
         } else {
           alert(message);
+          setLoading(false);
         }
       })
       .catch((err) => {
         console.log('error', err);
+        setLoading(false);
       });
   };
 
@@ -232,6 +237,7 @@ const DocumentViewer = () => {
     console.log('Visible items are', viewableItems);
     // console.log('Changed in this iteration', changed);
   }, []);
+  if (loading) return <Loader />;
   return (
     <View style={tw`h-full `}>
       <Appbar.Header mode="center-aligned">
