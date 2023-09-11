@@ -1,5 +1,5 @@
 import {
-  Dimensions,
+  Alert,
   FlatList,
   SafeAreaView,
   ScrollView,
@@ -75,6 +75,33 @@ export default function AddRecipient() {
     showPrivateMessage: false,
   });
 
+  const createContact = (name: string, email: string) => {
+    axios
+      .post(
+        'https://docudash.net/api/Contacts/create',
+        {
+          name: name,
+          email: email,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_Token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const {
+          message,
+          status,
+          ReturnID,
+        }: { message: string; status: boolean; ReturnID: string } = response.data;
+        if (status) Alert.alert('Contact saved in your contacts list');
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
+
   useEffect(() => {
     setTimeout(() => {
       axios
@@ -110,6 +137,8 @@ export default function AddRecipient() {
       setRecipient((prev) => ({ ...prev, recName: Contact.name, recEmail: Contact.email }));
     }
   }, [route]);
+  console.log('Recipients', Recipients);
+  console.log('recipient', recipient);
 
   const addNewRecipient = () => {
     if (Recipient) {
@@ -322,7 +351,13 @@ export default function AddRecipient() {
         <Button mode="contained-tonal" onPress={() => navigation.goBack()}>
           Close
         </Button>
-        <Button mode="contained" onPress={addNewRecipient}>
+        <Button
+          mode="contained"
+          onPress={() => {
+            addNewRecipient();
+            createContact(recipient.recName, recipient.recEmail);
+          }}
+        >
           Save
         </Button>
       </View>
