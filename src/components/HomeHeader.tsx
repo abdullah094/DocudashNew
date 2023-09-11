@@ -8,7 +8,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar, Divider, Menu } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-export default function HomeHeader({ heading }) {
+interface IHomeHeader {
+  heading: string;
+  from?: string;
+}
+
+export default function HomeHeader({ heading, from }: IHomeHeader) {
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();
   const route = useRoute<HomeDrawerScreenProps<'HomeScreen'>['route']>();
   const [visible, setVisible] = React.useState(false);
@@ -19,7 +24,11 @@ export default function HomeHeader({ heading }) {
   const user = useSelector(selectProfileData);
   return (
     <View style={style.header}>
-      <Icon name="sort-variant" size={28} onPress={navigation.toggleDrawer} />
+      {from === 'add Recipent' ? (
+        <Icon name="arrow-left" size={28} onPress={navigation.goBack} />
+      ) : (
+        <Icon name="sort-variant" size={28} onPress={navigation.toggleDrawer} />
+      )}
       <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>{heading}</Text>
       <Menu
         anchorPosition="bottom"

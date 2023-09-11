@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   SafeAreaView,
   ScrollView,
@@ -60,8 +61,8 @@ export default function AddRecipient() {
   const [visible, setVisible] = React.useState(false);
   const [contact, setContact] = useState<Contact | undefined>();
   const [searchedContact, setSetsearchedContact] = useState<SearchContactList[]>();
-  const [disableScroll, setDisableScroll] = useState(false);
-  const [disableList, setDisableList] = useState(true);
+  const [showList, setShowList] = useState(false);
+  const [disableList, setDisableList] = useState(false);
   const openMenu = () => setVisible(true);
   console.log('searchedContact', searchedContact);
 
@@ -81,6 +82,33 @@ export default function AddRecipient() {
     showPrivateMessage: false,
   });
 
+  const createContact = (name: string, email: string) => {
+    axios
+      .post(
+        'https://docudash.net/api/Contacts/create',
+        {
+          name: name,
+          email: email,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_Token}`,
+          },
+        }
+      )
+      .then((response) => {
+        const {
+          message,
+          status,
+          ReturnID,
+        }: { message: string; status: boolean; ReturnID: string } = response.data;
+        if (status) Alert.alert('Contact saved in your contacts list');
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
+
   useEffect(() => {
     axios
       .post(
@@ -99,6 +127,9 @@ export default function AddRecipient() {
         const { message, status, data } = _data;
         if (message === 'Data Found') {
           setSetsearchedContact(data);
+          setShowList(true);
+        } else {
+          setShowList(false);
         }
       })
       .catch((error) => {
@@ -114,6 +145,8 @@ export default function AddRecipient() {
       setRecipient((prev) => ({ ...prev, recName: Contact.name, recEmail: Contact.email }));
     }
   }, [route]);
+  console.log('Recipients', Recipients);
+  console.log('recipient', recipient);
 
   const addNewRecipient = () => {
     if (Recipient) {
@@ -121,7 +154,9 @@ export default function AddRecipient() {
       EditedRecipients[Recipients.indexOf(Recipient)] = recipient;
       console.log('EditedRecipients', EditedRecipients);
       navigation.navigate('Edit', { Recipients: EditedRecipients });
-    } else navigation.navigate('Edit', { Recipients: [...Recipients, recipient] });
+    } else {
+      navigation.navigate('Edit', { Recipients: [...Recipients, recipient] });
+    }
   };
 
   return (
@@ -203,7 +238,7 @@ export default function AddRecipient() {
                   setRecipient((prev) => ({ ...prev, recName: text }));
                 }}
               />
-              {recipient.recName.length > 0 && disableList && (
+              {recipient.recName.length > 0 && disableList && showList && (
                 <FlatList
                   data={searchedContact}
                   contentContainerStyle={tw`border-2 border-[${COLORS.grey}] `}
@@ -211,16 +246,19 @@ export default function AddRecipient() {
                     <TouchableOpacity
                       style={tw`gap-1`}
                       onPress={() => {
-                        nameFieldRef.current.blur();
                         setRecipient((prev) => ({
                           ...prev,
                           recName: item.name,
                           recEmail: item.email,
                         }));
+                        setTimeout(() => {
+                          nameFieldRef.current.blur();
+                        }, 100);
                       }}
                     >
-                      <View style={tw`p-3`}>
+                      <View style={tw`p-3 gap-1`}>
                         <Text style={tw`text-4 font-medium`}>{item.name}</Text>
+                        <Text style={tw`text-3 font-medium text-gray-500`}>{item.email}</Text>
                       </View>
                       <Divider />
                     </TouchableOpacity>
@@ -370,7 +408,13 @@ export default function AddRecipient() {
         <Button mode="contained-tonal" onPress={() => navigation.goBack()}>
           Close
         </Button>
-        <Button mode="contained" onPress={addNewRecipient}>
+        <Button
+          mode="contained"
+          onPress={() => {
+            addNewRecipient();
+            createContact(recipient.recName, recipient.recEmail);
+          }}
+        >
           Save
         </Button>
       </View>

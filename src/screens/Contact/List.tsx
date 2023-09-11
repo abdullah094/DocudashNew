@@ -25,8 +25,9 @@ export default function List() {
   const navigation = useNavigation<RootStackScreenProps<'Contacts'>['navigation']>();
   const focused = useIsFocused();
   const route = useRoute<RootStackScreenProps<'Contacts'>['route']>();
+  const Recipients = route.params?.Recipients;
   const From = route.params?.From;
-  console.log(From);
+  console.log('From', From);
 
   const fetchData = async () => {
     setLoading(true);
@@ -57,7 +58,7 @@ export default function List() {
 
   return (
     <SafeAreaView style={tw`flex-1`}>
-      <HomeHeader heading={'CONTACTS'} />
+      <HomeHeader heading={'CONTACTS'} from={From} />
       <View style={tw`m-4 gap-1 `}>
         <Text style={tw`text-black text-5 font-bold `}>Contacts</Text>
         <Text style={tw`text-[${colors.gray}] text-3`}>Add or update your contacts.</Text>
