@@ -41,8 +41,8 @@ export type RootStackParamList = {
   DocumentViewer: { Envelope: envelope; item: SignaturePreview };
   SignatureSelection: envelope;
   StampSelection: envelope;
-  AddRecipient: { Recipients: Recipient[]; Recipient: Recipient };
-  Contacts: {} | undefined;
+  AddRecipient: { Recipients?: Recipient[]; Recipient?: Recipient;  Contact?:Contact} 
+  Contacts: {From?: string} ;
   AddContact: { Contact?: Contact };
 };
 

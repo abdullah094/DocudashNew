@@ -69,7 +69,6 @@ export default function StackNavigator() {
           <Stack.Screen name="SignatureSelection" component={SignatureSelection} />
           <Stack.Screen name="StampSelection" component={StampSelection} />
           <Stack.Screen name="Contacts" component={Contacts} />
-          <Stack.Screen name="AddContact" component={AddContact} />
 
           {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
           {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}

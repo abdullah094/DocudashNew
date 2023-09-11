@@ -24,7 +24,9 @@ export default function List() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<RootStackScreenProps<'Contacts'>['navigation']>();
   const focused = useIsFocused();
-  const route = useRoute();
+  const route = useRoute<RootStackScreenProps<'Contacts'>['route']>();
+  const From = route.params?.From;
+  console.log(From);
 
   const fetchData = async () => {
     setLoading(true);
@@ -75,7 +77,7 @@ export default function List() {
         contentContainerStyle={[tw`pb-25 py-5`, { alignSelf: 'stretch' }]}
         ListEmptyComponent={
           <View>
-            <Text style={tw`text-center text-gray-500`}>No items Found</Text>
+            <Text style={tw`text-center text-gray-500`}>No Contacts Found</Text>
           </View>
         }
         //   keyExtractor={(item) => item.id + '_'}
@@ -84,7 +86,11 @@ export default function List() {
             <Skeleton />
           ) : (
             <RN_LIST.Item
-              onPress={() => navigation.navigate('AddContact', { Contact: item })}
+              onPress={() => {
+                From
+                  ? navigation.navigate('AddRecipient', { Contact: item })
+                  : navigation.navigate('AddContact', { Contact: item });
+              }}
               title={item.name}
               titleStyle={tw`text-black font-semibold`}
               description={item.email}

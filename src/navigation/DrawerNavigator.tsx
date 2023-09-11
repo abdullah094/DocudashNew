@@ -102,7 +102,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer {...props}>
-                <List />
+                <ContactList />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
