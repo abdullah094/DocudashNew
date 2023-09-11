@@ -14,9 +14,6 @@ interface IHomeHeader {
 }
 
 export default function HomeHeader({ heading, from }: IHomeHeader) {
-=======
-export default function HomeHeader({ heading, addTarget }) {
->>>>>>> 4ba17865c233d1106ad5072f716a34b4a58fca5f
   const navigation = useNavigation<HomeDrawerScreenProps<'HomeScreen'>['navigation']>();
   const route = useRoute<HomeDrawerScreenProps<'HomeScreen'>['route']>();
   const [visible, setVisible] = React.useState(false);
@@ -27,33 +24,18 @@ export default function HomeHeader({ heading, addTarget }) {
   const user = useSelector(selectProfileData);
   return (
     <View style={style.header}>
-<<<<<<< HEAD
       {from === 'add Recipent' ? (
         <Icon name="arrow-left" size={28} onPress={navigation.goBack} />
       ) : (
         <Icon name="sort-variant" size={28} onPress={navigation.toggleDrawer} />
       )}
-=======
-      <View
-        ref={(r) => {
-          addTarget && addTarget(r, '0');
-        }}
-      >
-        <Icon
-          // style={{ width: 28, height: 28 }}
-          name="sort-variant"
-          size={28}
-          onPress={navigation.toggleDrawer}
-        />
-      </View>
->>>>>>> 4ba17865c233d1106ad5072f716a34b4a58fca5f
       <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>{heading}</Text>
       <Menu
         anchorPosition="bottom"
         visible={visible}
         onDismiss={closeMenu}
         anchor={
-          <TouchableOpacity onPress={openMenu} ref={(r) => addTarget && addTarget(r, '1')}>
+          <TouchableOpacity onPress={openMenu}>
             <Avatar.Image
               source={{
                 uri: user
