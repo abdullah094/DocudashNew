@@ -14,6 +14,7 @@ import StampList from '@screens/Stamp/List';
 import { selectRouteName } from '@stores/Slices';
 import { useSelector } from 'react-redux';
 import ContactList from '@screens/Contact/List';
+import Maps from '@screens/Maps';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -147,6 +148,20 @@ const DrawerNavigator = () => {
             {(props) => (
               <DrawerScreenContainer>
                 <Profile />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+          <Drawer.Screen
+            name="MAPS"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="account" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer>
+                <Maps />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
