@@ -23,7 +23,9 @@ import AddRecipient from '@screens/Manage/AddRecipient';
 import EmailScreen from '@screens/SignUp1/Email';
 import AddContact from '@screens/Contact/AddContact';
 import Contacts from '@screens/Contact/List';
+import Addresses from '@screens/Address/List';
 import FeatureHighlightScreen from '@screens/FeatureHighlightScreen';
+import AddAddress from '@screens/Address/AddAddress';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
@@ -70,6 +72,8 @@ export default function StackNavigator() {
           <Stack.Screen name="SignatureSelection" component={SignatureSelection} />
           <Stack.Screen name="StampSelection" component={StampSelection} />
           <Stack.Screen name="Contacts" component={Contacts} />
+          <Stack.Screen name="Addresses" component={Addresses} />
+          <Stack.Screen name="AddAddress" component={AddAddress} />
 
           {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
           {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}

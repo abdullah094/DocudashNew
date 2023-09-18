@@ -44,6 +44,8 @@ export type RootStackParamList = {
   AddRecipient: { Recipients?: Recipient[]; Recipient?: Recipient; Contact?: Contact };
   Contacts: { From?: string };
   AddContact: { Contact?: Contact };
+  Addresses: undefined;
+  AddAddress: { Address?: Address };
 };
 
 export type SignUpStackParamList = {
