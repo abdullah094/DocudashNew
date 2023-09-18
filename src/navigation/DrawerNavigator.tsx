@@ -14,7 +14,7 @@ import StampList from '@screens/Stamp/List';
 import { selectRouteName } from '@stores/Slices';
 import { useSelector } from 'react-redux';
 import ContactList from '@screens/Contact/List';
-import Maps from '@screens/Maps';
+import Map from '@screens/Notary/List';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -152,7 +152,7 @@ const DrawerNavigator = () => {
             )}
           </Drawer.Screen>
           <Drawer.Screen
-            name="MAPS"
+            name="Find Notary"
             options={{
               drawerIcon: ({ color }) => (
                 <Icon name="account" size={25} style={{ marginRight: -20, color }} />
@@ -161,7 +161,7 @@ const DrawerNavigator = () => {
           >
             {(props) => (
               <DrawerScreenContainer>
-                <Maps />
+                <Map />
               </DrawerScreenContainer>
             )}
           </Drawer.Screen>
