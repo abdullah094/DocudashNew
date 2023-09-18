@@ -1,14 +1,23 @@
+global.Buffer = global.Buffer || require('buffer').Buffer;
 import Loader from '@components/Loader';
 import SigningOrderModal from '@components/SigningOrderModal';
 import COLORS from '@constants/colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken, selectProfileData } from '@stores/Slices';
-import { Envelope, GenerateSignature, RootStackScreenProps, ViewDocument } from '@type/index';
+import {
+  DraggedElArr,
+  Envelope,
+  GenerateSignature,
+  HtmlEditorAPI,
+  RootStackScreenProps,
+  ViewDocument,
+} from '@type/index';
 import axios from 'axios';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   Image,
+  Modal,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,11 +25,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Appbar, Avatar, Button, Divider, IconButton, Menu } from 'react-native-paper';
+import { Button, Divider, IconButton, Menu, TextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
-import { repeat } from 'react-native-reanimated/lib/types/lib/reanimated2/animation/repeat';
 import VoidEnvelopeModel from '@components/VoidEnvelopeModel';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import * as FileSystem from 'expo-file-system';
+import * as Permissions from 'expo-permissions';
+import * as MediaLibrary from 'expo-media-library';
+import * as Sharing from 'expo-sharing';
+import * as Linking from 'expo-linking';
 
 interface IButton {
   text: string;
@@ -33,28 +47,176 @@ const Details = () => {
   const navigation = useNavigation<RootStackScreenProps<'Details'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'Details'>['route']>();
   const inbox: Envelope = route.params?.Envelope;
+  const accessCodeInputRef = useRef(null);
   const heading: string = route.params?.heading;
   const [data, setData] = useState<ViewDocument>();
+  const [images, setImages] = useState<string[]>();
   const [dataLoader, setDataLoader] = useState(true);
   const [needToSignVisible, setNeedToSignVisible] = useState(false);
+  const [accessCodeModal, setAccessCodeModal] = useState(false);
+  const [accessCode, setAccessCode] = useState('');
+  const [accessCodeText, setAccessCodeText] = useState('');
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
+  const [draggedElArr, setDraggedElArr] = useState<DraggedElArr>({
+    signature: [],
+    initial: [],
+    stamp: [],
+    date: [],
+    name: [],
+    email: [],
+    company: [],
+    title: [],
+  });
   const closeMenu = () => setVisible(false);
   const user = useSelector(selectProfileData);
   const [visibleMore, setVisibleMore] = React.useState(false);
   const openMenuMore = () => setVisibleMore(true);
   const closeMenuMore = () => setVisibleMore(false);
   const [visibleMoreHeader, setVisibleMoreHeader] = React.useState(false);
+  const [incrorrectCode, setIncrorrectCode] = useState(false);
   const openMenuMoreHeader = () => setVisibleMoreHeader(true);
   const closeMenuMoreHeader = () => setVisibleMoreHeader(false);
   const [needToSignButton, setNeedToSignButton] = useState('Sign');
+  const [loading, setLoading] = useState(false);
 
-  console.log(inbox.uniqid, inbox.signature_id);
   //@ts-ignore
   const generate: GenerateSignature = {
     signature_id: inbox.signature_id,
     uniqid: inbox.uniqid,
   };
+
+  const fetchData = () => {
+    setLoading(true);
+    const url = 'https://docudash.net/api/generate-signature/html-editor/';
+
+    axios
+      .get(url + generate.uniqid + '/' + generate.signature_id, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const {
+          status,
+          message,
+          generateSignatureDetailsFinalise,
+          generateSignatureDetails,
+          generateSignatureDetailsImages,
+        }: HtmlEditorAPI = response.data;
+
+        if (status) {
+          // if (
+          //   generateSignatureDetails.length > 0 &&
+          //   generateSignatureDetails[0].view_final_response != undefined
+          // ) {
+          //   const abayYAKiyahy = JSON.parse(generateSignatureDetails[0].view_final_response);
+          //   console.log()
+          // } else
+          if (generateSignatureDetailsFinalise && generateSignatureDetailsFinalise.draggedElArr) {
+            setImages(generateSignatureDetailsImages.map((x) => x.filesArr).flat());
+            if (
+              generateSignatureDetails.length > 0 &&
+              generateSignatureDetails[0].view_final_response != undefined
+            ) {
+              const abayYAKiyahy = JSON.parse(generateSignatureDetails[0].view_final_response);
+              setDraggedElArr(abayYAKiyahy);
+            }
+          } else {
+            alert(message);
+          }
+        }
+        setLoading(false);
+      })
+
+      .catch((error) => {
+        console.log('Error----', error);
+        setLoading(false);
+      });
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const createpdf = () => {
+    const createPDF = async () => {
+      const pdfDoc = await PDFDocument.create();
+
+      const promise = images.map(async (x, i) => {
+        const arrayBuffer = await axios({
+          method: 'get',
+          url: x,
+          responseType: 'arraybuffer',
+        })
+          .then((response) => {
+            // console.log('res', response.data);
+            return response.data;
+          })
+          .catch((erro) => {
+            console.log(erro);
+          });
+
+        // console.log('image', arrayBuffer);
+        const image4 = await pdfDoc.embedJpg(arrayBuffer);
+
+        const jpgDims = image4.scale(0.25);
+        const page = pdfDoc.addPage([image4.width, image4.height]);
+        page.drawImage(image4, {
+          x: 0,
+          // y: page.getHeight() / 2 - jpgDims.height / 2,
+          width: image4.width,
+          height: image4.height,
+        });
+
+        const promises = draggedElArr.signature
+          .filter((x) => x.element_container_id == `canvasInner-${i}`)
+          .map(async (element) => {
+            const bg = element.background.replace(/(\r\n|\n|\r)/gm, '');
+            console.log(bg);
+            const image = await pdfDoc.embedPng(bg);
+            page.drawImage(image, {
+              x: (parseFloat(element.left) / 100) * image.width,
+              y: (parseFloat(element.top) / 100) * image.height,
+              width: image.width,
+              height: image.height,
+            });
+          });
+        await Promise.all(promises);
+      });
+
+      await Promise.all(promise);
+
+      // images.forEach(async (element, index) => {
+      // console.log('element', element);
+
+      // });
+      // console.log(pdfDoc);
+      const pdfBytes = await pdfDoc.saveAsBase64();
+      return pdfBytes;
+    };
+    setLoading(true);
+    createPDF()
+      .then((res) => {
+        const fileUri = `${FileSystem.documentDirectory}pdf2.pdf`;
+        console.log(fileUri);
+        FileSystem.writeAsStringAsync(fileUri, res, {
+          encoding: FileSystem.EncodingType.Base64,
+        }).then((data) => {
+          setLoading(false);
+
+          // Sharing.shareAsync(fileUri, {
+          //   UTI: '',
+          //   dialogTitle: '',
+          //   mimeType: 'application/pdf',
+          // });
+        });
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log('err', err);
+      });
+  };
+
   const updateClientResponse = () => {
     axios
       .post('https://docudash.net/api/updateClientResponse/37', {
@@ -67,8 +229,6 @@ const Details = () => {
   useEffect(() => {
     const url = 'https://docudash.net/api/generate-signature/manage-doc-view/';
     const id = heading === 'Sent' ? inbox.id : inbox.signature_id;
-    console.log('url', url + inbox.id + '/' + inbox.signature_id);
-    console.log(`Bearer ${accessToken}`);
 
     axios
       .get(url + inbox.uniqid + '/' + id, {
@@ -78,7 +238,7 @@ const Details = () => {
       })
       .then((response) => {
         const data: ViewDocument = response.data;
-        console.log('DAta api', data);
+
         if (data.success) {
           setData(data);
           setDataLoader(false);
@@ -161,6 +321,64 @@ const Details = () => {
 
   return (
     <Fragment>
+      <Modal visible={accessCodeModal} transparent>
+        <View style={tw`flex-1 justify-center items-center`}>
+          <View style={tw`border-2 p-5 gap-4 bg-white rounded-xl`}>
+            <Text style={tw`text-4 font-bold `}>Enter Access Code</Text>
+            {incrorrectCode && (
+              <Text style={tw`text-red-500`}>Incorrect code. Please try again</Text>
+            )}
+            <TextInput
+              ref={accessCodeInputRef}
+              editable={true}
+              style={tw`w-60`}
+              mode="outlined"
+              value={accessCode}
+              onChangeText={(text) => setAccessCode(text)}
+            />
+            <View style={tw`flex-row justify-center gap-2`}>
+              <Button
+                mode="outlined"
+                onPress={() => {
+                  setAccessCodeModal(false);
+                  setTimeout(() => {
+                    setAccessCode('');
+                    setTimeout(() => {
+                      setIncrorrectCode(false);
+                    }, 100);
+                  }, 100);
+                }}
+              >
+                {' '}
+                Cancel
+              </Button>
+              <Button
+                mode="outlined"
+                onPress={() => {
+                  if (accessCode == accessCodeText) {
+                    setIncrorrectCode(false);
+                    setTimeout(() => {
+                      setAccessCodeModal(false);
+                      setTimeout(() => {
+                        setAccessCode('');
+                      }, 100);
+                    }, 100);
+                    navigation.navigate('DocumentViewer', { Envelope: generate });
+                  } else {
+                    setIncrorrectCode(true);
+                    setTimeout(() => {
+                      setAccessCode('');
+                    }, 100);
+                  }
+                }}
+              >
+                {' '}
+                View
+              </Button>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <SafeAreaView style={tw`flex-0`}></SafeAreaView>
       <View style={styles.header}>
         <Icon name="arrow-left" size={28} onPress={() => navigation.goBack()} />
@@ -260,8 +478,21 @@ const Details = () => {
                 <Button
                   mode="elevated"
                   onPress={() => {
-                    //@ts-ignore
-                    navigation.navigate('DocumentViewer', { Envelope: generate });
+                    data.generateSignatureDetails
+                      .filter(
+                        (item) =>
+                          item.recEmail.toLowerCase() == user.email.toLowerCase() &&
+                          item.complete_incomplete === 0
+                      )
+                      .map((item) => {
+                        if (item.access_code) {
+                          setAccessCodeModal(true);
+                          accessCodeInputRef.current?.foucs();
+                          setTimeout(() => {
+                            setAccessCodeText(item.access_code);
+                          }, 100);
+                        } else navigation.navigate('DocumentViewer', { Envelope: generate });
+                      });
                   }}
                 >
                   Sign
@@ -309,6 +540,18 @@ const Details = () => {
                 <Divider />
                 <Menu.Item onPress={DeleteEnvelope} title="Delete" />
               </Menu>
+            </View>
+            <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
+              <Button
+                disabled={loading}
+                loading={loading}
+                mode="elevated"
+                onPress={() => {
+                  createpdf();
+                }}
+              >
+                Download
+              </Button>
             </View>
             <View style={tw`flex-row items-center gap-5 py-2 justify-center`}></View>
           </View>
@@ -385,7 +628,12 @@ const Details = () => {
             </Text>
             <Button
               onPress={() => {
-                navigation.navigate('DocumentViewer', { Envelope: generate });
+                if (item.access_code) {
+                  setAccessCodeModal(true);
+                  setTimeout(() => {
+                    setAccessCodeText(item.access_code);
+                  }, 100);
+                } else navigation.navigate('DocumentViewer', { Envelope: generate });
               }}
               mode="outlined"
             >

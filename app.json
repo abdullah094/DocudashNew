@@ -14,16 +14,38 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationWhenInUsePermission":  "Allow $(PRODUCT_NAME) to use your location.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ]
+    ]
+  ,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.darkwaqar.DDash"
+      "bundleIdentifier": "com.darkwaqar.DDash",
+     
+    "config": {
+      "googleMapsApiKey": "AIzaSyAS5nWA8pNQgiVb_LAWkOq6GU8F1tfmvDQ"
+    }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.darkwaqar.DDash"
+      "package": "com.darkwaqar.DDash",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAS5nWA8pNQgiVb_LAWkOq6GU8F1tfmvDQ"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

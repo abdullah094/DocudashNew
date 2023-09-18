@@ -285,6 +285,7 @@ const Edit = () => {
         formData.append('hostEmail[' + index + ']', item.hostEmail);
         formData.append('access_code[' + index + ']', item.access_code);
         formData.append('private_message[' + index + ']', item.private_message);
+        formData.append('signingOrderInput[' + index + ']', item.id);
       }
     });
     formData.append('emailSubject', emailSubject);
