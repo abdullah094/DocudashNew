@@ -48,6 +48,8 @@ export type RootStackParamList = {
   AddContact: { Contact?: Contact };
   NotaryOrUser: undefined;
   NotaryProfile: undefined
+  Addresses: undefined;
+  AddAddress: { Address?: Address };
 };
 
 export type SignUpStackParamList = {
