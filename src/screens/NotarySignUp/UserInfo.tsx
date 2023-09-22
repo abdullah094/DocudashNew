@@ -33,10 +33,10 @@ const UserInfoScreen = () => {
   const fetchData = async () => {
     setLoading(true);
     const token = await getToken();
-    console.log(token);
+    console.log('token', token);
 
     axios
-      .post('https://docudash.net/api/sign-up-1/' + token, {
+      .post('https://docudash.net/api/notary-sign-up-1/' + token, {
         first_name: form.first_Name,
         last_name: form.last_Name,
         phone: form.phone,
@@ -48,7 +48,7 @@ const UserInfoScreen = () => {
         if (success) {
           setLoading(false),
             // @ts-ignore
-            navigation.replace('SignUpIndex', {
+            navigation.replace('NotaryLoginStackNavigator', {
               screen: ('Step' + data.steps) as any,
               params: {
                 api: next,
@@ -84,7 +84,7 @@ const UserInfoScreen = () => {
         >
           <View style={tw`absolute top--10 left-5`}>
             <Chip>
-              <Text variant="labelLarge">{`1/4`}</Text>
+              <Text variant="labelLarge">{`2/6`}</Text>
             </Chip>
           </View>
           <Image

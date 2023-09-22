@@ -10,7 +10,7 @@ import Signatures from '@screens/Signatures/List';
 import AddStamp from '@screens/Stamp/AddStamps';
 import Stamps from '@screens/Stamp/List';
 import { logoutUser, selectAccessToken, setAccessToken } from '@stores/Slices';
-import { getTokenGlobal } from '@utils/AsyncGlobal';
+import { getData, getNotaryOrUser, getTokenGlobal } from '@utils/AsyncGlobal';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../types/navigation';
@@ -24,11 +24,24 @@ import EmailScreen from '@screens/SignUp1/Email';
 import AddContact from '@screens/Contact/AddContact';
 import Contacts from '@screens/Contact/List';
 import FeatureHighlightScreen from '@screens/FeatureHighlightScreen';
+import NotaryLoginStackNavigator from './NotaryLoginStackNavigator';
+import NotaryOrUser from '@screens/SignUp1/NotaryOrUser';
+import NotaryProfile from '@screens/NotaryProfile';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
-  // clearToken();
+  const [signUpToken, setSignUpToken] = useState<string>();
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(true);
+    const getNotaryData = async () => {
+      const token = await getNotaryOrUser();
+      setLoading(false);
+      if (token) setSignUpToken(token);
+    };
+    getNotaryData();
+  }, []);
+  // clearToken();
   const dispatch = useDispatch();
   useEffect(() => {
     setLoading(true);
@@ -53,6 +66,7 @@ export default function StackNavigator() {
       {user ? (
         <Stack.Group>
           {/* <Stack.Screen name="Featured" component={FeatureHighlightScreen} /> */}
+
           <Stack.Screen name="Home" component={DrawerNavigator} />
           <Stack.Screen name="Signatures" component={Signatures} />
           <Stack.Screen name="AddSignature" component={AddSignature} />
@@ -70,12 +84,17 @@ export default function StackNavigator() {
           <Stack.Screen name="SignatureSelection" component={SignatureSelection} />
           <Stack.Screen name="StampSelection" component={StampSelection} />
           <Stack.Screen name="Contacts" component={Contacts} />
+          <Stack.Screen name="NotaryProfile" component={NotaryProfile} />
 
           {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
           {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}
         </Stack.Group>
       ) : (
-        <Stack.Screen name="SignUpIndex" component={LoginStackNavigator} />
+        <Stack.Group>
+          <Stack.Screen name="NotaryOrUser" component={NotaryOrUser} />
+          <Stack.Screen name="SignUpIndex" component={LoginStackNavigator} />
+          <Stack.Screen name="NotaryLoginStackNavigator" component={NotaryLoginStackNavigator} />
+        </Stack.Group>
       )}
     </Stack.Navigator>
   );

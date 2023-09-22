@@ -10,7 +10,7 @@ const PostCarouselItem = (props) => {
   const navigation = useNavigation();
 
   const goToPostPage = () => {
-    // navigation.navigate('SnappCover');
+    navigation.navigate('NotaryProfile', { item: post });
   };
   return (
     // <Text>hello</Text>
@@ -21,17 +21,11 @@ const PostCarouselItem = (props) => {
       <View style={tw`bg-white rounded-lg `}>
         <View style={tw`flex-row`}>
           {/* Image  */}
-          <Image
-            style={tw`h-full aspect-square rounded-l-lg`}
-            resizeMode="cover"
-            source={{ uri: post.image }}
-          />
+          <Image style={tw`h-full m-2 rounded-l-lg`} resizeMode="cover" source={post.image} />
 
           <View style={{ flex: 1, marginHorizontal: 10 }}>
             {/* Bed & Bedroom  */}
-            <Text style={tw`text-lg my-2`}>
-              {post.bed} bed {post.bedroom} bedroom
-            </Text>
+            <Text style={tw`text-lg my-2`}>{post.title}</Text>
 
             {/* Type & Description */}
             <Text style={tw`text-sm`} numberOfLines={2}>
@@ -40,7 +34,7 @@ const PostCarouselItem = (props) => {
 
             {/*  Old price & new price */}
             <Text style={tw`text-sm my-2`}>
-              <Text style={tw`font-bold`}>${post.newPrice} </Text>/ night
+              <Text style={tw`font-bold`}>${post.newPrice} </Text>/ sign
             </Text>
           </View>
         </View>

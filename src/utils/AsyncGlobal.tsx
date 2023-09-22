@@ -15,6 +15,20 @@ export const getData = async () => {
   return val;
 };
 
+export const storeNotaryOrUser = async (value: string) => {
+  //store step data
+  try {
+    await AsyncStorage.setItem('@notayOrNot', value);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getNotaryOrUser = async () => {
+  let val = await AsyncStorage.getItem('notayOrNot');
+  return val;
+};
+
 export const storeTokenGlobal = async (value: string) => {
   //token for full app
   try {

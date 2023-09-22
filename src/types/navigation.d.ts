@@ -1,3 +1,4 @@
+import { NotaryOrUser } from '@screens/SignUp1/NotaryOrUser';
 import { AddContact } from '@screens/Contact/AddContact';
 import type {
   CompositeScreenProps,
@@ -37,6 +38,7 @@ export type RootStackParamList = {
   AddStamp: { Stamp?: StampPreview };
   Profile: undefined;
   SignUpIndex: undefined;
+  NotaryLoginStackNavigator: undefined
   Template: undefined;
   DocumentViewer: { Envelope: envelope; item?: SignaturePreview; stamp?: StampPreview };
   SignatureSelection: envelope;
@@ -44,16 +46,21 @@ export type RootStackParamList = {
   AddRecipient: { Recipients?: Recipient[]; Recipient?: Recipient; Contact?: Contact };
   Contacts: { From?: string };
   AddContact: { Contact?: Contact };
+  NotaryOrUser: undefined;
+  NotaryProfile: undefined
 };
 
 export type SignUpStackParamList = {
-  Index: undefined;
+  NotaryOrUser: undefined
+  Index: {type:string};
   Step1: { api: string };
   Step2: { api: string };
   Step3: { api: string };
   Step4: { industry: Industry[]; signUpReasons: Industry[] };
   Step5: { token: string; email: string };
+  Step6: { token: string; email: string };
   Browser: { url: string; heading: string };
+  Address: undefined
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<

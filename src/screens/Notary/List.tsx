@@ -24,6 +24,7 @@ import EvilIcons from '@expo/vector-icons/EvilIcons';
 import tw from 'twrnc';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { colors } from '@utils/Colors';
+import DropDown from 'react-native-paper-dropdown';
 const { width, height } = Dimensions.get('window');
 
 const Map = () => {
@@ -37,9 +38,9 @@ const Map = () => {
   const posts = [
     {
       id: '0',
-      image: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/1.jpg',
+      image: require('@assets/ProfilePic.png'),
       type: 'Private Room',
-      title: 'Bright room in the heart of the city',
+      title: 'Nina Agdaal',
       description:
         "Lorem Ipsum is simplyLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       bed: 2,
@@ -54,9 +55,9 @@ const Map = () => {
     },
     {
       id: '1',
-      image: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/2.jpg',
+      image: require('@assets/ProfilePic.png'),
       type: 'Entire Flat',
-      title: 'NEW lux. apartment in the center of Santa Cruz',
+      title: 'Laura Mcarty',
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       bed: 3,
@@ -71,9 +72,9 @@ const Map = () => {
     },
     {
       id: '2',
-      image: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/3.jpg',
+      image: require('@assets/ProfilePic.png'),
       type: 'Private Property',
-      title: 'Green House Santa Cruz',
+      title: 'Julie Green',
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       bed: 2,
@@ -88,9 +89,9 @@ const Map = () => {
     },
     {
       id: '3',
-      image: 'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/images/4.jpg',
+      image: require('@assets/ProfilePic.png'),
       type: 'Entire Flat',
-      title: 'Typical canarian house',
+      title: 'Kamala Haris',
       description:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       bed: 4,
@@ -107,7 +108,23 @@ const Map = () => {
 
   // variables
   const snapPoints = useMemo(() => ['8%', '90%'], []);
-
+  const [showDropDownType, setShowDropDownType] = useState(false);
+  const [showDropdownLoc, setShowDropDownLoc] = useState(false);
+  const [typeValue, setTypeValue] = useState('');
+  const types = [
+    {
+      label: 'All',
+      value: 'all',
+    },
+    {
+      label: 'In Person',
+      value: 'in person',
+    },
+    {
+      label: 'RON',
+      value: 'ron',
+    },
+  ];
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
@@ -320,17 +337,34 @@ const Map = () => {
 
           <BottomSheetFlatList
             ListHeaderComponent={
-              <Text
-                style={{
-                  color: 'black',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  marginBottom: 20,
-                  fontSize: 18,
-                }}
-              >
-                {`${posts?.length} Tropical Homes`}
-              </Text>
+              <View>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    marginBottom: 20,
+                    fontSize: 18,
+                  }}
+                >
+                  {`${posts?.length} Tropical Homes`}
+                </Text>
+                <View style={tw`flex-row gap-4 px-10 justify-center items-center`}>
+                  <Text>Select:</Text>
+                  <View style={tw`w-40 `}>
+                    <DropDown
+                      label={'Select Type'}
+                      mode={'outlined'}
+                      visible={showDropDownType}
+                      showDropDown={() => setShowDropDownType(true)}
+                      onDismiss={() => setShowDropDownType(false)}
+                      value={typeValue}
+                      setValue={setTypeValue}
+                      list={types}
+                    />
+                  </View>
+                </View>
+              </View>
             }
             data={posts}
             renderItem={({ item }: any) => {

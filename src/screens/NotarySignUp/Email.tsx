@@ -1,7 +1,7 @@
 import GreenButton from '@components/GreenButton';
 import Input from '@components/Input';
 import { useNavigation } from '@react-navigation/native';
-import { SignUpAPI, SignUpStackScreenProps } from '@type/index';
+import { NotraySignUpAPI, SignUpAPI, SignUpStackScreenProps } from '@type/index';
 import { storeData, storeToken } from '@utils/AsyncFunc';
 import axios from 'axios';
 import React, { useState } from 'react';
@@ -31,12 +31,12 @@ const EmailScreen = () => {
   const fetchData = () => {
     setLoading(true);
     axios
-      .post('https://docudash.net/api/sign-up', {
+      .post('https://docudash.net/api/notary-try-for-free', {
         email: inputVal?.toLowerCase(),
         checkAgree: checked,
       })
       .then((response) => {
-        const { data, success, next_access, message, next }: SignUpAPI = response.data;
+        const { data, success, next_code, message, next }: NotraySignUpAPI = response.data;
         console.log('emailScreen', response.data);
         if (success) {
           if (data.steps === 5) {
@@ -50,7 +50,7 @@ const EmailScreen = () => {
             });
           } else {
             // @ts-ignore
-            navigation.replace('SignUpIndex', {
+            navigation.replace('NotaryLoginStackNavigator', {
               screen: ('Step' + data.steps) as any,
               params: {
                 api: next,
@@ -58,7 +58,7 @@ const EmailScreen = () => {
               },
             });
           }
-          storeToken(next_access);
+          storeToken(next_code);
           storeData('Step' + data.steps);
         } else {
           // @ts-ignore
