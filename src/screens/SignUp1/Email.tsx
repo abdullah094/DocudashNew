@@ -39,10 +39,10 @@ const EmailScreen = () => {
         const { data, success, next_access, message, next }: SignUpAPI = response.data;
         console.log('emailScreen', response.data);
         if (success) {
-          if (data.steps === 5) {
+          if (data.steps === 6) {
             // @ts-ignore
             navigation.navigate('SignUpIndex', {
-              screen: ('Step' + data.steps) as any,
+              screen: 'Step5',
               params: {
                 api: next,
                 email: data.email,

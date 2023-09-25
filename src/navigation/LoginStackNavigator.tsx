@@ -32,7 +32,6 @@ export default function LoginStackNavigator() {
       <LoginStack.Screen name="Step3" component={SetPasswordScreen} />
       <LoginStack.Screen name="Step4" component={IndustriesScreen} />
       <LoginStack.Screen name="Step5" component={PasswordScreen} />
-      <LoginStack.Screen name="Address" component={Address} />
 
       <LoginStack.Screen name="Browser" component={Browser} />
     </LoginStack.Navigator>

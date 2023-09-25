@@ -39,7 +39,7 @@ const Map = () => {
     {
       id: '0',
       image: require('@assets/ProfilePic.png'),
-      type: 'Private Room',
+      type: 'Law',
       title: 'Nina Agdaal',
       description:
         "Lorem Ipsum is simplyLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
@@ -197,7 +197,7 @@ const Map = () => {
       return;
     }
     const index = posts.findIndex((place) => place.id === selectedPlaceId);
-    flatList.current.scrollToIndex({ index });
+    // flatList.current.scrollToIndex({ index });
 
     const selectedPlace = posts[index];
     console.log(selectedPlace);
@@ -369,17 +369,20 @@ const Map = () => {
             data={posts}
             renderItem={({ item }: any) => {
               return (
-                <TouchableWithoutFeedback onPress={() => navigation.navigate('SnappCover')}>
-                  <View
-                    style={tw`w-full my-5 flex justify-center items-center bg-white shadow-md rounded-lg`}
-                  >
+                <TouchableWithoutFeedback
+                  onPress={() => navigation.navigate('NotaryProfile', { item: item })}
+                >
+                  <View style={tw`w-full my-5 flex justify-center bg-white shadow-md rounded-lg`}>
+                    <View style={tw`w-full bg-[${colors.green}] h-20`}></View>
                     <Image
                       style={{
-                        width: width - 20,
-                        height: 370,
+                        width: 80,
+                        marginHorizontal: 20,
                         borderRadius: 20,
+                        bottom: 50,
                       }}
-                      source={{ uri: item?.image }}
+                      source={item.image}
+                      resizeMode="contain"
                     />
                     <View
                       style={{
@@ -387,21 +390,25 @@ const Map = () => {
                         flexDirection: 'row',
                         justifyContent: 'space-between',
                         marginTop: 10,
-                        paddingHorizontal: 10,
+                        paddingHorizontal: 20,
+                        bottom: 50,
                       }}
                     >
                       <View>
-                        <Text style={{ fontSize: 15, color: 'black' }}>{item?.title}</Text>
+                        <Text style={{ fontSize: 20, color: 'black' }}>{item?.title}</Text>
                         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
                           {item?.totalPrice}{' '}
                         </Text>
                       </View>
                       <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          alignSelf: 'flex-start',
-                        }}
+                        style={[
+                          {
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            alignSelf: 'flex-start',
+                          },
+                          tw`gap-1`,
+                        ]}
                       >
                         <Image
                           style={{ width: 20, height: 20 }}

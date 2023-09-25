@@ -17,28 +17,30 @@ import { Chip, Switch, RadioButton, Divider } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import { List as RN_LIST } from 'react-native-paper';
+import { AddressList, Addresses } from 'src/types/AddressList';
 
 export default function List() {
   const accessToken = useSelector(selectAccessToken);
-  const [data, setData] = useState<Contact[]>();
+  const [data, setData] = useState<Addresses[]>();
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<RootStackScreenProps<'Addresses'>['navigation']>();
   const focused = useIsFocused();
   const route = useRoute<RootStackScreenProps<'Addresses'>['route']>();
-  const From = route.params?.From;
-  console.log('From', From);
 
+  const From = route.params?.From;
   const fetchData = async () => {
     setLoading(true);
     await axios
-      .get('https://docudash.net/api/Contacts/list', {
+      .get('https://docudash.net/api/Address', {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
         setLoading(false);
-        const { data }: ContactList = response.data;
+        const { data }: AddressList = response.data;
+        console.log(data);
+
         setData(data);
       })
       .catch((error) => {
@@ -81,19 +83,19 @@ export default function List() {
           </View>
         }
         //   keyExtractor={(item) => item.id + '_'}
-        renderItem={({ item }: { item: Contact }) =>
+        renderItem={({ item }: { item: Addresses }) =>
           loading ? (
             <Skeleton />
           ) : (
             <RN_LIST.Item
               onPress={() => {
                 From
-                  ? navigation.navigate('AddRecipient', { Contact: item })
-                  : navigation.navigate('AddContact', { Contact: item });
+                  ? navigation.navigate('AddAddress', { Address: item })
+                  : navigation.navigate('AddAddress', { Address: item });
               }}
               title={item.name}
               titleStyle={tw`text-black font-semibold`}
-              description={item.email}
+              description={item.address}
               descriptionStyle={tw`text-[${colors.gray}] font-thin`}
               left={(props) => <RN_LIST.Icon {...props} icon="face-man" />}
             />

@@ -58,7 +58,7 @@ export default function EnvelopeList({ heading }: { heading: string }) {
       ListHeaderComponent={
         <View style={tw`flex-row items-center justify-between px-5 mb-5 `}>
           <Text style={tw`font-bold text-6  tracking-wider`} numberOfLines={1}>
-            {heading}
+            {heading.toUpperCase()}
           </Text>
           <FilterModal
             onPress={(item: React.SetStateAction<string | undefined>) => setName(item)}
