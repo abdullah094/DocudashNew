@@ -43,7 +43,6 @@ target 'Docudash' do
 # @generated begin react-native-maps - expo prebuild (DO NOT MODIFY) sync-e9cc66c360abe50bc66d89fffb3c55b034d7d369
   pod 'react-native-google-maps', path: File.dirname(`node --print "require.resolve('react-native-maps/package.json')"`)
 # @generated end react-native-maps
-
   config = use_native_modules!
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
@@ -52,6 +51,43 @@ target 'Docudash' do
   # Flags change depending on the env values.
   flags = get_default_flags()
 
+# @generated begin withReactNativeMaps - expo prebuild (DO NOT MODIFY) sync-602fe89cba558bf514c97cab0be48242f65f2875
+
+  $static_library = [
+    'React',
+    'Google-Maps-iOS-Utils',
+    'GoogleMaps',
+    'react-native-maps',
+    'react-native-google-maps',
+    'React-hermes'
+  ]
+
+  pre_install do |installer|
+    Pod::Installer::Xcode::TargetValidator.send(
+      :define_method, 
+      :verify_no_static_framework_transitive_dependencies
+    ) {}
+
+    installer.pod_targets.each do |pod|
+      bt = pod.send(:build_type)
+
+      if $static_library.include?(pod.name)
+        puts "Overriding the build_type to static_library from static_framework for #{pod.name}"
+
+        def pod.build_type;
+          Pod::BuildType.static_library
+        end
+      end
+    end
+
+    installer.pod_targets.each do |pod|
+      bt = pod.send(:build_type)
+      puts "#{pod.name} (#{bt})"
+      puts "  linkage: #{bt.send(:linkage)} packaging: #{bt.send(:packaging)}"
+    end
+  end
+
+# @generated end withReactNativeMaps
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',

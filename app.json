@@ -11,29 +11,27 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "plugins": [
+      "./bin/react-native-maps-plugin",
       [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
           "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location.",
-          "locationWhenInUsePermission":  "Allow $(PRODUCT_NAME) to use your location.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
           "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true
         }
       ]
-    ]
-  ,
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.darkwaqar.DDash",
-     
-    "config": {
-      "googleMapsApiKey": "AIzaSyAS5nWA8pNQgiVb_LAWkOq6GU8F1tfmvDQ"
-    }
+
+      "config": {
+        "googleMapsApiKey": "AIzaSyAS5nWA8pNQgiVb_LAWkOq6GU8F1tfmvDQ"
+      }
     },
     "android": {
       "adaptiveIcon": {

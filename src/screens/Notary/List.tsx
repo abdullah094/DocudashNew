@@ -17,7 +17,6 @@ import {
   TextInput,
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { FlatListPropsWithLayout } from 'react-native-reanimated';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
@@ -279,7 +278,7 @@ const Map = () => {
         <MapView
           ref={map}
           style={{ flex: 1 }}
-          provider={PROVIDER_GOOGLE}
+          // provider={PROVIDER_GOOGLE}
           initialRegion={{
             latitude: 28.3279822,
             longitude: -16.5124847,

@@ -5,7 +5,9 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "ios-m": "arch -x86_64 npx expo run:ios",
+    "pre-build": "npx expo prebuild"
   },
   "dependencies": {
     "@expo/webpack-config": "^18.0.1",
