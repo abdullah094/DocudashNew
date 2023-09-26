@@ -92,6 +92,7 @@ const AddAddress = () => {
   const navigation = useNavigation<RootStackScreenProps<'AddAddress'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'AddAddress'>['route']>();
   const Adress = route.params?.Address as Addresses;
+  console.log(Adress.id);
 
   useEffect(() => {
     if (Adress) {
@@ -106,47 +107,14 @@ const AddAddress = () => {
     }
     if (Adress) {
       // update
-      console.log(adress.name);
+      console.log('Update');
+
       axios
         .post(
           'https://docudash.net/api/Address/update/' + adress.id,
           {
             name: adress.name,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          const {
-            message,
-            status,
-          }: {
-            message: string;
-            status: boolean;
-          } = response.data;
-          console.log('response.data', response.data);
-          if (status) {
-            navigation.goBack();
-            // navigation.navigate('Signatures', {});
-          } else {
-            Alert.alert(message);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      // create
-      console.log(adress.name);
-      axios
-        .post(
-          'https://docudash.net/api/Address/create',
-          {
-            name: adress.name,
-            adress: adress.address,
+            address: adress.address,
             city: adress.city,
             state: adress.state,
             country: adress.country,
@@ -163,13 +131,55 @@ const AddAddress = () => {
         .then((response) => {
           const {
             message,
-            status,
+            success,
           }: {
             message: string;
-            status: boolean;
+            success: boolean;
+          } = response.data;
+          console.log('response.data', response.data);
+          if (success) {
+            navigation.goBack();
+            // navigation.navigate('Signatures', {});
+          } else {
+            Alert.alert(message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      // create
+      console.log('Create');
+
+      axios
+        .post(
+          'https://docudash.net/api/Address/create',
+          {
+            name: adress.name,
+            address: adress.address,
+            city: adress.city,
+            state: adress.state,
+            country: adress.country,
+            zip_code: adress.zip_code,
+            lat: adress.lat,
+            long: adress.long,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          const {
+            message,
+            success,
+          }: {
+            message: string;
+            success: boolean;
           } = response.data;
           console.log(response.data);
-          if (status) {
+          if (success) {
             navigation.goBack();
             // navigation.navigate('Signatures', {});
           } else {
@@ -189,7 +199,7 @@ const AddAddress = () => {
     }
     axios
       .post(
-        'https://docudash.net/api/Contacts/delete',
+        'https://docudash.net/api/Address/delete',
         {
           deleteId: adress.id,
         },
@@ -202,13 +212,13 @@ const AddAddress = () => {
       .then((response) => {
         const {
           message,
-          success,
+          status,
         }: {
           message: string;
-          success: boolean;
+          status: boolean;
         } = response.data;
         console.log(response.data);
-        if (success) {
+        if (status) {
           navigation.goBack();
           // navigation.navigate('Signatures', {});
         } else {
@@ -227,7 +237,7 @@ const AddAddress = () => {
         {Adress && <Appbar.Action icon="delete" onPress={deleteContact} />}
       </Appbar.Header>
       <View style={tw`flex-1`}>
-        <ScrollView contentContainerStyle={tw`mx-2 gap-4`}>
+        <ScrollView contentContainerStyle={tw`mx-2 gap-4`} keyboardShouldPersistTaps="handled">
           <TextInput
             mode="outlined"
             label="Name"
@@ -271,8 +281,17 @@ const AddAddress = () => {
               components: 'country:us',
             }}
             onPress={(data, details = null) => {
-              console.log(details.address_components[0]);
-
+              let _state: any;
+              // console.log('details.address_components[0]', details.adr_address);
+              const state = details.address_components.find((component) =>
+                component.types.includes('administrative_area_level_1')
+              );
+              _state = state.long_name;
+              let _country: any;
+              const country = details.address_components.find((component) =>
+                component.types.includes('country')
+              );
+              _country = country.long_name;
               if (details == null) return;
 
               const placeType = details.types[0] || '';
@@ -312,6 +331,8 @@ const AddAddress = () => {
                 lat: String(lat),
                 address: String(data.description),
                 zip_code: zip_code,
+                state: _state,
+                country: _country,
               }));
             }}
           />
