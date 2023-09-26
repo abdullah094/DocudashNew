@@ -17,7 +17,6 @@ import {
   TextInput,
 } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { FlatListPropsWithLayout } from 'react-native-reanimated';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
@@ -25,15 +24,38 @@ import tw from 'twrnc';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { colors } from '@utils/Colors';
 import DropDown from 'react-native-paper-dropdown';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { selectAccessToken } from '@stores/Slices';
+import { Notaries, NotaryList } from 'src/types/NoraryList';
 const { width, height } = Dimensions.get('window');
 
 const Map = () => {
+  const accessToken = useSelector(selectAccessToken);
   const [select, setSelect] = useState(1);
   const navigation = useNavigation();
   const panelRef = useRef(null);
   const [heart, setHeart] = useState<number>();
   const [condition, setCondition] = useState(true);
   const [searchText, setSearchText] = useState<string>();
+  const [data, setData] = useState<Notaries[]>();
+  const fetchData = () => {
+    axios
+      .get('https://docudash.net/api/notarize-map', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const { Notary, status }: NotaryList = response.data;
+        if (status) {
+          setData(Notary.data);
+        }
+      });
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   // const { posts } = props;
   const posts = [
     {
@@ -196,7 +218,7 @@ const Map = () => {
     if (!selectedPlaceId || !flatList.current) {
       return;
     }
-    const index = posts.findIndex((place) => place.id === selectedPlaceId);
+    const index = data.findIndex((place) => place.id === selectedPlaceId);
     // flatList.current.scrollToIndex({ index });
 
     const selectedPlace = posts[index];
@@ -287,23 +309,24 @@ const Map = () => {
             longitudeDelta: 0.8,
           }}
         >
-          {posts.map((place) => (
-            <CustomMarker
-              coordinate={{
-                latitude: place.coordinate.latitude,
-                longitude: place.coordinate.longitude,
-              }}
-              key={place.id}
-              price={place.newPrice}
-              isSelected={place.id === selectedPlaceId}
-              onPress={() => setSelectedPlaceId(place.id)}
-            />
-          ))}
+          {data &&
+            data.map((place) => (
+              <CustomMarker
+                coordinate={{
+                  latitude: place.lat,
+                  longitude: place.long,
+                }}
+                key={place.id}
+                // price={place.newPrice}
+                // isSelected={place.id === selectedPlaceId}
+                // onPress={() => setSelectedPlaceId(place.id)}
+              />
+            ))}
         </MapView>
         <View style={{ position: 'absolute', bottom: 30 }}>
           <FlatList
             ref={flatList}
-            data={posts}
+            data={data}
             keyExtractor={(item) => item.id}
             renderItem={({ item }: any) => <PostCarouselItem post={item} key={item.id} />}
             horizontal
@@ -338,17 +361,6 @@ const Map = () => {
           <BottomSheetFlatList
             ListHeaderComponent={
               <View>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    marginBottom: 20,
-                    fontSize: 18,
-                  }}
-                >
-                  {`${posts?.length} Tropical Homes`}
-                </Text>
                 <View style={tw`flex-row gap-4 px-10 justify-center items-center`}>
                   <Text>Select:</Text>
                   <View style={tw`w-40 `}>
@@ -366,7 +378,7 @@ const Map = () => {
                 </View>
               </View>
             }
-            data={posts}
+            data={data}
             renderItem={({ item }: any) => {
               return (
                 <TouchableWithoutFeedback
@@ -378,10 +390,11 @@ const Map = () => {
                       style={{
                         width: 80,
                         marginHorizontal: 20,
-                        borderRadius: 20,
+                        borderRadius: 50,
+                        height: 80,
                         bottom: 50,
                       }}
-                      source={item.image}
+                      source={{ uri: item.notary_image }}
                       resizeMode="contain"
                     />
                     <View
@@ -395,26 +408,8 @@ const Map = () => {
                       }}
                     >
                       <View>
-                        <Text style={{ fontSize: 20, color: 'black' }}>{item?.title}</Text>
-                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
-                          {item?.totalPrice}{' '}
-                        </Text>
-                      </View>
-                      <View
-                        style={[
-                          {
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            alignSelf: 'flex-start',
-                          },
-                          tw`gap-1`,
-                        ]}
-                      >
-                        <Image
-                          style={{ width: 20, height: 20 }}
-                          source={require('@assets/Download.png')}
-                        />
-                        <Text>4.94</Text>
+                        <Text style={{ fontSize: 20, color: 'black' }}>{item?.first_name}</Text>
+                        <Text style={{ fontSize: 15, fontWeight: '200' }}>{item?.email} </Text>
                       </View>
                     </View>
                     <View style={{ position: 'absolute', top: 20, right: 20 }}>

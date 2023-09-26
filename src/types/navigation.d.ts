@@ -11,6 +11,7 @@ import { pet } from './pet';
 import { Envelope } from './envelope';
 import { Recipient } from './recipient';
 import { Contact } from './contact';
+import { Addresses } from './AddressList';
 
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeDrawerParamList>;
@@ -48,7 +49,7 @@ export type RootStackParamList = {
   AddContact: { Contact?: Contact };
   NotaryOrUser: undefined;
   NotaryProfile: {item:any}
-  Addresses: undefined;
+  Addresses: {From: Addresses};
   AddAddress: { Address?: Address };
 };
 
@@ -62,7 +63,7 @@ export type SignUpStackParamList = {
   Step5: { token: string; email: string };
   Step6: { token: string; email: string };
   Browser: { url: string; heading: string };
-  Address: undefined
+  Address: {From: Addresses}
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<

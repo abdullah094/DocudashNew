@@ -2,9 +2,13 @@ import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'r
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import tw from 'twrnc';
+import { Notaries } from 'src/types/NoraryList';
 
-const PostCarouselItem = (props) => {
-  const post = props.post;
+interface IPost {
+  post: Notaries;
+}
+
+const PostCarouselItem = ({ post }: IPost) => {
   const width = useWindowDimensions().width;
 
   const navigation = useNavigation();
@@ -21,15 +25,19 @@ const PostCarouselItem = (props) => {
       <View style={tw`bg-white rounded-lg `}>
         <View style={tw`flex-row`}>
           {/* Image  */}
-          <Image style={tw`h-full m-2 rounded-l-lg`} resizeMode="cover" source={post.image} />
+          <Image
+            style={tw`h-30 w-30 m-2 bg-gray-200 rounded-lg`}
+            resizeMode="contain"
+            source={{ uri: post.notary_image }}
+          />
 
           <View style={{ flex: 1, marginHorizontal: 10 }}>
             {/* Bed & Bedroom  */}
-            <Text style={tw`text-lg my-2`}>{post.title}</Text>
+            <Text style={tw`text-lg my-2`}>{post.email}</Text>
 
             {/* Type & Description */}
             <Text style={tw`text-sm`} numberOfLines={2}>
-              {post?.type}. {post?.title}
+              {post?.first_name} {post?.last_name}
             </Text>
 
             {/*  Old price & new price */}

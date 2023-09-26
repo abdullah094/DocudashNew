@@ -10,19 +10,26 @@ import {
   Linking,
   Alert,
   SafeAreaView,
+  FlatList,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Colors from '@constants/colors';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import StarRating from 'react-native-star-rating-fixed-viewproptype';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Foundation from '@expo/vector-icons/Foundation';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { selectAccessToken } from '@stores/Slices';
+import { NotarizeReview, ReviewsList } from 'src/types/ReviewList';
 
 const { width, height } = Dimensions.get('window');
 const NotaryProfile = ({ navigation, route }) => {
   const { item } = route.params;
+  const accessToken = useSelector(selectAccessToken);
   const [seeMore, setSeeMore] = useState(false);
+  const [reviews, setReviews] = useState<NotarizeReview[]>([]);
   let numberOfLines = 2;
   let seeMoreText = 'See more';
   if (seeMore) {
@@ -32,7 +39,29 @@ const NotaryProfile = ({ navigation, route }) => {
     numberOfLines = 2;
     seeMoreText = 'See more';
   }
+  console.log(item.first_name);
 
+  const fetchReviews = () => {
+    const url = 'https://docudash.net/api/notarize-map-details/' + item.first_name + item.last_name;
+    axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const { status, NotarizeReview }: ReviewsList = response.data;
+        if (status) {
+          console.log(NotarizeReview);
+
+          setReviews(NotarizeReview);
+        } else {
+        }
+      });
+  };
+  useEffect(() => {
+    fetchReviews();
+  }, []);
   const image_dimension = 100;
   const args = {
     number: '', // String value with the number to call
@@ -55,11 +84,11 @@ const NotaryProfile = ({ navigation, route }) => {
             borderRadius: image_dimension / 2,
             marginTop: 60,
           }}
-          source={require('@assets/ProfilePic.png')}
+          source={{ uri: item.notary_image }}
         />
-        <Text style={[styles.heading, { fontSize: 20 }]}>{item.title}</Text>
-        <Text style={styles.heading}>wizardinnovations@gmail.com</Text>
-        <Text style={styles.heading}>+1-123456789</Text>
+        <Text style={[styles.heading, { fontSize: 20 }]}>{item.first_name}</Text>
+        <Text style={styles.heading}>{item.email}</Text>
+        <Text style={styles.heading}>{item.phone}</Text>
         <View style={{ marginTop: 5 }}>
           <StarRating
             disabled={false}
@@ -252,155 +281,60 @@ const NotaryProfile = ({ navigation, route }) => {
         <View style={styles.content_box}>
           <Text style={styles.content_heading}>Reviews:</Text>
 
-          {/* Review Box */}
-          <View style={{ paddingVertical: 15 }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  height: '90%',
-                }}
-              >
-                <Image
-                  style={{ width: 50, height: 50, borderRadius: 25 }}
-                  source={require('@assets/ProfilePic.png')}
-                />
-                <View style={{ marginLeft: 5, height: '90%' }}>
-                  <Text
-                    style={[
-                      {
-                        marginVertical: 1,
-                        color: Colors.black,
-                      },
-                    ]}
+          {reviews.length === 0 ? (
+            <Text>No reviews of this Notary</Text>
+          ) : (
+            reviews.map((element, i) => {
+              return (
+                <View style={{ paddingVertical: 15 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingHorizontal: 4,
+                    }}
                   >
-                    Rene jackson
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        height: '90%',
+                      }}
+                    >
+                      <Image
+                        style={{ width: 50, height: 50, borderRadius: 25 }}
+                        source={require('@assets/ProfilePic.png')}
+                      />
+                      <View style={{ marginLeft: 5, height: '90%' }}>
+                        <Text
+                          style={[
+                            {
+                              marginVertical: 1,
+                              color: Colors.black,
+                            },
+                          ]}
+                        >
+                          {element.name}
+                        </Text>
+                        <StarRating
+                          disabled={false}
+                          maxStars={5}
+                          rating={element.star}
+                          starSize={15}
+                          starStyle={{ color: Colors.golden }}
+                        />
+                      </View>
+                    </View>
+                    <Text>{element.created_at.substring('0', '10')}</Text>
+                  </View>
+                  <Text style={{ color: 'gray', marginTop: 5, paddingHorizontal: 6 }}>
+                    {element.review}
                   </Text>
-                  <StarRating
-                    disabled={false}
-                    maxStars={5}
-                    rating={4}
-                    starSize={15}
-                    starStyle={{ color: Colors.golden }}
-                  />
                 </View>
-              </View>
-              <Text>4/10/2022</Text>
-            </View>
-            <Text style={{ color: 'gray', marginTop: 5 }}>
-              Philip is a consummate professional who takes great pride in his work. He has a
-              thorough understanding of the legal system and stays up-to-date on the latest laws and
-              regulations to provide his clients with the best possible service.
-            </Text>
-          </View>
-
-          {/* 2nd review */}
-
-          <View style={{ paddingVertical: 15 }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  height: '90%',
-                }}
-              >
-                <Image
-                  style={{ width: 50, height: 50, borderRadius: 25 }}
-                  source={require('@assets/ProfilePic.png')}
-                />
-                <View style={{ marginLeft: 5, height: '90%' }}>
-                  <Text
-                    style={[
-                      {
-                        marginVertical: 1,
-                        color: Colors.black,
-                      },
-                    ]}
-                  >
-                    Emily Wilis
-                  </Text>
-                  <StarRating
-                    disabled={false}
-                    maxStars={5}
-                    rating={5}
-                    starSize={15}
-                    starStyle={{ color: Colors.golden }}
-                  />
-                </View>
-              </View>
-              <Text>13/1/2022</Text>
-            </View>
-            <Text style={{ color: 'gray', marginTop: 5 }}>
-              Whether you need to certify a simple document or require more complex legal services,
-              Philip Morris is the notary you can count on for professional and personalized
-              service.
-            </Text>
-          </View>
-
-          {/* 3rd Review */}
-
-          <View style={{ paddingVertical: 15 }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  height: '90%',
-                }}
-              >
-                <Image
-                  style={{ width: 50, height: 50, borderRadius: 25 }}
-                  source={require('@assets/ProfilePic.png')}
-                />
-                <View style={{ marginLeft: 5, height: '90%' }}>
-                  <Text
-                    style={[
-                      {
-                        marginVertical: 1,
-                        color: Colors.black,
-                      },
-                    ]}
-                  >
-                    Cara Belwater
-                  </Text>
-                  <StarRating
-                    disabled={false}
-                    maxStars={5}
-                    rating={3.5}
-                    starSize={15}
-                    starStyle={{ color: Colors.golden }}
-                  />
-                </View>
-              </View>
-              <Text>28/1/2023</Text>
-            </View>
-            <Text style={{ color: 'gray', marginTop: 5 }}>
-              {' '}
-              Philip is also a seasoned legal consultant who can provide guidance and advice on a
-              wide range of legal matters. He has a reputation for being trustworthy and reliable,
-              and he always puts his clients' needs first.
-            </Text>
-          </View>
+              );
+            })
+          )}
         </View>
       </View>
     </ScrollView>
@@ -436,8 +370,9 @@ const styles = StyleSheet.create({
   box: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
   content_heading: {
     color: Colors.black,
-    fontSize: 15,
+    fontSize: 20,
     marginVertical: 5,
+    fontWeight: 'bold',
   },
   content_box: { marginTop: 15 },
   overview_bullet: { flexDirection: 'row', alignItems: 'center', marginTop: 5 },
