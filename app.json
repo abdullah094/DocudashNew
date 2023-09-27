@@ -13,7 +13,6 @@
     },
     "assetBundlePatterns": ["**/*"],
     "plugins": [
-      "./bin/react-native-maps-plugin",
       [
         "expo-location",
         {
