@@ -16,9 +16,8 @@ PODS:
     - React-Core
   - EXLocation (15.1.1):
     - ExpoModulesCore
-  - EXMediaLibrary (15.6.0):
+  - EXMediaLibrary (15.2.3):
     - ExpoModulesCore
-    - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - EXPermissions (14.1.2):
     - ExpoModulesCore
@@ -49,6 +48,30 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.71.8)
   - fmt (6.2.1)
   - glog (0.3.5)
+  - Google-Maps-iOS-Utils (4.1.0):
+    - Google-Maps-iOS-Utils/Clustering (= 4.1.0)
+    - Google-Maps-iOS-Utils/Geometry (= 4.1.0)
+    - Google-Maps-iOS-Utils/GeometryUtils (= 4.1.0)
+    - Google-Maps-iOS-Utils/Heatmap (= 4.1.0)
+    - Google-Maps-iOS-Utils/QuadTree (= 4.1.0)
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Clustering (4.1.0):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Geometry (4.1.0):
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/GeometryUtils (4.1.0):
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Heatmap (4.1.0):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/QuadTree (4.1.0):
+    - GoogleMaps
+  - GoogleMaps (7.0.0):
+    - GoogleMaps/Maps (= 7.0.0)
+  - GoogleMaps/Base (7.0.0)
+  - GoogleMaps/Maps (7.0.0):
+    - GoogleMaps/Base
   - Google-Maps-iOS-Utils (4.1.0):
     - Google-Maps-iOS-Utils/Clustering (= 4.1.0)
     - Google-Maps-iOS-Utils/Geometry (= 4.1.0)
@@ -332,6 +355,10 @@ PODS:
     - Google-Maps-iOS-Utils (= 4.1.0)
     - GoogleMaps (= 7.0.0)
     - React-Core
+  - react-native-google-maps (1.3.2):
+    - Google-Maps-iOS-Utils (= 4.1.0)
+    - GoogleMaps (= 7.0.0)
+    - React-Core
   - react-native-maps (1.3.2):
     - React-Core
   - react-native-safe-area-context (4.5.0):
@@ -513,7 +540,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-google-maps (from `/Users/macbookpro/DocudashNew/node_modules/react-native-maps`)
+  - react-native-google-maps (from `/Users/waqarmac/DocudashNew/node_modules/react-native-maps`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
@@ -545,6 +572,8 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - fmt
+    - Google-Maps-iOS-Utils
+    - GoogleMaps
     - Google-Maps-iOS-Utils
     - GoogleMaps
     - libevent
@@ -623,7 +652,7 @@ EXTERNAL SOURCES:
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-google-maps:
-    :path: "/Users/macbookpro/DocudashNew/node_modules/react-native-maps"
+    :path: "/Users/waqarmac/DocudashNew/node_modules/react-native-maps"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-safe-area-context:
@@ -689,7 +718,7 @@ SPEC CHECKSUMS:
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
   EXImageLoader: fd053169a8ee932dd83bf1fe5487a50c26d27c2b
   EXLocation: 74a0ba446f54fd585ea6cfcd19a25644bf22c30d
-  EXMediaLibrary: 802eee8ef888ee16ef80f1b79005d3d611793e14
+  EXMediaLibrary: 587cd8aad27a6fc8d7c38b950bc75bc1845a7480
   EXPermissions: ee60d7978aba135b8b391185b039d78f151c376a
   Expo: 8448e3a2aa1b295f029c81551e1ab6d986517fdb
   ExpoCrypto: 9105610a09cd6290b900bd82fc5d190e489125a3
@@ -702,6 +731,8 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: 0d9a4f4de7ab614c49e98c00aedfd3bfbda33d59
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  Google-Maps-iOS-Utils: 3343332b18dfd5be8f1f44edd7d481ace3da4d9a
+  GoogleMaps: 6e9c923ca035989709fcb5771544fda4cc5fa2a4
   Google-Maps-iOS-Utils: 3343332b18dfd5be8f1f44edd7d481ace3da4d9a
   GoogleMaps: 6e9c923ca035989709fcb5771544fda4cc5fa2a4
   hermes-engine: 47986d26692ae75ee7a17ab049caee8864f855de
@@ -720,6 +751,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 747911ab5921641b4ed7e4900065896597142125
   React-jsinspector: c712f9e3bb9ba4122d6b82b4f906448b8a281580
   React-logger: 342f358b8decfbf8f272367f4eacf4b6154061be
+  react-native-google-maps: 035ad2f9b4974f22af3d4d4c6993960a181b0aaf
   react-native-google-maps: 035ad2f9b4974f22af3d4d4c6993960a181b0aaf
   react-native-maps: 085f614cf14d3637b2048bb9752da5b1c27c2886
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
@@ -749,6 +781,6 @@ SPEC CHECKSUMS:
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   Yoga: 065f0b74dba4832d6e328238de46eb72c5de9556
 
-PODFILE CHECKSUM: ee5360c1ac3a44c48d1fad1ae0469abb0926f420
+PODFILE CHECKSUM: b812d0ccfc4c29f3ecbc4fe5e2c983787f301e74
 
 COCOAPODS: 1.12.1

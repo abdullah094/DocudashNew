@@ -27,7 +27,6 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.darkwaqar.DDash",
-
       "config": {
         "googleMapsApiKey": "AIzaSyAS5nWA8pNQgiVb_LAWkOq6GU8F1tfmvDQ"
       }

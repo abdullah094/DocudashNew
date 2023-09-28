@@ -14,8 +14,8 @@ import { View } from 'react-native-ui-lib';
 const Inbox = () => {
   const navigation = useNavigation<RootStackScreenProps<'Inbox'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'Inbox'>['route']>();
-  const heading = route.params?.heading || ('Inbox' as string);
-  const [value, setValue] = React.useState('');
+  const heading = route.params?.heading || 'Inbox';
+  const [value, setValue] = React.useState(heading);
 
   const dispatch = useDispatch();
   useEffect(() => {
