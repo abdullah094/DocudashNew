@@ -29,6 +29,7 @@ import NotaryLoginStackNavigator from './NotaryLoginStackNavigator';
 import NotaryOrUser from '@screens/SignUp1/NotaryOrUser';
 import NotaryProfile from '@screens/NotaryProfile';
 import AddAddress from '@screens/Address/AddAddress';
+import CreateARequest from '@screens/BookAnAppointment/CreateARequest';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
@@ -89,6 +90,7 @@ export default function StackNavigator() {
           <Stack.Screen name="NotaryProfile" component={NotaryProfile} />
           <Stack.Screen name="Addresses" component={Addresses} />
           <Stack.Screen name="AddAddress" component={AddAddress} />
+          <Stack.Screen name="CreateARequest" component={CreateARequest} />
 
           {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
           {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}

@@ -23,6 +23,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
 import { NotarizeReview, ReviewsList } from 'src/types/ReviewList';
+import tw from 'twrnc';
 
 const { width, height } = Dimensions.get('window');
 const NotaryProfile = ({ navigation, route }) => {
@@ -239,31 +240,17 @@ const NotaryProfile = ({ navigation, route }) => {
         {/* contact */}
         <View style={styles.content_box}>
           <Text style={styles.content_heading}>Contact</Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-evenly',
-              marginTop: 10,
-            }}
+
+          <TouchableOpacity
+            style={styles.contact_button}
+            onPress={() => navigation.navigate('CreateARequest')}
           >
-            <TouchableOpacity style={styles.contact_button}>
-              <Text style={styles.contact_button_text}>Text</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.contact_button}>
-              <Text style={styles.contact_button_text}>Call</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.contact_button}
-              onPress={() => Linking.openURL('https://join.skype.com/invite/LZXNciOF2MgC')}
-            >
-              <Text style={[styles.contact_button_text, { textAlign: 'center' }]}>Video call</Text>
-            </TouchableOpacity>
-          </View>
+            <Text style={styles.contact_button_text}>Book an appoinment</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.content_box}>
           <View style={{ alignItems: 'center', marginVertical: 5 }}>
-            <Text style={{ color: 'gray' }}>or</Text>
+            {/* <Text style={{ color: 'gray' }}>or</Text> */}
           </View>
           <TouchableOpacity
             onPress={() => navigation.navigate('Schedule')}
@@ -286,7 +273,7 @@ const NotaryProfile = ({ navigation, route }) => {
           ) : (
             reviews.map((element, i) => {
               return (
-                <View style={{ paddingVertical: 15 }}>
+                <View style={{ paddingVertical: 15 }} key={element.id}>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -326,7 +313,9 @@ const NotaryProfile = ({ navigation, route }) => {
                         />
                       </View>
                     </View>
-                    <Text>{element.created_at.substring('0', '10')}</Text>
+                    <Text style={tw`font-light text-gray-400`}>
+                      {element.created_at.substring('0', '10')}
+                    </Text>
                   </View>
                   <Text style={{ color: 'gray', marginTop: 5, paddingHorizontal: 6 }}>
                     {element.review}
@@ -382,7 +371,6 @@ const styles = StyleSheet.create({
   badge_box_text: { color: Colors.black, marginTop: 5 },
   contact_button: {
     borderWidth: 2,
-    width: '30%',
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',

@@ -92,7 +92,6 @@ const AddAddress = () => {
   const navigation = useNavigation<RootStackScreenProps<'AddAddress'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'AddAddress'>['route']>();
   const Adress = route.params?.Address as Addresses;
-  console.log(Adress.id);
 
   useEffect(() => {
     if (Adress) {
