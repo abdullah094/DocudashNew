@@ -5,7 +5,10 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "ios-m": "arch -x86_64 npx expo run:ios",
+    "pre-build": "npx expo prebuild",
+    "log": "cd ios && pod install --verbose"
   },
   "dependencies": {
     "@expo/webpack-config": "^18.0.1",
@@ -26,9 +29,9 @@
     "expo-document-picker": "~11.2.2",
     "expo-file-system": "~15.2.2",
     "expo-image-picker": "~14.1.1",
-    "expo-linking": "^6.0.0",
+    "expo-linking": "~4.0.1",
     "expo-location": "~15.1.1",
-    "expo-media-library": "^15.6.0",
+    "expo-media-library": "~15.2.3",
     "expo-permissions": "~14.1.1",
     "expo-sharing": "~11.2.2",
     "expo-skeleton-loader": "^1.1.3",

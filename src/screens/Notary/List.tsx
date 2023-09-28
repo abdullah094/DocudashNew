@@ -301,7 +301,7 @@ const Map = () => {
         <MapView
           ref={map}
           style={{ flex: 1 }}
-          provider={PROVIDER_GOOGLE}
+          // provider={PROVIDER_GOOGLE}
           initialRegion={{
             latitude: 28.3279822,
             longitude: -16.5124847,
