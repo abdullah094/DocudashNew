@@ -16,8 +16,7 @@ import {
   useWindowDimensions,
   TextInput,
 } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import Entypo from '@expo/vector-icons/Entypo';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import tw from 'twrnc';
@@ -27,18 +26,33 @@ import DropDown from 'react-native-paper-dropdown';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
-import { Notaries, NotaryList } from 'src/types/NoraryList';
-const { width, height } = Dimensions.get('window');
+import { Notaries, NotaryList, locationNotary } from 'src/types/NoraryList';
+import { Searchbar } from 'react-native-paper';
 
+const { width, height } = Dimensions.get('window');
+const types = [
+  {
+    label: 'All',
+    value: 'all',
+  },
+  {
+    label: 'In Person',
+    value: 'in person',
+  },
+  {
+    label: 'RON',
+    value: 'ron',
+  },
+];
 const Map = () => {
   const accessToken = useSelector(selectAccessToken);
-  const [select, setSelect] = useState(1);
   const navigation = useNavigation();
   const panelRef = useRef(null);
   const [heart, setHeart] = useState<number>();
-  const [condition, setCondition] = useState(true);
-  const [searchText, setSearchText] = useState<string>();
   const [data, setData] = useState<Notaries[]>();
+  const [searchQuery, setSearchQuery] = React.useState('');
+
+  const onChangeSearch = (query) => setSearchQuery(query);
   const fetchData = () => {
     axios
       .get('https://docudash.net/api/notarize-map', {
@@ -49,109 +63,37 @@ const Map = () => {
       .then((response) => {
         const { Notary, status }: NotaryList = response.data;
         if (status) {
-          setData(Notary.data);
+          const notaryList = Notary.data.map((x) => ({
+            ...x,
+            // @ts-ignore
+            location_sign_up: JSON.parse(x.location_sign_up) as locationNotary,
+          }));
+          setData(notaryList);
+          // if (notaryList.length > 0) {
+          //   const selectedPlace = notaryList[0];
+          //   const region: Region = {
+          //     latitude: Number(selectedPlace.location_sign_up.latitude),
+          //     longitude: Number(selectedPlace.location_sign_up.longitude),
+          //     latitudeDelta: 0.5,
+          //     longitudeDelta: 0.5,
+          //   };
+          //   map.current.animateToRegion(region);
+          // }
         }
       });
   };
   useEffect(() => {
     fetchData();
   }, []);
-  // const { posts } = props;
-  const posts = [
-    {
-      id: '0',
-      image: require('@assets/ProfilePic.png'),
-      type: 'Law',
-      title: 'Nina Agdaal',
-      description:
-        "Lorem Ipsum is simplyLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      bed: 2,
-      bedroom: 3,
-      oldPrice: 25,
-      newPrice: 20,
-      totalPrice: 120,
-      coordinate: {
-        latitude: 28.3915637,
-        longitude: -16.6291304,
-      },
-    },
-    {
-      id: '1',
-      image: require('@assets/ProfilePic.png'),
-      type: 'Entire Flat',
-      title: 'Laura Mcarty',
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      bed: 3,
-      bedroom: 2,
-      oldPrice: 76,
-      newPrice: 65,
-      totalPrice: 390,
-      coordinate: {
-        latitude: 28.4815637,
-        longitude: -16.2291304,
-      },
-    },
-    {
-      id: '2',
-      image: require('@assets/ProfilePic.png'),
-      type: 'Private Property',
-      title: 'Julie Green',
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      bed: 2,
-      bedroom: 1,
-      oldPrice: 64,
-      newPrice: 55,
-      totalPrice: 330,
-      coordinate: {
-        latitude: 28.2515637,
-        longitude: -16.3991304,
-      },
-    },
-    {
-      id: '3',
-      image: require('@assets/ProfilePic.png'),
-      type: 'Entire Flat',
-      title: 'Kamala Haris',
-      description:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-      bed: 4,
-      bedroom: 3,
-      oldPrice: 120,
-      newPrice: 100,
-      totalPrice: 600,
-      coordinate: {
-        latitude: 28.4815637,
-        longitude: -16.2991304,
-      },
-    },
-  ];
-
-  // variables
   const snapPoints = useMemo(() => ['8%', '90%'], []);
   const [showDropDownType, setShowDropDownType] = useState(false);
-  const [showDropdownLoc, setShowDropDownLoc] = useState(false);
   const [typeValue, setTypeValue] = useState('');
-  const types = [
-    {
-      label: 'All',
-      value: 'all',
-    },
-    {
-      label: 'In Person',
-      value: 'in person',
-    },
-    {
-      label: 'RON',
-      value: 'ron',
-    },
-  ];
+
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
+  const [selectedPlaceId, setSelectedPlaceId] = useState<number>(0);
 
   const flatList = useRef<FlatList>(null);
   const map = useRef<MapView>(null);
@@ -162,7 +104,6 @@ const Map = () => {
   });
 
   const onViewableItemsChanged = useCallback(({ viewableItems }: any) => {
-    console.log('onViewCallBack', viewableItems);
     if (viewableItems.length > 0) {
       const selectedPlace = viewableItems[0].item;
       setSelectedPlaceId(selectedPlace.id);
@@ -176,44 +117,6 @@ const Map = () => {
     },
   ]);
 
-  const width = useWindowDimensions().width;
-  const FlatListData = [
-    {
-      id: 1,
-      name: 'Tropical',
-      img: require('@assets/Download.png'),
-    },
-    {
-      id: 2,
-      name: 'OMG!',
-      img: require('@assets/Download.png'),
-    },
-    {
-      id: 3,
-      name: 'Tiny Homes ',
-      img: require('@assets/Download.png'),
-    },
-    {
-      id: 4,
-      name: 'Lake',
-      img: require('@assets/Download.png'),
-    },
-    {
-      id: 5,
-      name: 'Mansions',
-      img: require('@assets/Download.png'),
-    },
-  ];
-  const coordinates = [
-    {
-      latitude: 24.910688,
-      longitude: 67.0310973,
-    },
-    {
-      latitude: 24.910688,
-      longitude: 67.0310973,
-    },
-  ];
   useEffect(() => {
     if (!selectedPlaceId || !flatList.current) {
       return;
@@ -221,18 +124,18 @@ const Map = () => {
     const index = data.findIndex((place) => place.id === selectedPlaceId);
     // flatList.current.scrollToIndex({ index });
 
-    const selectedPlace = posts[index];
-    console.log(selectedPlace);
-    const region = {
-      latitude: selectedPlace.coordinate.latitude,
-      longitude: selectedPlace.coordinate.longitude,
-      latitudeDelta: 0.8,
-      longitudeDelta: 0.8,
+    const selectedPlace = data[index];
+
+    const region: Region = {
+      latitude: Number(selectedPlace.lat),
+      longitude: Number(selectedPlace.long),
+      latitudeDelta: 0.9,
+      longitudeDelta: 0.9,
     };
     map.current?.animateToRegion(region);
   }, [selectedPlaceId]);
   return (
-    <SafeAreaView style={tw`flex-1 bg-white`}>
+    <SafeAreaView style={tw`h-full bg-white`}>
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <View
           style={{
@@ -303,27 +206,29 @@ const Map = () => {
           style={{ flex: 1 }}
           // provider={PROVIDER_GOOGLE}
           initialRegion={{
-            latitude: 28.3279822,
-            longitude: -16.5124847,
-            latitudeDelta: 0.8,
-            longitudeDelta: 0.8,
+            latitude: 35.6657425,
+            longitude: -116.9306027,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
           }}
         >
-          {data &&
-            data.map((place) => (
+          {data?.map((place) => {
+            return (
               <CustomMarker
                 coordinate={{
-                  latitude: place.lat,
-                  longitude: place.long,
+                  latitude: parseFloat(place.lat),
+                  longitude: parseFloat(place.long),
                 }}
+                name={place.first_name}
                 key={place.id}
-                // price={place.newPrice}
-                // isSelected={place.id === selectedPlaceId}
-                // onPress={() => setSelectedPlaceId(place.id)}
-              />
-            ))}
+                isSelected={place.id === selectedPlaceId}
+                onPress={() => setSelectedPlaceId(place.id)}
+              ></CustomMarker>
+            );
+          })}
         </MapView>
-        <View style={{ position: 'absolute', bottom: 30 }}>
+
+        <View style={{ position: 'absolute', bottom: 50 }}>
           <FlatList
             ref={flatList}
             data={data}
@@ -346,23 +251,29 @@ const Map = () => {
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
         >
-          {/* <View style={{flex: 1}}>
-            <Text
-              style={{
-                color: 'black',
-                fontWeight: 'bold',
-                textAlign: 'center',
-                marginBottom: 20,
-                fontSize: 18,
-              }}>
-              {`${posts?.length} Tropical Homes`}
-            </Text> */}
+          <Text
+            style={{
+              color: 'black',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              marginVertical: 20,
+              fontSize: 18,
+            }}
+          >
+            {`See All ${data?.length} Notary`}
+          </Text>
 
           <BottomSheetFlatList
             ListHeaderComponent={
               <View>
-                <View style={tw`flex-row gap-4 px-10 justify-center items-center`}>
-                  <Text>Select:</Text>
+                <View style={tw`flex-row gap-4 px-2 items-center`}>
+                  <Searchbar
+                    mode="bar"
+                    style={tw`flex-1`}
+                    placeholder="Search"
+                    onChangeText={onChangeSearch}
+                    value={searchQuery}
+                  />
                   <View style={tw`w-40 `}>
                     <DropDown
                       label={'Select Type'}
@@ -379,13 +290,17 @@ const Map = () => {
               </View>
             }
             data={data}
-            renderItem={({ item }: any) => {
+            renderItem={({ item }: { item: Notaries }) => {
               return (
                 <TouchableWithoutFeedback
                   onPress={() => navigation.navigate('NotaryProfile', { item: item })}
                 >
                   <View style={tw`w-full my-5 flex justify-center bg-white shadow-md rounded-lg`}>
-                    <View style={tw`w-full bg-[${colors.green}] h-20`}></View>
+                    <Image
+                      source={{ uri: item.BannerImage }}
+                      // resizeMode="contain"
+                      style={tw`w-full bg-[${colors.green}] h-20`}
+                    ></Image>
                     <Image
                       style={{
                         width: 80,
@@ -395,7 +310,7 @@ const Map = () => {
                         bottom: 50,
                       }}
                       source={{ uri: item.notary_image }}
-                      resizeMode="contain"
+                      resizeMode="cover"
                     />
                     <View
                       style={{

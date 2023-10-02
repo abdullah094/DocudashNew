@@ -5,7 +5,6 @@ module.exports = {
     extend: {
       fontFamily: {
         nunito: 'nunito',
-        'nunito-SemiBold': 'nunito-SemiBold',
       },
     },
   },

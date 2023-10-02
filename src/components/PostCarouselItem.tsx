@@ -34,16 +34,16 @@ const PostCarouselItem = ({ post }: IPost) => {
           <View style={{ flex: 1, marginHorizontal: 10 }}>
             {/* Bed & Bedroom  */}
             <Text style={tw`text-lg my-2`}>{post.email}</Text>
-
-            {/* Type & Description */}
             <Text style={tw`text-sm`} numberOfLines={2}>
               {post?.first_name} {post?.last_name}
             </Text>
+            {/* Type & Description
+           
 
             {/*  Old price & new price */}
-            <Text style={tw`text-sm my-2`}>
-              <Text style={tw`font-bold`}>${post.newPrice} </Text>/ sign
-            </Text>
+            {/* <Text style={tw`text-sm my-2`}>
+              <Text style={tw`font-bold`}>{post.BioDescription} </Text>
+            </Text> */}
           </View>
         </View>
       </View>
