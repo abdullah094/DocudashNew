@@ -1,7 +1,7 @@
 import GreenButton from '@components/GreenButton';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken, setAccessToken } from '@stores/Slices';
-import { Istep5Response, SignUpStackScreenProps } from '@type/index';
+import { Istep5Response, RootStackScreenProps, SignUpStackScreenProps } from '@type/index';
 import { clearAsync, getToken } from '@utils/AsyncFunc';
 import { storeTokenGlobal } from '@utils/AsyncGlobal';
 import { colors } from '@utils/Colors';
@@ -38,6 +38,8 @@ interface uploadType {
 const CreateARequest = () => {
   const accessToken = useSelector(selectAccessToken);
   const navigation = useNavigation<SignUpStackScreenProps<'Step4'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'AddAddress'>['route']>();
+  const From = route.params?.From as string;
   const [documents, setDocuments] = useState<uploadType[]>(new Array());
   const [progress, setProgress] = useState(0.2);
   const [loading, setLoading] = useState<boolean>(false);
@@ -57,6 +59,14 @@ const CreateARequest = () => {
     Recipients: [],
   });
 
+  useEffect(() => {
+    if (From === 'Address') {
+      setProgress(0.8);
+      setValue('Message');
+      setNextDisabled(true);
+      setPreviousDisabled(false);
+    }
+  }, []);
   const sendData = () => {
     setLoading(true);
     let formData = new FormData();

@@ -92,18 +92,18 @@ export default function RequestRecipient({
                 <View style={tw`gap-2 flex-1`}>
                   <View style={tw`flex-row items-center`}>
                     <Text variant="labelLarge" style={tw`w-15`}>
-                      Host name:
+                      receiver name:
                     </Text>
                     <TextInput
                       mode="outlined"
                       style={tw`ml-2 flex-1`}
                       // placeholder="Name"
-                      value={item.hostName}
+                      value={item.recName}
                       onChangeText={(text) =>
                         setData((prev) => ({
                           ...prev,
                           Recipients: prev.Recipients.map((x) =>
-                            x.id == item.id ? { ...x, hostName: text } : x
+                            x.id == item.id ? { ...x, recName: text } : x
                           ),
                         }))
                       }
@@ -111,18 +111,18 @@ export default function RequestRecipient({
                   </View>
                   <View style={tw`flex-row items-center`}>
                     <Text variant="labelLarge" style={tw`w-15`}>
-                      Host Email:
+                      receiver Email:
                     </Text>
                     <TextInput
                       mode="outlined"
                       // placeholder="Email"
                       style={tw`ml-2 flex-1`}
-                      value={item.hostEmail}
+                      value={item.recEmail}
                       onChangeText={(text) =>
                         setData((prev) => ({
                           ...prev,
                           Recipients: prev.Recipients.map((x) =>
-                            x.id == item.id ? { ...x, hostEmail: text } : x
+                            x.id == item.id ? { ...x, recEmail: text } : x
                           ),
                         }))
                       }

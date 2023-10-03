@@ -92,6 +92,7 @@ const AddAddress = () => {
   const navigation = useNavigation<RootStackScreenProps<'AddAddress'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'AddAddress'>['route']>();
   const Adress = route.params?.Address as Addresses;
+  const From = route.params?.From as string;
 
   useEffect(() => {
     if (Adress) {
@@ -179,7 +180,9 @@ const AddAddress = () => {
           } = response.data;
           console.log(response.data);
           if (success) {
-            navigation.goBack();
+            if (From === 'create request') {
+              navigation.navigate('CreateARequest', { From: 'Address' });
+            } else navigation.goBack();
             // navigation.navigate('Signatures', {});
           } else {
             Alert.alert(message);
