@@ -243,9 +243,9 @@ const NotaryProfile = ({ navigation, route }) => {
 
           <TouchableOpacity
             style={styles.contact_button}
-            onPress={() => navigation.navigate('CreateARequest')}
+            onPress={() => navigation.navigate('CreateARequest', { Notary: item.email })}
           >
-            <Text style={styles.contact_button_text}>Book an appoinment</Text>
+            <Text style={styles.contact_button_text}>Book an appointment</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.content_box}>
@@ -253,7 +253,7 @@ const NotaryProfile = ({ navigation, route }) => {
             {/* <Text style={{ color: 'gray' }}>or</Text> */}
           </View>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Schedule')}
+            onPress={() => navigation.navigate('Schedule', { Notary: item.email })}
             style={{
               backgroundColor: Colors.blue,
               paddingVertical: 10,

@@ -40,7 +40,7 @@ export type RootStackParamList = {
   AddStamp: { Stamp?: StampPreview };
   Profile: undefined;
   SignUpIndex: undefined;
-  NotaryLoginStackNavigator: undefined
+  NotaryLoginStackNavigator: undefined;
   Template: undefined;
   DocumentViewer: { Envelope: envelope; item?: SignaturePreview; stamp?: StampPreview };
   SignatureSelection: envelope;
@@ -49,16 +49,16 @@ export type RootStackParamList = {
   Contacts: { From?: string };
   AddContact: { Contact?: Contact };
   NotaryOrUser: undefined;
-  NotaryProfile: {item:any}
-  Addresses: {From: Addresses};
-  AddAddress: { Address?: Address,From?:string };
-  CreateARequest: {email?: string,From?:string};
-  RequestList:  { heading: string };
+  NotaryProfile: { item: any };
+  Addresses: { From: Addresses };
+  AddAddress: { Address?: Address; From?: string; Notary?: string };
+  CreateARequest: { email?: string; From?: string };
+  RequestList: { heading: string };
 };
 
 export type SignUpStackParamList = {
-  NotaryOrUser: undefined
-  Index: {type:string};
+  NotaryOrUser: undefined;
+  Index: { type: string };
   Step1: { api: string };
   Step2: { api: string };
   Step3: { api: string };
@@ -66,7 +66,7 @@ export type SignUpStackParamList = {
   Step5: { token: string; email: string };
   Step6: { token: string; email: string };
   Browser: { url: string; heading: string };
-  Address: {From: Addresses}
+  Address: { From: Addresses };
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScreenProps<

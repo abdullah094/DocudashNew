@@ -27,7 +27,7 @@ import Addresses from '@screens/Address/List';
 import FeatureHighlightScreen from '@screens/FeatureHighlightScreen';
 import NotaryLoginStackNavigator from './NotaryLoginStackNavigator';
 import NotaryOrUser from '@screens/SignUp1/NotaryOrUser';
-import NotaryProfile from '@screens/NotaryProfile';
+import NotaryProfile from '@screens/Notary/NotaryProfile';
 import AddAddress from '@screens/Address/AddAddress';
 import CreateARequest from '@screens/Notary/CreateARequest';
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -11,8 +11,10 @@ import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, View } from 'react-
 import {
   Button,
   Chip,
+  Dialog,
   Divider,
   Menu,
+  Portal,
   ProgressBar,
   SegmentedButtons,
   Text,
@@ -40,6 +42,7 @@ const CreateARequest = () => {
   const navigation = useNavigation<SignUpStackScreenProps<'Step4'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'AddAddress'>['route']>();
   const From = route.params?.From as string;
+  const notaryName = route.params?.Notary as string;
   const [documents, setDocuments] = useState<uploadType[]>(new Array());
   const [progress, setProgress] = useState(0.2);
   const [loading, setLoading] = useState<boolean>(false);
@@ -47,11 +50,18 @@ const CreateARequest = () => {
   const [value, setValue] = React.useState('Reason');
   const [previousDisabled, setPreviousDisabled] = useState(true);
   const [nextDisabled, setNextDisabled] = useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => {
+    setVisible(false);
+    navigation.navigate('Home');
+  };
 
   const [data, setData] = useState<IRequest>({
-    notary_id: 'grimudallouto-7714@yopmail.com',
+    notary_id: '',
     reasonOfRequest: '1',
-    requestDate: '09/25/2023 - 09/25/2023',
+    requestDate: '',
     requestTime: '1',
     requestLocation: '1',
     requestMessage: 'Message Demo',
@@ -65,6 +75,9 @@ const CreateARequest = () => {
       setValue('Message');
       setNextDisabled(true);
       setPreviousDisabled(false);
+    }
+    if (notaryName) {
+      setData((prev) => ({ ...prev, notary_id: notaryName }));
     }
   }, []);
   const sendData = () => {
@@ -120,6 +133,7 @@ const CreateARequest = () => {
         } = response.data;
         console.log(response.data);
         if (status) {
+          showDialog();
           // navigation.replace('DocumentEditor', {
           //   Envelope: generateSignature,
           // });
@@ -190,7 +204,7 @@ const CreateARequest = () => {
         </Button>
 
         {nextDisabled ? (
-          <Button mode="contained" onPress={sendData} loading={loading}>
+          <Button mode="contained" onPress={sendData} disabled={loading} loading={loading}>
             Create Request
           </Button>
         ) : (
@@ -225,6 +239,17 @@ const CreateARequest = () => {
           </Button>
         )}
       </View>
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>Request Send</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">Request Submitted Soon We Will Contact</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Done</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 };

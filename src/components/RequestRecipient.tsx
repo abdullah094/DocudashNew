@@ -86,48 +86,95 @@ export default function RequestRecipient({
       <ScrollView nestedScrollEnabled>
         <View style={tw` gap-2`}>
           {data.Recipients?.map((item) => (
-            <View style={tw`h-64`} key={item.id}>
+            <View style={tw`h-50`} key={item.id}>
               <View style={tw`border-2  border-gray-300 p-4 flex-row flex-1 items-center gap-4`}>
                 <Text>{Number(item.id) + 1}</Text>
+
                 <View style={tw`gap-2 flex-1`}>
-                  <View style={tw`flex-row items-center`}>
-                    <Text variant="labelLarge" style={tw`w-15`}>
-                      receiver name:
-                    </Text>
-                    <TextInput
-                      mode="outlined"
-                      style={tw`ml-2 flex-1`}
-                      // placeholder="Name"
-                      value={item.recName}
-                      onChangeText={(text) =>
-                        setData((prev) => ({
-                          ...prev,
-                          Recipients: prev.Recipients.map((x) =>
-                            x.id == item.id ? { ...x, recName: text } : x
-                          ),
-                        }))
-                      }
-                    ></TextInput>
-                  </View>
-                  <View style={tw`flex-row items-center`}>
-                    <Text variant="labelLarge" style={tw`w-15`}>
-                      receiver Email:
-                    </Text>
-                    <TextInput
-                      mode="outlined"
-                      // placeholder="Email"
-                      style={tw`ml-2 flex-1`}
-                      value={item.recEmail}
-                      onChangeText={(text) =>
-                        setData((prev) => ({
-                          ...prev,
-                          Recipients: prev.Recipients.map((x) =>
-                            x.id == item.id ? { ...x, recEmail: text } : x
-                          ),
-                        }))
-                      }
-                    ></TextInput>
-                  </View>
+                  {item.sign_type == '2' ? (
+                    <>
+                      <View style={tw`flex-row items-center`}>
+                        <Text variant="labelLarge" style={tw`w-15`}>
+                          Host name:
+                        </Text>
+                        <TextInput
+                          mode="outlined"
+                          style={tw`ml-2 flex-1`}
+                          // placeholder="Name"
+                          value={item.hostName}
+                          onChangeText={(text) =>
+                            setData((prev) => ({
+                              ...prev,
+                              Recipients: prev.Recipients.map((x) =>
+                                x.id == item.id ? { ...x, hostName: text } : x
+                              ),
+                            }))
+                          }
+                        ></TextInput>
+                      </View>
+
+                      <View style={tw`flex-row items-center`}>
+                        <Text variant="labelLarge" style={tw`w-15`}>
+                          Host email:
+                        </Text>
+                        <TextInput
+                          mode="outlined"
+                          style={tw`ml-2 flex-1`}
+                          // placeholder="Name"
+                          value={item.hostEmail}
+                          onChangeText={(text) =>
+                            setData((prev) => ({
+                              ...prev,
+                              Recipients: prev.Recipients.map((x) =>
+                                x.id == item.id ? { ...x, hostEmail: text } : x
+                              ),
+                            }))
+                          }
+                        ></TextInput>
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <View style={tw`flex-row items-center`}>
+                        <Text variant="labelLarge" style={tw`w-15`}>
+                          Receiver Name:
+                        </Text>
+                        <TextInput
+                          mode="outlined"
+                          // placeholder="Email"
+                          style={tw`ml-2 flex-1`}
+                          value={item.recName}
+                          onChangeText={(text) =>
+                            setData((prev) => ({
+                              ...prev,
+                              Recipients: prev.Recipients.map((x) =>
+                                x.id == item.id ? { ...x, recName: text } : x
+                              ),
+                            }))
+                          }
+                        ></TextInput>
+                      </View>
+                      <View style={tw`flex-row items-center`}>
+                        <Text variant="labelLarge" style={tw`w-15`}>
+                          Receiver Email:
+                        </Text>
+                        <TextInput
+                          mode="outlined"
+                          // placeholder="Email"
+                          style={tw`ml-2 flex-1`}
+                          value={item.recEmail}
+                          onChangeText={(text) =>
+                            setData((prev) => ({
+                              ...prev,
+                              Recipients: prev.Recipients.map((x) =>
+                                x.id == item.id ? { ...x, recEmail: text } : x
+                              ),
+                            }))
+                          }
+                        ></TextInput>
+                      </View>
+                    </>
+                  )}
                   <View style={tw`items-center flex-row gap-2`}>
                     <Text variant="labelLarge" style={tw`w-15`}>
                       Action:
