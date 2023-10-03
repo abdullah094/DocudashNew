@@ -25,9 +25,9 @@ export default function RequestMessage({
   const [text, setText] = React.useState('');
   const [location, setLocation] = React.useState('Home');
   const [userLocation, setUserLocation] = React.useState<Addresses[]>([]);
-  const fouces = useIsFocused();
+  const isFocused = useIsFocused();
 
-  const fetchLoaction = () => {
+  const fetchLocation = () => {
     axios
       .get('https://docudash.net/api/Address', {
         headers: {
@@ -40,8 +40,8 @@ export default function RequestMessage({
       });
   };
   useEffect(() => {
-    fetchLoaction();
-  }, [fouces]);
+    fetchLocation();
+  }, [isFocused]);
   return (
     <>
       <View style={tw`mx-2`}>

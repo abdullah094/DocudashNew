@@ -27,7 +27,7 @@ import Addresses from '@screens/Address/List';
 import FeatureHighlightScreen from '@screens/FeatureHighlightScreen';
 import NotaryLoginStackNavigator from './NotaryLoginStackNavigator';
 import NotaryOrUser from '@screens/SignUp1/NotaryOrUser';
-import NotaryProfile from '@screens/NotaryProfile';
+import NotaryProfile from '@screens/Notary/NotaryProfile';
 import AddAddress from '@screens/Address/AddAddress';
 import CreateARequest from '@screens/Notary/CreateARequest';
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -68,7 +68,7 @@ export default function StackNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <Stack.Group>
-          <Stack.Screen name="CreateARequest" component={CreateARequest} />
+          {/* <Stack.Screen name="CreateARequest" component={CreateARequest} /> */}
           {/* <Stack.Screen name="Featured" component={FeatureHighlightScreen} /> */}
 
           <Stack.Screen name="Home" component={DrawerNavigator} />
@@ -91,7 +91,7 @@ export default function StackNavigator() {
           <Stack.Screen name="NotaryProfile" component={NotaryProfile} />
           <Stack.Screen name="Addresses" component={Addresses} />
           <Stack.Screen name="AddAddress" component={AddAddress} />
-          {/* <Stack.Screen name="CreateARequest" component={CreateARequest} /> */}
+          <Stack.Screen name="CreateARequest" component={CreateARequest} />
 
           {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
           {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}
