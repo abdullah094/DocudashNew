@@ -2,6 +2,7 @@ import { Pressable, Touchable, TouchableOpacity, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { Text, Button, Divider, Menu, TextInput, IconButton } from 'react-native-paper';
 import tw from 'twrnc';
+import { IRequest } from 'src/types/request';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
@@ -9,7 +10,13 @@ import { AddressList, Addresses } from 'src/types/AddressList';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { SignUpStackScreenProps } from 'src/types/navigation';
 
-export default function RequestMessage() {
+export default function RequestMessage({
+  data,
+  setData,
+}: {
+  data: IRequest;
+  setData: React.Dispatch<React.SetStateAction<IRequest>>;
+}) {
   const accessToken = useSelector(selectAccessToken);
   const navigation = useNavigation<SignUpStackScreenProps<'Step4'>['navigation']>();
   const [LocationVisible, setLocationVisible] = React.useState(false);

@@ -22,6 +22,7 @@ import DropDown from 'react-native-paper-dropdown';
 import { useDispatch } from 'react-redux';
 import tw from 'twrnc';
 import CalendarPicker from 'react-native-calendar-picker';
+import { IRequest } from 'src/types/request';
 
 const reasons = [
   {
@@ -92,7 +93,14 @@ const time = [
     value: '5',
   },
 ];
-export default function RequestReason() {
+
+export default function RequestReason({
+  data,
+  setData,
+}: {
+  data: IRequest;
+  setData: React.Dispatch<React.SetStateAction<IRequest>>;
+}) {
   const [state, setState] = useState<{
     selectedStartDate: Date;
     selectedEndDate: Date;
@@ -104,8 +112,6 @@ export default function RequestReason() {
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
 
-  const [industryID, setIndustryID] = useState<string>('');
-  const [timeVal, setTimeVal] = useState<string>('');
   const [showDropDownIndustry, setShowDropDownIndustry] = useState(false);
   const [timeDropdown, setTimeDropdown] = useState(false);
   const minDate = new Date(); // Today
@@ -114,6 +120,11 @@ export default function RequestReason() {
     ? new Date(state.selectedStartDate).toLocaleDateString()
     : '';
   const endDate = state.selectedEndDate ? new Date(state.selectedEndDate).toLocaleDateString() : '';
+
+  useEffect(() => {
+    setData((prev) => ({ ...prev, requestDate: startDate + ' - ' + endDate }));
+  }, [startDate, endDate]);
+
   const onDateChange = (date, type) => {
     if (type === 'END_DATE') {
       setState((prev) => ({ ...prev, selectedEndDate: date }));
@@ -126,20 +137,23 @@ export default function RequestReason() {
       }));
     }
   };
+  const dropDownRef = React.useRef(null);
+
   return (
     <>
       <View style={tw`mx-2`}>
         <Text variant="labelLarge">Reason of Request</Text>
         <View style={tw`border border-[${colors.green}] rounded-3xl overflow-hidden my-2`}>
           <DropDown
+            ref={dropDownRef}
             mode={'flat'}
             placeholder="Reason of Request"
             visible={showDropDownIndustry}
             inputProps={{ backgroundColor: 'white', width: '100%' }}
             showDropDown={() => setShowDropDownIndustry(true)}
             onDismiss={() => setShowDropDownIndustry(false)}
-            value={industryID}
-            setValue={setIndustryID}
+            value={data.reasonOfRequest}
+            setValue={(text) => setData((prev) => ({ ...prev, reasonOfRequest: text }))}
             list={reasons}
           />
         </View>
@@ -178,8 +192,8 @@ export default function RequestReason() {
             inputProps={{ backgroundColor: 'white', width: '100%' }}
             showDropDown={() => setTimeDropdown(true)}
             onDismiss={() => setTimeDropdown(false)}
-            value={timeVal}
-            setValue={setTimeVal}
+            value={data.requestTime}
+            setValue={(text) => setData((prev) => ({ ...prev, requestTime: text }))}
             list={time}
           />
         </View>

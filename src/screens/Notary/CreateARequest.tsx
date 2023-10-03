@@ -1,6 +1,6 @@
 import GreenButton from '@components/GreenButton';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { setAccessToken } from '@stores/Slices';
+import { selectAccessToken, setAccessToken } from '@stores/Slices';
 import { Istep5Response, RootStackScreenProps, SignUpStackScreenProps } from '@type/index';
 import { clearAsync, getToken } from '@utils/AsyncFunc';
 import { storeTokenGlobal } from '@utils/AsyncGlobal';
@@ -19,7 +19,7 @@ import {
   TextInput,
 } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import CalendarPicker from 'react-native-calendar-picker';
 import UploadView from '@components/UploadView';
@@ -27,102 +27,16 @@ import RequestMessage from '@components/RequestMessage';
 import RequestReason from '@components/RequestReason';
 import HomeHeader from '@components/HomeHeader';
 import RequestRecipient from '@components/RequestRecipient';
+import FormData from 'form-data';
+import { IRequest } from 'src/types/request';
 
-interface route {
-  email: string;
-}
-interface Data {
-  id: number;
-  title: string;
-  slug: string;
-  order_at: number;
-  status: number;
-  created_by: number;
-  updated_by: number;
-  deleted: number;
-  created_at: Date;
-  updated_at: Date;
-}
-interface dropDown {
-  label: string;
-  value: number;
-}
-
-const reasons = [
-  {
-    label: 'Notary Document (legal Document)',
-    value: '1',
-  },
-  {
-    label: 'Lawsuit',
-    value: '2',
-  },
-  {
-    label: 'Agreement',
-    value: '3',
-  },
-  {
-    label: 'Immigration',
-    value: '4',
-  },
-  {
-    label: 'Civil document',
-    value: '5',
-  },
-  {
-    label: 'Latter services',
-    value: '6',
-  },
-  {
-    label: 'Apostle',
-    value: '7',
-  },
-  {
-    label: 'Transcript Notarization',
-    value: '8',
-  },
-  {
-    label: 'Real-estate/mortgage',
-    value: '9',
-  },
-  {
-    label: 'Contestation',
-    value: '10',
-  },
-  {
-    label: 'Other',
-    value: '11',
-  },
-];
-
-const time = [
-  {
-    label: 'Early Morning 6 AM to 9 AM',
-    value: '1',
-  },
-  {
-    label: 'Morning 9 AM to 12 PM',
-    value: '2',
-  },
-  {
-    label: 'Afternoon 12 PM to 3 PM',
-    value: '3',
-  },
-  {
-    label: 'Late Afternoon 3 PM to 6 PM',
-    value: '4',
-  },
-  {
-    label: 'Evening 6 PM to 9 PM',
-    value: '5',
-  },
-];
 interface uploadType {
   uri: string;
   name: string;
   type: 'image' | 'video' | undefined | string;
 }
 const CreateARequest = () => {
+  const accessToken = useSelector(selectAccessToken);
   const navigation = useNavigation<SignUpStackScreenProps<'Step4'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'AddAddress'>['route']>();
   const From = route.params?.From as string;
@@ -134,6 +48,17 @@ const CreateARequest = () => {
   const [previousDisabled, setPreviousDisabled] = useState(true);
   const [nextDisabled, setNextDisabled] = useState(false);
 
+  const [data, setData] = useState<IRequest>({
+    notary_id: 'grimudallouto-7714@yopmail.com',
+    reasonOfRequest: '1',
+    requestDate: '09/25/2023 - 09/25/2023',
+    requestTime: '1',
+    requestLocation: '1',
+    requestMessage: 'Message Demo',
+    numOfRecipients: 0,
+    Recipients: [],
+  });
+
   useEffect(() => {
     if (From === 'Address') {
       setProgress(0.8);
@@ -142,37 +67,72 @@ const CreateARequest = () => {
       setPreviousDisabled(false);
     }
   }, []);
-  const sendData = async () => {
+  const sendData = () => {
     setLoading(true);
-    const token = await getToken();
+    let formData = new FormData();
+    formData.append('notary_id', data.notary_id);
+    formData.append('reasonOfRequest', data.reasonOfRequest);
+    formData.append('requestDate', data.requestDate);
+    formData.append('requestTime', data.requestTime);
+    formData.append('requestLocation', data.requestLocation);
+    formData.append('requestMessage', data.requestMessage);
+    formData.append('numOfRecipients', data.numOfRecipients);
+
+    data.Recipients.forEach((item, index) => {
+      {
+        formData.append('recipients_update_id[' + index + ']', item.recipients_update_id);
+        formData.append('recName[' + index + ']', item.recName);
+        formData.append('recEmail[' + index + ']', item.recEmail);
+        formData.append('sign_type[' + index + ']', item.sign_type);
+        formData.append('hostName[' + index + ']', item.hostName);
+        formData.append('hostEmail[' + index + ']', item.hostEmail);
+        formData.append('access_code[' + index + ']', item.access_code);
+        formData.append('private_message[' + index + ']', item.private_message);
+        formData.append('signingOrderInput[' + index + ']', item.id);
+      }
+    });
+
+    [...documents].forEach((image, index) => {
+      // formData.append('photosID[' + index + ']', '0');
+      formData.append('documents[]', image, `image${index + 1}.png`);
+    });
+
+    let headers = {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'multipart/form-data',
+    };
+
     axios
-      .post('https://docudash.net/api/create-request', {
-        industry_id: 'industryID',
-      })
+      .post('https://docudash.net/api/create-request', formData, { headers })
       .then((response) => {
-        const { success, message, token }: Istep5Response = response.data;
-        if (success) {
-          dispatch(setAccessToken(token));
-          setLoading(false);
-          Alert.alert(message);
-          storeTokenGlobal(token);
-          clearAsync();
+        setLoading(false);
+        const {
+          status,
+          message,
+        }: {
+          status: boolean;
+          message: {
+            emailSubject: string[];
+            emailMessage: string[];
+            'recName.0': string[];
+            'photos.0': string[];
+          };
+        } = response.data;
+        console.log(response.data);
+        if (status) {
+          // navigation.replace('DocumentEditor', {
+          //   Envelope: generateSignature,
+          // });
         } else {
-          setLoading(false);
-          // @ts-ignore
-          if (message.industry_id) {
-            // @ts-ignore
-            Alert.alert(message.industry_id[0]);
+          for (const [key, value] of Object.entries(message)) {
+            alert(value);
           }
-          // @ts-ignore
-          if (message.sign_up_reasons_id) {
-            // @ts-ignore
-            Alert.alert(message.sign_up_reasons_id[0]);
-          }
+          console.log(JSON.stringify(response.data));
         }
       })
-      .catch((err) => {
+      .catch((error) => {
         setLoading(false);
+        console.log('error', error);
       });
   };
 
@@ -190,13 +150,12 @@ const CreateARequest = () => {
       </View>
       <ScrollView>
         <View style={tw`flex-1 gap-2`}>
-          {value === 'Reason' && <RequestReason />}
-          {value === 'Recipient' && <RequestRecipient />}
-
+          {value === 'Reason' && <RequestReason data={data} setData={setData} />}
+          {value === 'Recipient' && <RequestRecipient data={data} setData={setData} />}
           {value === 'Documents' && (
             <UploadView documents={documents} setDocuments={setDocuments} />
           )}
-          {value === 'Message' && <RequestMessage />}
+          {value === 'Message' && <RequestMessage data={data} setData={setData} />}
         </View>
       </ScrollView>
       <ProgressBar progress={progress}></ProgressBar>

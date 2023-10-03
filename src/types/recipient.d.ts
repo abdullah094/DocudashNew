@@ -1,4 +1,5 @@
 export interface Recipient {
+  id: string;
   recName: string;
   recEmail: string;
   sign_type: string;

@@ -16,9 +16,8 @@ PODS:
     - React-Core
   - EXLocation (15.1.1):
     - ExpoModulesCore
-  - EXMediaLibrary (15.6.0):
+  - EXMediaLibrary (15.2.3):
     - ExpoModulesCore
-    - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - EXPermissions (14.1.2):
     - ExpoModulesCore
@@ -513,7 +512,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-google-maps (from `/Users/navaidjafri/Documents/DocudashNew/node_modules/react-native-maps`)
+  - react-native-google-maps (from `/Users/macbookpro/DocudashNew/node_modules/react-native-maps`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
@@ -623,7 +622,7 @@ EXTERNAL SOURCES:
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-google-maps:
-    :path: "/Users/navaidjafri/Documents/DocudashNew/node_modules/react-native-maps"
+    :path: "/Users/macbookpro/DocudashNew/node_modules/react-native-maps"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-safe-area-context:
@@ -689,7 +688,7 @@ SPEC CHECKSUMS:
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
   EXImageLoader: fd053169a8ee932dd83bf1fe5487a50c26d27c2b
   EXLocation: 74a0ba446f54fd585ea6cfcd19a25644bf22c30d
-  EXMediaLibrary: 802eee8ef888ee16ef80f1b79005d3d611793e14
+  EXMediaLibrary: 587cd8aad27a6fc8d7c38b950bc75bc1845a7480
   EXPermissions: ee60d7978aba135b8b391185b039d78f151c376a
   Expo: 8448e3a2aa1b295f029c81551e1ab6d986517fdb
   ExpoCrypto: 9105610a09cd6290b900bd82fc5d190e489125a3
