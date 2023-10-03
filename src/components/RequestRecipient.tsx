@@ -3,6 +3,7 @@ import { Divider, IconButton, Menu, Text, TextInput } from 'react-native-paper';
 import React, { useEffect, useState } from 'react';
 import tw from 'twrnc';
 import DropDown from 'react-native-paper-dropdown';
+import { IRequest } from 'src/types/request';
 
 interface recipient {
   id: number;
@@ -22,7 +23,7 @@ const status = [
     value: '2',
   },
   {
-    label: 'Recieves a copy',
+    label: 'Receives a copy',
     value: '3',
   },
   {
@@ -31,25 +32,40 @@ const status = [
   },
 ];
 
-export default function RequestRecipient() {
-  const [numberOfRecipient, setNumberOfRecipient] = useState(0);
-  const [recipient, setRecipient] = useState<recipient[]>([]);
-
+export default function RequestRecipient({
+  data,
+  setData,
+}: {
+  data: IRequest;
+  setData: React.Dispatch<React.SetStateAction<IRequest>>;
+}) {
   useEffect(() => {
-    setRecipient((prev) =>
-      [...new Array(numberOfRecipient)].map((x, i) => ({
-        id: i,
-        first_name: '',
-        email: '',
+    setData((prev) => ({
+      ...prev,
+      Recipients: [...new Array(data.numOfRecipients)].map((x, i) => ({
+        id: String(i),
+        recName: '',
+        recEmail: '',
+        sign_type: '1',
+        hostName: '',
+        hostEmail: '',
+        access_code: '',
+        private_message: '',
+        recipients_update_id: '',
         showDropDown: false,
-        time: '1',
-      }))
-    );
-  }, [numberOfRecipient]);
+        visible: false,
+        showAccessCode: false,
+        showPrivateMessage: false,
+      })),
+    }));
+  }, [data.numOfRecipients]);
 
   const Delete = (id) => {
-    setRecipient((prev) => prev.filter((x, index) => index != id));
-    setNumberOfRecipient(numberOfRecipient - 1);
+    setData((prev) => ({
+      ...prev,
+      Recipients: prev.Recipients.filter((x, index) => index != id),
+      numOfRecipients: prev.numOfRecipients - 1,
+    }));
   };
 
   return (
@@ -58,46 +74,57 @@ export default function RequestRecipient() {
         <Text variant="labelLarge">Number of Recipients:</Text>
         <TextInput
           mode="outlined"
-          value={String(numberOfRecipient)}
-          onChangeText={(text) => setNumberOfRecipient(Number(text.replace(/[^0-9]/g, '')))}
+          value={String(data.numOfRecipients)}
+          onChangeText={(text) =>
+            setData((prev) => ({
+              ...prev,
+              numOfRecipients: Number(text.replace(/[^0-9]/g, '')),
+            }))
+          }
         />
       </View>
       <ScrollView nestedScrollEnabled>
         <View style={tw` gap-2`}>
-          {recipient?.map((item) => (
+          {data.Recipients?.map((item) => (
             <View style={tw`h-64`} key={item.id}>
               <View style={tw`border-2  border-gray-300 p-4 flex-row flex-1 items-center gap-4`}>
-                <Text>{item.id + 1}</Text>
+                <Text>{Number(item.id) + 1}</Text>
                 <View style={tw`gap-2 flex-1`}>
                   <View style={tw`flex-row items-center`}>
                     <Text variant="labelLarge" style={tw`w-15`}>
-                      Name:
+                      Host name:
                     </Text>
                     <TextInput
                       mode="outlined"
                       style={tw`ml-2 flex-1`}
                       // placeholder="Name"
-                      value={item.first_name}
+                      value={item.hostName}
                       onChangeText={(text) =>
-                        setRecipient((prev) =>
-                          prev.map((x) => (x.id == item.id ? { ...x, first_name: text } : x))
-                        )
+                        setData((prev) => ({
+                          ...prev,
+                          Recipients: prev.Recipients.map((x) =>
+                            x.id == item.id ? { ...x, hostName: text } : x
+                          ),
+                        }))
                       }
                     ></TextInput>
                   </View>
                   <View style={tw`flex-row items-center`}>
                     <Text variant="labelLarge" style={tw`w-15`}>
-                      Email:
+                      Host Email:
                     </Text>
                     <TextInput
                       mode="outlined"
                       // placeholder="Email"
                       style={tw`ml-2 flex-1`}
-                      value={item.email}
+                      value={item.hostEmail}
                       onChangeText={(text) =>
-                        setRecipient((prev) =>
-                          prev.map((x) => (x.id == item.id ? { ...x, email: text } : x))
-                        )
+                        setData((prev) => ({
+                          ...prev,
+                          Recipients: prev.Recipients.map((x) =>
+                            x.id == item.id ? { ...x, hostEmail: text } : x
+                          ),
+                        }))
                       }
                     ></TextInput>
                   </View>
@@ -108,9 +135,12 @@ export default function RequestRecipient() {
                     <Menu
                       theme={{ roundness: 4 }}
                       onDismiss={() =>
-                        setRecipient((prev) =>
-                          prev.map((x) => (x.id == item.id ? { ...x, showDropDown: false } : x))
-                        )
+                        setData((prev) => ({
+                          ...prev,
+                          Recipients: prev.Recipients.map((x) =>
+                            x.id == item.id ? { ...x, showDropDown: false } : x
+                          ),
+                        }))
                       }
                       visible={item.showDropDown}
                       anchorPosition="bottom"
@@ -118,23 +148,27 @@ export default function RequestRecipient() {
                       anchor={
                         <TouchableOpacity
                           onPress={() =>
-                            setRecipient((prev) =>
-                              prev.map((x) => (x.id == item.id ? { ...x, showDropDown: true } : x))
-                            )
+                            setData((prev) => ({
+                              ...prev,
+                              Recipients: prev.Recipients.map((x) =>
+                                x.id == item.id ? { ...x, showDropDown: true } : x
+                              ),
+                            }))
                           }
                           style={tw`flex-row items-center border rounded-lg w-50 border-gray-500`}
                         >
                           <Text variant="bodyMedium" style={tw`flex-1 px-2`}>
-                            {status.find((x) => x.value == item.time).label}
+                            {status.find((x) => x.value == item.sign_type).label}
                           </Text>
                           <IconButton
                             icon="chevron-down"
                             onPress={() =>
-                              setRecipient((prev) =>
-                                prev.map((x) =>
+                              setData((prev) => ({
+                                ...prev,
+                                Recipients: prev.Recipients.map((x) =>
                                   x.id == item.id ? { ...x, showDropDown: true } : x
-                                )
-                              )
+                                ),
+                              }))
                             }
                           />
                         </TouchableOpacity>
@@ -145,14 +179,14 @@ export default function RequestRecipient() {
                           <Menu.Item
                             style={tw`flex-1`}
                             onPress={() => {
-                              setRecipient((prev) =>
-                                prev.map((x) => (x.id == item.id ? { ...x, time: stat.value } : x))
-                              );
-                              setRecipient((prev) =>
-                                prev.map((x) =>
-                                  x.id == item.id ? { ...x, showDropDown: false } : x
-                                )
-                              );
+                              setData((prev) => ({
+                                ...prev,
+                                Recipients: prev.Recipients.map((x) =>
+                                  x.id == item.id
+                                    ? { ...x, showDropDown: false, sign_type: stat.value }
+                                    : x
+                                ),
+                              }));
                             }}
                             title={stat.label}
                           />

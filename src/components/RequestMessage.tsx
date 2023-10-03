@@ -2,8 +2,15 @@ import { Pressable, Touchable, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { Text, Button, Divider, Menu, TextInput, IconButton } from 'react-native-paper';
 import tw from 'twrnc';
+import { IRequest } from 'src/types/request';
 
-export default function RequestMessage() {
+export default function RequestMessage({
+  data,
+  setData,
+}: {
+  data: IRequest;
+  setData: React.Dispatch<React.SetStateAction<IRequest>>;
+}) {
   const [LocationVisible, setLocationVisible] = React.useState(false);
   const openLocationMenu = () => setLocationVisible(true);
   const closeLocationMenu = () => setLocationVisible(false);
