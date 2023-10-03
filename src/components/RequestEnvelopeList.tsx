@@ -11,11 +11,12 @@ import tw from 'twrnc';
 import EnvelopeListItem from './EnvelopeListItem';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import RequestEnvelopeListItem from './RequestEnvelopeListItem';
+import { RequestEnvelopeListT } from 'src/types/RequestEnvelope';
 export default function RequestEnvelopeList({ heading }: { heading: string }) {
   const navigation = useNavigation();
   const focused = useIsFocused();
   const accessToken = useSelector(selectAccessToken);
-  const [data, setData] = useState<Array<Envelope>>();
+  const [data, setData] = useState<Array<RequestEnvelopeListT>>();
   const [loading, setLoading] = useState(false);
   console.log(accessToken);
 
