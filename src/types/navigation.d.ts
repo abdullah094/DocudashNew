@@ -50,8 +50,8 @@ export type RootStackParamList = {
   NotaryOrUser: undefined;
   NotaryProfile: {item:any}
   Addresses: {From: Addresses};
-  AddAddress: { Address?: Address };
-  CreateARequest: {email: string}
+  AddAddress: { Address?: Address,From?:string };
+  CreateARequest: {email?: string,From?:string}
 };
 
 export type SignUpStackParamList = {
