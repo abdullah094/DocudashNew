@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import ContactList from '@screens/Contact/List';
 import AddressesList from '@screens/Address/List';
 import Map from '@screens/Notary/List';
+import RequestList from '@screens/Request/List';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -118,6 +119,20 @@ const DrawerNavigator = () => {
           {(props) => (
             <DrawerScreenContainer {...props}>
               <ContactList />
+            </DrawerScreenContainer>
+          )}
+        </Drawer.Screen>
+        <Drawer.Screen
+          name="REQUEST"
+          options={{
+            drawerIcon: ({ color }) => (
+              <Icon name="contacts" size={25} style={{ marginRight: -20, color }} />
+            ),
+          }}
+        >
+          {(props) => (
+            <DrawerScreenContainer {...props}>
+              <RequestList />
             </DrawerScreenContainer>
           )}
         </Drawer.Screen>

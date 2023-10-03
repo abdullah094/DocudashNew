@@ -33,6 +33,7 @@ export default function NotaryLoginStackNavigator() {
       <LoginStack.Screen name="Step3" component={SetPasswordScreen} />
       <LoginStack.Screen name="Step4" component={Address} />
       <LoginStack.Screen name="Step5" component={RON_DocUpload} />
+      <LoginStack.Screen name="Step6" component={PasswordScreen} />
 
       <LoginStack.Screen name="Browser" component={Browser} />
     </LoginStack.Navigator>

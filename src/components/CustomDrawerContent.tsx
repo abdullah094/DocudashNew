@@ -21,6 +21,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     <DrawerContentScrollView
       style={{
         paddingVertical: 30,
+        paddingBottom: 100,
       }}
     >
       <View style={tw`flex-row items-center  mt-5 w-full justify-between px-5`}>
