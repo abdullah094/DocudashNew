@@ -1,3 +1,4 @@
+import { RequestList } from '@screens/Request/List';
 import { NotaryOrUser } from '@screens/SignUp1/NotaryOrUser';
 import { AddContact } from '@screens/Contact/AddContact';
 import type {
@@ -52,6 +53,7 @@ export type RootStackParamList = {
   Addresses: { From: Addresses };
   AddAddress: { Address?: Address; From?: string; Notary?: string };
   CreateARequest: { email?: string; From?: string };
+  RequestList: { heading: string };
 };
 
 export type SignUpStackParamList = {

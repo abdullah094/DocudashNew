@@ -10,11 +10,12 @@ import { setRouteName } from '@stores/Slices';
 import { useDispatch } from 'react-redux';
 import { SegmentedButtons } from 'react-native-paper';
 import { View } from 'react-native-ui-lib';
+import RequestEnvelopeList from '@components/RequestEnvelopeList';
 
-const Inbox = () => {
-  const navigation = useNavigation<RootStackScreenProps<'Inbox'>['navigation']>();
-  const route = useRoute<RootStackScreenProps<'Inbox'>['route']>();
-  const heading = route.params?.heading || 'Inbox';
+const List = () => {
+  const navigation = useNavigation<RootStackScreenProps<'RequestList'>['navigation']>();
+  const route = useRoute<RootStackScreenProps<'RequestList'>['route']>();
+  const heading = route.params?.heading || 'RequestList';
   const [value, setValue] = React.useState(heading);
 
   const dispatch = useDispatch();
@@ -26,28 +27,28 @@ const Inbox = () => {
   return (
     <SafeAreaView style={tw`flex-1`}>
       <HomeHeader heading={heading} />
-      <View style={tw`px-4`}>
+      <View style={tw`px-2`}>
         <SegmentedButtons
           value={value}
           onValueChange={setValue}
           buttons={[
             {
-              value: 'Inbox',
-              label: 'Inbox',
+              value: 'RequestList',
+              label: 'Request',
             },
             {
-              value: 'Draft',
-              label: 'Draft',
+              value: 'AcceptedList',
+              label: 'Accepted',
             },
-            { value: 'Sent', label: 'Sent' },
+            { value: 'DoneList', label: 'Done' },
 
-            { value: 'Trash', label: 'Trash' },
+            { value: 'RejectedList', label: 'Rejected' },
           ]}
         />
       </View>
-      <EnvelopeList heading={value} />
+      <RequestEnvelopeList heading={value} />
     </SafeAreaView>
   );
 };
 
-export default Inbox;
+export default List;
