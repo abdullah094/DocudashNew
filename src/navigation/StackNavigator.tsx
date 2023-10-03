@@ -29,7 +29,7 @@ import NotaryLoginStackNavigator from './NotaryLoginStackNavigator';
 import NotaryOrUser from '@screens/SignUp1/NotaryOrUser';
 import NotaryProfile from '@screens/NotaryProfile';
 import AddAddress from '@screens/Address/AddAddress';
-import CreateARequest from '@screens/BookAnAppointment/CreateARequest';
+import CreateARequest from '@screens/Notary/CreateARequest';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
