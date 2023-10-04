@@ -38,9 +38,9 @@ const DrawerProfileModal = () => {
             />
             <Text
               style={{
-                color: COLORS.white,
+                color: colors.blue,
                 fontWeight: 'bold',
-                fontSize: 13,
+                fontSize: 15,
                 marginTop: 10,
               }}
             >

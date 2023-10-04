@@ -24,8 +24,12 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         paddingBottom: 100,
       }}
     >
-      <View style={tw`flex-row items-center  mt-5 w-full justify-between px-5`}>
-        <Image style={tw`w-30 h-7 `} source={require('@assets/docudash_pow_logo.png')} />
+      <View style={tw`flex-row items-center   mt-4 w-full justify-between px-5`}>
+        <Image
+          style={tw`w-44  bg-white rounded-xl`}
+          resizeMode="contain"
+          source={require('@assets/docudash_pow_logo.png')}
+        />
       </View>
       <DrawerProfileModal />
       {routeName === 'Manage' && (
@@ -43,7 +47,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       <Drawer.Item
         active
         label="LOGOUT"
-        style={tw`m-1 bg-transparent rounded-none`}
+        style={tw`m-1 bg-transparent rounded-none mb-10`}
         icon="logout"
         onPress={() => {
           dispatch(logoutUser());

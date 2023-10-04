@@ -1,8 +1,8 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import tw from 'twrnc';
 import DropDown from 'react-native-paper-dropdown';
-import { Button, Divider, Menu } from 'react-native-paper';
+import { Button, Divider, Menu, Text } from 'react-native-paper';
 import GreenButton from '@components/GreenButton';
 import { useNavigation } from '@react-navigation/native';
 import { SignUpStackScreenProps } from '@type/*';
@@ -25,17 +25,22 @@ const NotaryOrUser = () => {
     <View style={tw`flex-1 justify-center items-center`}>
       <View style={tw`w-50 gap-4 `}>
         <Image style={tw`w-40 h-30 self-center`} source={require('@assets/adaptive-icon.png')} />
-        <Text style={tw`text-5 font-bold text-center`}>How do you want to proceed?</Text>
+        <Text variant="titleMedium" style={tw`font-bold text-center`}>
+          How do you want to proceed?
+        </Text>
         <Menu
+          style={tw`w-50`}
           visible={showDropDown}
           anchorPosition="bottom"
           onDismiss={closeMenu}
           anchor={
             <TouchableOpacity
-              style={tw`flex-row items-center w-full bg-white justify-between px-5 border-2 rounded-3xl h-15 border-gray-300`}
+              style={tw`flex-row items-center w-full bg-white justify-between  px-4 border rounded-xl h-12 border-gray-500`}
               onPress={openMenu}
             >
-              <Text style={tw`text-5  text-black pl-5`}>{dropDownVal}</Text>
+              <Text variant="labelLarge" style={tw``}>
+                {dropDownVal}
+              </Text>
               <View style={tw`bottom-0`}>
                 <Icon name="down" size={15} color={'black'} />
               </View>

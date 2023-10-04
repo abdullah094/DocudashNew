@@ -17,6 +17,8 @@ import ContactList from '@screens/Contact/List';
 import AddressesList from '@screens/Address/List';
 import Map from '@screens/Notary/List';
 import RequestList from '@screens/Request/List';
+import { colors } from '@utils/Colors';
+
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -30,19 +32,19 @@ const DrawerNavigator = () => {
         drawerType: 'slide',
         drawerStyle: {
           width: 200,
-          backgroundColor: COLORS.primary,
+          backgroundColor: colors.white,
         },
         // @ts-ignore
         overlayColor: null,
         drawerLabelStyle: {
           fontWeight: 'bold',
         },
-        drawerActiveTintColor: COLORS.white,
-        drawerInactiveTintColor: COLORS.secondary,
+        drawerActiveTintColor: colors.green,
+        drawerInactiveTintColor: colors.blue,
         // @ts-ignore
         drawerItemStyle: { backgroundColor: null },
         sceneContainerStyle: {
-          backgroundColor: COLORS.primary,
+          backgroundColor: colors.white,
         },
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
