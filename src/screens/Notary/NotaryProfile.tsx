@@ -24,10 +24,13 @@ import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
 import { NotarizeReview, ReviewsList } from 'src/types/ReviewList';
 import tw from 'twrnc';
+import { Avatar } from 'react-native-paper';
+import { Notaries } from 'src/types/NoraryList';
+// uri: 'https://docudash.net/public/uploads/NotaryRequestBanner/' + item.BannerImage,
 
 const { width, height } = Dimensions.get('window');
 const NotaryProfile = ({ navigation, route }) => {
-  const { item } = route.params;
+  const { item } = route.params as { item: Notaries };
   const accessToken = useSelector(selectAccessToken);
   const [seeMore, setSeeMore] = useState(false);
   const [reviews, setReviews] = useState<NotarizeReview[]>([]);
@@ -40,7 +43,7 @@ const NotaryProfile = ({ navigation, route }) => {
     numberOfLines = 2;
     seeMoreText = 'See more';
   }
-  console.log(item.first_name);
+  console.log('profile', item);
 
   const fetchReviews = () => {
     const url = 'https://docudash.net/api/notarize-map-details/' + item.first_name + item.last_name;
@@ -85,7 +88,9 @@ const NotaryProfile = ({ navigation, route }) => {
             borderRadius: image_dimension / 2,
             marginTop: 60,
           }}
-          source={{ uri: item.notary_image }}
+          source={{
+            uri: 'https://docudash.net/public/uploads/profile-pics/' + item.image,
+          }}
         />
         <Text style={[styles.heading, { fontSize: 20 }]}>{item.first_name}</Text>
         <Text style={styles.heading}>{item.email}</Text>
@@ -100,16 +105,23 @@ const NotaryProfile = ({ navigation, route }) => {
           />
         </View>
       </SafeAreaView>
+
       <View
         style={{
           width: width - 80,
-          paddingVertical: 30,
-          backgroundColor: Colors.white,
+          // backgroundColor: Colors.white,
           top: -80,
           borderRadius: 10,
         }}
       >
-        <View
+        <Image
+          source={{
+            uri: 'https://docudash.net/public/uploads/NotaryRequestBanner/' + item.BannerImage,
+          }}
+          style={tw`w-full h-14`}
+          resizeMode={'contain'}
+        ></Image>
+        {/* <View
           style={{
             width: '100%',
             alignItems: 'center',
@@ -125,10 +137,11 @@ const NotaryProfile = ({ navigation, route }) => {
             }}
             numberOfLines={6}
           >
-            {item.description}
+            {item.BioDescription}
           </Text>
-        </View>
+        </View> */}
       </View>
+
       {/* Content */}
       <View
         style={{
@@ -173,17 +186,7 @@ const NotaryProfile = ({ navigation, route }) => {
         <View style={styles.content_box}>
           <Text style={styles.content_heading}>About This Notary</Text>
           <Text style={{ color: 'gray' }} numberOfLines={numberOfLines}>
-            Philip Morris is a highly skilled notary who has been serving his community for over a
-            decade. He is known for his exceptional attention to detail and his ability to
-            authenticate legal documents with precision and accuracy. Philip is a consummate
-            professional who takes great pride in his work. He has a thorough understanding of the
-            legal system and stays up-to-date on the latest laws and regulations to provide his
-            clients with the best possible service. In addition to his notary services, Philip is
-            also a seasoned legal consultant who can provide guidance and advice on a wide range of
-            legal matters. He has a reputation for being trustworthy and reliable, and he always
-            puts his clients' needs first. Whether you need to certify a simple document or require
-            more complex legal services, Philip Morris is the notary you can count on for
-            professional and personalized service.
+            {item.about_notary}
           </Text>
           <Pressable style={{ padding: 3 }} onPress={() => setSeeMore(!seeMore)}>
             <Text style={{ color: Colors.gray }}>{seeMoreText}</Text>
@@ -194,24 +197,26 @@ const NotaryProfile = ({ navigation, route }) => {
           <Text style={styles.content_heading}>Overview</Text>
           <View style={styles.overview_bullet}>
             <Ionicons name="md-trophy-outline" color={Colors.black} size={16} />
-            <Text style={styles.bullet_text}>Hired 251 times</Text>
+            <Text style={styles.bullet_text}>Hired {Math.floor(Math.random() * 200)} times</Text>
           </View>
           <View style={styles.overview_bullet}>
             <Ionicons name="location" color={Colors.black} size={16} />
-            <Text style={styles.bullet_text}>Serves Houston, TX</Text>
+            <Text style={styles.bullet_text}>{item.city + ',' + item.state}</Text>
           </View>
 
           <View style={styles.overview_bullet}>
             <Ionicons name="md-person-add" color={Colors.black} size={16} />
-            <Text style={styles.bullet_text}>Background Check</Text>
+            <Text style={styles.bullet_text}>verified by</Text>
           </View>
           <View style={styles.overview_bullet}>
             <Ionicons name="people" color={Colors.black} size={15} />
-            <Text style={styles.bullet_text}>2 employess</Text>
+            <Text style={styles.bullet_text}>{Math.floor(Math.random() * 10)} employees</Text>
           </View>
           <View style={styles.overview_bullet}>
             <Ionicons name="alarm-outline" color={Colors.black} size={15} />
-            <Text style={styles.bullet_text}>4 years in business</Text>
+            <Text style={styles.bullet_text}>
+              {Math.floor(Math.random() * 10)} years in business
+            </Text>
           </View>
         </View>
         {/* Top Pro */}
@@ -228,11 +233,11 @@ const NotaryProfile = ({ navigation, route }) => {
             }}
           >
             <View style={styles.badge_box}>
-              <Image style={styles.badge_image} source={require('@assets/ProfilePic.png')} />
+              <Image style={styles.badge_image} source={require('@assets/badge.png')} />
               <Text style={styles.badge_box_text}>2021</Text>
             </View>
             <View style={styles.badge_box}>
-              <Image style={styles.badge_image} source={require('@assets/ProfilePic.png')} />
+              <Image style={styles.badge_image} source={require('@assets/badge.png')} />
               <Text style={styles.badge_box_text}>2022</Text>
             </View>
           </View>
@@ -289,11 +294,15 @@ const NotaryProfile = ({ navigation, route }) => {
                         height: '90%',
                       }}
                     >
-                      <Image
-                        style={{ width: 50, height: 50, borderRadius: 25 }}
-                        source={require('@assets/ProfilePic.png')}
+                      <Avatar.Image
+                        size={50}
+                        source={{
+                          uri:
+                            'https://docudash.net/public/uploads/profile-pics/' +
+                            element.user?.image,
+                        }}
                       />
-                      <View style={{ marginLeft: 5, height: '90%' }}>
+                      <View style={{ marginLeft: 14, height: '90%' }}>
                         <Text
                           style={[
                             {

@@ -2,7 +2,7 @@ import GettingStarted from '@components/GettingStarted';
 import HomeHeader from '@components/HomeHeader';
 import UploadView from '@components/UploadView';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
-import { selectAccessToken, setProfileData, setRouteName } from '@stores/Slices';
+import { logoutUser, selectAccessToken, setProfileData, setRouteName } from '@stores/Slices';
 import { DashboardAPI, HomeDrawerScreenProps, User } from '@type/index';
 import { colors } from '@utils/Colors';
 import axios from 'axios';
@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 import COLORS from '../constants/colors';
 import mime from 'mime';
+import { clearToken } from '@utils/AsyncGlobal';
 
 const { height } = Dimensions.get('window');
 
@@ -38,20 +39,17 @@ interface uploadType {
 
 const titles = [
   'Get Notified',
-  'Title two is a long title that will not get cut by default, but can be limited',
-  'Title number three',
-  // 'Title number four',
+  'Help is here',
+  'Show More',
+  'Your Profile Photo is here',
   // 'Title number five',
   // 'Welcome to Uilib demo!',
 ];
 const messages = [
-  'Important notifications appear right on your clubs and groups. Tap them to get more information about the most' +
-    'important things that you should pay attention to.',
-  'Short message with information about the above highlighted feature',
-  'A long message, that will not get cut (but can be limited) with information about the highlighted feature.' +
-    ' Please note that if the message is too long and will cause the content box to render off screen, you will get a' +
-    ' warning about it',
-  // 'Very short message',
+  'Side Menu is where all the important things are from manage to find notary click here to see the menu',
+  'You can Find help here  ',
+  'Click here and see your progress here',
+  'Press this to upload you image',
   // 'Short message with information about the below highlighted feature',
   // 'Here is where you can view demos of all Uilib components',
 ];
@@ -179,6 +177,14 @@ const HomeScreen = () => {
           setSignature(data.signature);
         } else {
           setSignature('');
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        if (err.response.status === 401) {
+          Alert.alert('Session Expired', 'Please login again');
+          dispatch(logoutUser());
+          clearToken();
         }
       });
   };

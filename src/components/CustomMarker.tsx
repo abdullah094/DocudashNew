@@ -1,3 +1,4 @@
+import { colors } from '@utils/Colors';
 import React from 'react';
 import { View, Text } from 'react-native';
 import { LatLng, Marker } from 'react-native-maps';
@@ -13,7 +14,7 @@ const CustomMarker = (props: {
     <Marker coordinate={coordinate} onPress={onPress}>
       <View
         style={{
-          backgroundColor: isSelected ? 'black' : 'white',
+          backgroundColor: isSelected ? colors.green : 'white',
           padding: 5,
           borderRadius: 20,
           borderColor: 'grey',

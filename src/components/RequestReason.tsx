@@ -137,7 +137,6 @@ export default function RequestReason({
       }));
     }
   };
-  const dropDownRef = React.useRef(null);
 
   return (
     <>
@@ -145,7 +144,6 @@ export default function RequestReason({
         <Text variant="labelLarge">Reason of Request</Text>
         <View style={tw`border border-[${colors.green}] rounded-3xl overflow-hidden my-2`}>
           <DropDown
-            ref={dropDownRef}
             mode={'flat'}
             placeholder="Reason of Request"
             visible={showDropDownIndustry}

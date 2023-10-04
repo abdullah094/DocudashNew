@@ -1,16 +1,16 @@
-import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Image, Pressable, StyleSheet, View, Dimensions } from 'react-native';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import tw from 'twrnc';
 import { Notaries } from 'src/types/NoraryList';
+import { Text } from 'react-native-paper';
+const { width, height } = Dimensions.get('window');
 
 interface IPost {
   post: Notaries;
 }
 
 const PostCarouselItem = ({ post }: IPost) => {
-  const width = useWindowDimensions().width;
-
   const navigation = useNavigation();
 
   const goToPostPage = () => {
@@ -26,23 +26,20 @@ const PostCarouselItem = ({ post }: IPost) => {
         <View style={tw`flex-row`}>
           {/* Image  */}
           <Image
-            style={tw`h-30 w-30 m-2 bg-gray-200 rounded-lg`}
+            style={tw`h-20 w-20 m-2 bg-gray-200 rounded-lg`}
             resizeMode="contain"
             source={{ uri: post.notary_image }}
           />
 
-          <View style={{ flex: 1, marginHorizontal: 10 }}>
-            {/* Bed & Bedroom  */}
-            <Text style={tw`text-lg my-2`}>{post.email}</Text>
-            <Text style={tw`text-sm`} numberOfLines={2}>
+          <View style={tw`flex-1 gap-2 p-2`}>
+            <Text variant="labelLarge" style={tw`text-lg`} numberOfLines={2}>
               {post?.first_name} {post?.last_name}
             </Text>
-            {/* Type & Description
-           
+            <Text variant="bodyMedium">{post.email}</Text>
 
             {/*  Old price & new price */}
             {/* <Text style={tw`text-sm my-2`}>
-              <Text style={tw`font-bold`}>{post.BioDescription} </Text>
+              <Text style={tw`font-bold`}>{post.ShortDescription} </Text>
             </Text> */}
           </View>
         </View>

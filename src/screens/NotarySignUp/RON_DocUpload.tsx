@@ -30,6 +30,7 @@ import { useDispatch } from 'react-redux';
 import { setAccessToken } from '@stores/Slices';
 import { NotarySignUpStep5 } from 'src/types/NotarySignUpStep5';
 import { storeTokenGlobal } from '@utils/AsyncGlobal';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface uploadType {
   uri: string;
@@ -74,9 +75,8 @@ const RON_DocUpload = () => {
           storeTokenGlobal(token);
           clearAsync();
         } else {
-          Alert.alert('Failed', 'Wrong code Please try again or resend code'),
-            setOtp(''),
-            setLoading(false);
+          if (message) Object.values(message).map((x) => Alert.alert('Failed', x.toString()));
+          setOtp(''), setLoading(false);
         }
       })
       .catch((err) => {
@@ -86,48 +86,47 @@ const RON_DocUpload = () => {
   };
 
   return (
-    <>
-      <ScrollView contentContainerStyle={tw`h-full bg-white`}>
+    <SafeAreaView style={tw`h-full bg-white`}>
+      <ScrollView contentContainerStyle={tw`bg-white`}>
         <View style={tw`flex-1 gap-3 justify-center px-10`}>
-          <KeyboardAvoidingView
-            style={tw`gap-3`}
-            keyboardVerticalOffset={150}
-            behavior={'position'}
+          <View style={tw`absolute top-10 left-5`}>
+            <Chip>
+              <Text variant="labelLarge">{`6/6`}</Text>
+            </Chip>
+          </View>
+          <Image
+            style={tw`w-65 self-center`}
+            resizeMode="contain"
+            source={require('@assets/logo.png')}
+          />
+          <Text
+            style={{
+              fontFamily: 'nunito-SemiBold',
+              color: colors.blue,
+              fontSize: 25,
+              alignSelf: 'center',
+            }}
           >
-            <View style={tw`absolute top--10 left-5`}>
-              <Chip>
-                <Text variant="labelLarge">{`6/6`}</Text>
-              </Chip>
-            </View>
-            <Image
-              style={tw`w-65 self-center`}
-              resizeMode="contain"
-              source={require('@assets/logo.png')}
-            />
-            <Text
-              style={{
-                fontFamily: 'nunito-SemiBold',
-                color: colors.blue,
-                fontSize: 25,
-                alignSelf: 'center',
-              }}
-            >
-              Documents Upload
+            Documents Upload
+          </Text>
+          <Text
+            style={[
+              { fontFamily: 'nunito-SemiBold' },
+              tw`text-center text-[${colors.blue}] text-base`,
+            ]}
+          >
+            Upload your Remote Online Notary Certificate for verification purposes. If you’re not an
+            R.O.N, please proceed to next step by clicking Next{' '}
+            <Text variant="labelLarge" style={tw`font-bold underline`}>
+              Next
             </Text>
-            <Text
-              style={[
-                { fontFamily: 'nunito-SemiBold' },
-                tw`text-center text-[${colors.blue}] text-base`,
-              ]}
-            >
-              Upload your RON form
-            </Text>
-            <UploadView documents={documents} setDocuments={setDocuments} />
-            <GreenButton loading={loading} text={'Next'} onPress={fetchData} />
-          </KeyboardAvoidingView>
+            tab
+          </Text>
+          <UploadView documents={documents} setDocuments={setDocuments} />
+          <GreenButton loading={loading} text={'Next'} onPress={fetchData} />
         </View>
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 };
 

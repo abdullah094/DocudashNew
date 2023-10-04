@@ -128,7 +128,7 @@ const DrawerNavigator = () => {
           name="REQUEST"
           options={{
             drawerIcon: ({ color }) => (
-              <Icon name="contacts" size={25} style={{ marginRight: -20, color }} />
+              <Icon name="briefcase" size={25} style={{ marginRight: -20, color }} />
             ),
           }}
         >
@@ -168,10 +168,10 @@ const DrawerNavigator = () => {
           )}
         </Drawer.Screen>
         <Drawer.Screen
-          name="Find Notary"
+          name="FIND NOTARY"
           options={{
             drawerIcon: ({ color }) => (
-              <Icon name="account" size={25} style={{ marginRight: -20, color }} />
+              <Icon name="map" size={25} style={{ marginRight: -20, color }} />
             ),
           }}
         >

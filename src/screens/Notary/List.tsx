@@ -8,7 +8,6 @@ import {
   FlatList,
   Image,
   SafeAreaView,
-  Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -27,7 +26,8 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectAccessToken } from '@stores/Slices';
 import { Notaries, NotaryList, locationNotary } from 'src/types/NoraryList';
-import { Searchbar } from 'react-native-paper';
+import { Searchbar, Text } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 const types = [
@@ -45,6 +45,7 @@ const types = [
   },
 ];
 const Map = () => {
+  const insets = useSafeAreaInsets();
   const accessToken = useSelector(selectAccessToken);
   const navigation = useNavigation();
   const panelRef = useRef(null);
@@ -85,7 +86,7 @@ const Map = () => {
   useEffect(() => {
     fetchData();
   }, []);
-  const snapPoints = useMemo(() => ['8%', '90%'], []);
+  const snapPoints = useMemo(() => ['10', '90'], []);
   const [showDropDownType, setShowDropDownType] = useState(false);
   const [typeValue, setTypeValue] = useState('');
 
@@ -228,7 +229,7 @@ const Map = () => {
           })}
         </MapView>
 
-        <View style={{ position: 'absolute', bottom: 50 }}>
+        <View style={{ position: 'absolute', bottom: insets.bottom + 20 }}>
           <FlatList
             ref={flatList}
             data={data}
@@ -251,15 +252,7 @@ const Map = () => {
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
         >
-          <Text
-            style={{
-              color: 'black',
-              fontWeight: 'bold',
-              textAlign: 'center',
-              marginVertical: 20,
-              fontSize: 18,
-            }}
-          >
+          <Text variant="labelLarge" style={tw`text-lg text-center mb-2 mt-2 font-bold`}>
             {`See All ${data?.length} Notary`}
           </Text>
 
@@ -274,7 +267,7 @@ const Map = () => {
                     onChangeText={onChangeSearch}
                     value={searchQuery}
                   />
-                  <View style={tw`w-40 `}>
+                  <View style={tw`w-40`}>
                     <DropDown
                       label={'Select Type'}
                       mode={'outlined'}
@@ -292,24 +285,30 @@ const Map = () => {
             data={data}
             renderItem={({ item }: { item: Notaries }) => {
               return (
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                   onPress={() => navigation.navigate('NotaryProfile', { item: item })}
                 >
-                  <View style={tw`w-full my-5 flex justify-center bg-white shadow-md rounded-lg`}>
+                  <View style={tw`m-2 flex justify-center bg-white shadow-md rounded-lg`}>
                     <Image
-                      source={{ uri: item.BannerImage }}
-                      // resizeMode="contain"
-                      style={tw`w-full bg-[${colors.green}] h-20`}
+                      source={{
+                        uri:
+                          'https://docudash.net/public/uploads/NotaryRequestBanner/' +
+                          item.BannerImage,
+                      }}
+                      resizeMode="contain"
+                      style={tw`w-full bg-[${colors.green}] h-16`}
                     ></Image>
                     <Image
                       style={{
-                        width: 80,
+                        width: 60,
                         marginHorizontal: 20,
                         borderRadius: 50,
-                        height: 80,
-                        bottom: 50,
+                        height: 60,
+                        bottom: 40,
                       }}
-                      source={{ uri: item.notary_image }}
+                      source={{
+                        uri: 'https://docudash.net/public/uploads/profile-pics/' + item.image,
+                      }}
                       resizeMode="cover"
                     />
                     <View
@@ -337,7 +336,7 @@ const Map = () => {
                       </TouchableOpacity>
                     </View>
                   </View>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
               );
             }}
           />
