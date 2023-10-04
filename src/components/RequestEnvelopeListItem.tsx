@@ -25,7 +25,12 @@ export default function RequestEnvelopeListItem({ item, heading }: IEnvelopeList
           Status: <Text style={tw`font-thin`}>Request</Text>
         </Text>
       </View>
-      <Button mode="outlined">View</Button>
+      <Button
+        onPress={() => navigation.navigate('RequestDetails', { id: item.id })}
+        mode="outlined"
+      >
+        View
+      </Button>
     </View>
   );
 }

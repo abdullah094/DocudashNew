@@ -54,6 +54,7 @@ export type RootStackParamList = {
   AddAddress: { Address?: Address; From?: string; Notary?: string };
   CreateARequest: { email?: string; From?: string };
   RequestList: { heading: string };
+  RequestDetails: {id: number}
 };
 
 export type SignUpStackParamList = {

@@ -30,6 +30,7 @@ import NotaryOrUser from '@screens/SignUp1/NotaryOrUser';
 import NotaryProfile from '@screens/Notary/NotaryProfile';
 import AddAddress from '@screens/Address/AddAddress';
 import CreateARequest from '@screens/Notary/CreateARequest';
+import RequestDetails from '@screens/Request/Details';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
@@ -68,6 +69,7 @@ export default function StackNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <Stack.Group>
+          {/* <Stack.Screen name="RequestDetails" component={RequestDetails} /> */}
           {/* <Stack.Screen name="CreateARequest" component={CreateARequest} /> */}
           {/* <Stack.Screen name="Featured" component={FeatureHighlightScreen} /> */}
 
@@ -92,6 +94,7 @@ export default function StackNavigator() {
           <Stack.Screen name="Addresses" component={Addresses} />
           <Stack.Screen name="AddAddress" component={AddAddress} />
           <Stack.Screen name="CreateARequest" component={CreateARequest} />
+          <Stack.Screen name="RequestDetails" component={RequestDetails} />
 
           {/* <Stack.Screen name="ManageDrawer" component={ManageDrawer} /> */}
           {/* <Stack.Screen name="TemplateHistory" component={TemplateHistory} /> */}
