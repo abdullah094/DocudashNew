@@ -70,6 +70,7 @@ const Details = () => {
     company: [],
     title: [],
   });
+
   const closeMenu = () => setVisible(false);
   const user = useSelector(selectProfileData);
   const [visibleMore, setVisibleMore] = React.useState(false);
@@ -107,29 +108,6 @@ const Details = () => {
       });
   };
   const Done = () => {
-    setAcceptLoading(true);
-    axios
-      .post(
-        'https://docudash.net/api/notary/ApproveRequest',
-        {
-          id: id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response.data);
-        setAcceptLoading(false);
-        navigation.goBack();
-      })
-      .catch((err) => {
-        setAcceptLoading(false);
-      });
-  };
-  const Deny = () => {
     setDoneLoading(true);
     axios
       .post(
@@ -150,6 +128,29 @@ const Details = () => {
       })
       .catch((err) => {
         setDoneLoading(false);
+      });
+  };
+  const Deny = () => {
+    setDenyLoading(true);
+    axios
+      .post(
+        'https://docudash.net/api/notary/DenyRequest',
+        {
+          id: id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        setDenyLoading(false);
+        navigation.goBack();
+      })
+      .catch((err) => {
+        setDenyLoading(false);
       });
   };
 
@@ -255,18 +256,22 @@ const Details = () => {
               <IconButton icon="dots-vertical" onPress={(_) => openMenuMoreHeader()}></IconButton>
             }
           >
+            <Menu.Item onPress={Accept} title="Accept" />
             {/* <VoidEnvelopeModel inbox={inbox} navigation={navigation} /> */}
             <Divider />
+            <Menu.Item onPress={Deny} title="Deny" />
             {/* <Menu.Item onPress={DeleteEnvelope} title="Delete" /> */}
             <Divider />
+            <Menu.Item onPress={Done} title="Done" />
+            <Divider />
+
             {/* <Menu.Item onPress={ResendEmail} title="Resend Email" /> */}
           </Menu>
         </View>
         <ScrollView>
           <View style={tw`p-4 gap-3 py-10 pt-3`}>
             <View style={tw`  gap-3 flex-row items-center`}>
-              <Text style={styles.heading}>
-                {' '}
+              <Text style={[styles.heading, { width: '80%' }]} numberOfLines={2}>
                 {reasons.find((x) => x.value == details?.reasonOfRequest.toString())?.label}
               </Text>
               <Menu
@@ -354,47 +359,49 @@ const Details = () => {
             </View>
 
             {/* Buttons */}
-            <View style={tw`flex-row items-center  gap-3 py-5`}>
-              {details.status === 1 ? (
-                <>
-                  <View style={tw` items-center gap-5 py-2 justify-center`}>
-                    <Button
-                      mode="contained"
-                      loading={acceptLoading}
-                      disabled={acceptLoading}
-                      onPress={Accept}
-                    >
-                      Accept
-                    </Button>
-                  </View>
+            {user.user_type === 7 ? (
+              <View style={tw`flex-row items-center  gap-3 py-5`}>
+                {details.notary_request_status === 1 ? (
+                  <>
+                    <View style={tw` items-center gap-5 py-2 justify-center`}>
+                      <Button
+                        mode="contained"
+                        loading={acceptLoading}
+                        disabled={acceptLoading}
+                        onPress={Accept}
+                      >
+                        Accept
+                      </Button>
+                    </View>
 
-                  <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
-                    <Button
-                      loading={denyLoading}
-                      disabled={denyLoading}
-                      onPress={Deny}
-                      mode="outlined"
-                    >
-                      Deny
-                    </Button>
-                  </View>
-                </>
-              ) : (
-                // status ===2
-                <>
-                  <View style={tw` items-center gap-5 py-2 justify-center`}>
-                    <Button
-                      mode="contained"
-                      loading={doneLoading}
-                      disabled={doneLoading}
-                      onPress={Done}
-                    >
-                      Done
-                    </Button>
-                  </View>
-                </>
-              )}
-            </View>
+                    <View style={tw`flex-row items-center gap-5 py-2 justify-center`}>
+                      <Button
+                        loading={denyLoading}
+                        disabled={denyLoading}
+                        onPress={Deny}
+                        mode="outlined"
+                      >
+                        Deny
+                      </Button>
+                    </View>
+                  </>
+                ) : (
+                  // status ===2
+                  <>
+                    <View style={tw` items-center gap-5 py-2 justify-center`}>
+                      <Button
+                        mode="contained"
+                        loading={doneLoading}
+                        disabled={doneLoading}
+                        onPress={Done}
+                      >
+                        Done
+                      </Button>
+                    </View>
+                  </>
+                )}
+              </View>
+            ) : null}
             <View style={tw`py-10 gap-4`}>
               <Text style={styles.heading}>Uploaded Documents</Text>
               <View>
