@@ -259,95 +259,100 @@ const Profile = () => {
 
           <Text>{new Date(user.created_at).toUTCString().slice(0, 17)}</Text>
         </View>
-        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
-          <View style={tw`flex-row justify-between`}>
-            <Text variant="titleMedium">Banner</Text>
-            <Button mode="contained" style={tw`rounded-lg`} onPress={bannerImageUpload}>
-              Update
-            </Button>
-          </View>
-          <Image
-            source={{
-              uri: 'https://docudash.net/public/uploads/NotaryRequestBanner/' + user.BannerImage,
-            }}
-            style={tw`w-full h-14`}
-            resizeMode={'contain'}
-          ></Image>
-        </View>
-        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
-          <View style={tw`flex-row justify-between`}>
-            <Text variant="titleMedium">Bio description:</Text>
-            <BioEditModal />
-          </View>
-          <Text>{user.BioDescription}</Text>
-        </View>
-        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
-          <View style={tw`flex-row justify-between`}>
-            <Text variant="titleMedium">Short Description:</Text>
-            <ShortDescriptionModal />
-          </View>
-          <Text>{user.ShortDescription}</Text>
-        </View>
-        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg gap-4 `}>
-          <View style={tw`flex-row justify-between`}>
-            <Text variant="titleMedium">Verification Status:</Text>
-          </View>
-          <Text>{user?.verification_status === 1 ? 'Verified' : 'Not Verified'}</Text>
-        </View>
-        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
-          <View style={tw`flex-row justify-between`}>
-            <Text variant="titleMedium">Upload Proof of Employees:</Text>
-            <Button
-              mode="contained"
-              style={tw`rounded-lg`}
-              onPress={() => {
-                setModalVisible(true);
-              }}
-            >
-              Update
-            </Button>
-          </View>
-          <View style={tw`gap-2`}>
-            <Text>Proof of Employees: {user.ProofOfEmployes}</Text>
-            <TouchableOpacity>
-              <Text style={tw`text-green-500 text-4`}>Click to View</Text>
-            </TouchableOpacity>
-            {modalVisible ? (
-              <View style={tw`flex-1 justify-center items-center  `}>
-                <View style={tw`bg-white m-2 p-2 gap-2 w-72 rounded-lg`}>
-                  <View style={tw`flex-row items-center justify-between`}>
-                    <Text style={tw`text-xl`}>Update Number of Employees</Text>
-                  </View>
-                  <Divider></Divider>
-                  <View style={tw`gap-2`}>
-                    <TextInput
-                      label="Enter Number of Employees"
-                      value={firstName}
-                      keyboardType="number-pad"
-                      onChangeText={(text) => setFirstName(text)}
-                      style={tw`h-20`}
-                    />
-                    <UploadView documents={documents} setDocuments={setDocuments} />
-                  </View>
-
-                  <Divider></Divider>
-                  <View style={tw`flex-row items-center gap-4 justify-between`}>
-                    <Button style={tw`rounded-lg`} mode="contained" onPress={onSave}>
-                      Update
-                    </Button>
-                    <Button
-                      style={tw`rounded-lg`}
-                      mode="outlined"
-                      onPress={() => setModalVisible(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </View>
-                </View>
+        {user.user_type === 7 ? (
+          <>
+            <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+              <View style={tw`flex-row justify-between`}>
+                <Text variant="titleMedium">Banner</Text>
+                <Button mode="contained" style={tw`rounded-lg`} onPress={bannerImageUpload}>
+                  Update
+                </Button>
               </View>
-            ) : null}
-          </View>
-        </View>
+              <Image
+                source={{
+                  uri:
+                    'https://docudash.net/public/uploads/NotaryRequestBanner/' + user.BannerImage,
+                }}
+                style={tw`w-full h-14`}
+                resizeMode={'contain'}
+              ></Image>
+            </View>
+            <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+              <View style={tw`flex-row justify-between`}>
+                <Text variant="titleMedium">Bio description:</Text>
+                <BioEditModal />
+              </View>
+              <Text>{user.BioDescription}</Text>
+            </View>
+            <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+              <View style={tw`flex-row justify-between`}>
+                <Text variant="titleMedium">Short Description:</Text>
+                <ShortDescriptionModal />
+              </View>
+              <Text>{user.ShortDescription}</Text>
+            </View>
+            <View style={tw`border border-gray-300 m-4 p-4 rounded-lg gap-4 `}>
+              <View style={tw`flex-row justify-between`}>
+                <Text variant="titleMedium">Verification Status:</Text>
+              </View>
+              <Text>{user?.verification_status === 1 ? 'Verified' : 'Not Verified'}</Text>
+            </View>
+            <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+              <View style={tw`flex-row justify-between`}>
+                <Text variant="titleMedium">Upload Proof of Employees:</Text>
+                <Button
+                  mode="contained"
+                  style={tw`rounded-lg`}
+                  onPress={() => {
+                    setModalVisible(true);
+                  }}
+                >
+                  Update
+                </Button>
+              </View>
+              <View style={tw`gap-2`}>
+                <Text>Proof of Employees: {user.ProofOfEmployes}</Text>
+                <TouchableOpacity>
+                  <Text style={tw`text-green-500 text-4`}>Click to View</Text>
+                </TouchableOpacity>
+                {modalVisible ? (
+                  <View style={tw`flex-1 justify-center items-center  `}>
+                    <View style={tw`bg-white m-2 p-2 gap-2 w-72 rounded-lg`}>
+                      <View style={tw`flex-row items-center justify-between`}>
+                        <Text style={tw`text-xl`}>Update Number of Employees</Text>
+                      </View>
+                      <Divider></Divider>
+                      <View style={tw`gap-2`}>
+                        <TextInput
+                          label="Enter Number of Employees"
+                          value={firstName}
+                          keyboardType="number-pad"
+                          onChangeText={(text) => setFirstName(text)}
+                          style={tw`h-20`}
+                        />
+                        <UploadView documents={documents} setDocuments={setDocuments} />
+                      </View>
+
+                      <Divider></Divider>
+                      <View style={tw`flex-row items-center gap-4 justify-between`}>
+                        <Button style={tw`rounded-lg`} mode="contained" onPress={onSave}>
+                          Update
+                        </Button>
+                        <Button
+                          style={tw`rounded-lg`}
+                          mode="outlined"
+                          onPress={() => setModalVisible(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </View>
+                    </View>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+          </>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
