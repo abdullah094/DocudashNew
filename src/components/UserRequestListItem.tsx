@@ -10,7 +10,6 @@ interface IEnvelopeListItem {
   item: IRequestItem;
 }
 export default function UserRequestListItem({ item }: IEnvelopeListItem) {
-  console.log(item);
   const navigation = useNavigation<RootStackScreenProps<'Inbox'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'Inbox'>['route']>();
   return (

@@ -1,17 +1,8 @@
 global.Buffer = global.Buffer || require('buffer').Buffer;
-import Loader from '@components/Loader';
-import SigningOrderModal from '@components/SigningOrderModal';
 import COLORS from '@constants/colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { selectAccessToken, selectProfileData } from '@stores/Slices';
-import {
-  DraggedElArr,
-  Envelope,
-  GenerateSignature,
-  HtmlEditorAPI,
-  RootStackScreenProps,
-  ViewDocument,
-} from '@type/index';
+import { DraggedElArr, RootStackScreenProps, ViewDocument } from '@type/index';
 import axios from 'axios';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import Icon from '@expo/vector-icons/MaterialCommunityIcons';
@@ -21,11 +12,10 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Button, Divider, IconButton, Menu, TextInput } from 'react-native-paper';
+import { Button, Divider, IconButton, Menu, TextInput, Text } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import tw from 'twrnc';
 import {
@@ -49,15 +39,6 @@ const Details = () => {
   const navigation = useNavigation<RootStackScreenProps<'RequestDetails'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'RequestDetails'>['route']>();
   const id: number = route.params?.id;
-  const accessCodeInputRef = useRef(null);
-
-  const [data, setData] = useState<ViewDocument>();
-  const [images, setImages] = useState<string[]>();
-  const [dataLoader, setDataLoader] = useState(true);
-  const [needToSignVisible, setNeedToSignVisible] = useState(false);
-  const [accessCodeModal, setAccessCodeModal] = useState(false);
-  const [accessCode, setAccessCode] = useState('');
-  const [accessCodeText, setAccessCodeText] = useState('');
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
   const [draggedElArr, setDraggedElArr] = useState<DraggedElArr>({
@@ -75,7 +56,6 @@ const Details = () => {
   const [visibleMore, setVisibleMore] = React.useState(false);
   const [details, setDetails] = useState<NotaryRequests>();
   const [visibleMoreHeader, setVisibleMoreHeader] = React.useState(false);
-  const [incrorrectCode, setIncrorrectCode] = useState(false);
   const [documentDetails, setDocumentDetails] = useState<NotaryRequestsDetailsDocument[]>([]);
   const openMenuMoreHeader = () => setVisibleMoreHeader(true);
   const closeMenuMoreHeader = () => setVisibleMoreHeader(false);
@@ -182,66 +162,7 @@ const Details = () => {
   }, []);
   if (details)
     return (
-      <Fragment>
-        <Modal visible={accessCodeModal} transparent>
-          <View style={tw`flex-1 justify-center items-center`}>
-            <View style={tw`border-2 p-5 gap-4 bg-white rounded-xl`}>
-              <Text style={tw`text-4 font-bold `}>Enter Access Code</Text>
-              {incrorrectCode && (
-                <Text style={tw`text-red-500`}>Incorrect code. Please try again</Text>
-              )}
-              <TextInput
-                ref={accessCodeInputRef}
-                editable={true}
-                style={tw`w-60`}
-                mode="outlined"
-                value={accessCode}
-                onChangeText={(text) => setAccessCode(text)}
-              />
-              <View style={tw`flex-row justify-center gap-2`}>
-                <Button
-                  mode="outlined"
-                  onPress={() => {
-                    setAccessCodeModal(false);
-                    setTimeout(() => {
-                      setAccessCode('');
-                      setTimeout(() => {
-                        setIncrorrectCode(false);
-                      }, 100);
-                    }, 100);
-                  }}
-                >
-                  {' '}
-                  Cancel
-                </Button>
-                <Button
-                  mode="outlined"
-                  onPress={() => {
-                    if (accessCode == accessCodeText) {
-                      setIncrorrectCode(false);
-                      setTimeout(() => {
-                        setAccessCodeModal(false);
-                        setTimeout(() => {
-                          setAccessCode('');
-                        }, 100);
-                      }, 100);
-                      // navigation.navigate('DocumentViewer', { Envelope: generate });
-                    } else {
-                      setIncrorrectCode(true);
-                      setTimeout(() => {
-                        setAccessCode('');
-                      }, 100);
-                    }
-                  }}
-                >
-                  {' '}
-                  View
-                </Button>
-              </View>
-            </View>
-          </View>
-        </Modal>
-        <SafeAreaView style={tw`flex-0`}></SafeAreaView>
+      <SafeAreaView style={tw`h-full`}>
         <View style={styles.header}>
           <Icon name="arrow-left" size={28} onPress={() => navigation.goBack()} />
           <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>
@@ -264,12 +185,13 @@ const Details = () => {
         </View>
         <ScrollView>
           <View style={tw`p-4 gap-3 py-10 pt-3`}>
-            <View style={tw`  gap-3 flex-row items-center`}>
+            <View style={tw`gap-3 flex-row items-center`}>
               <Text style={styles.heading}>
                 {' '}
                 {reasons.find((x) => x.value == details?.reasonOfRequest.toString())?.label}
               </Text>
               <Menu
+                style={tw`w-70`}
                 visible={visible}
                 onDismiss={closeMenu}
                 anchor={<IconButton icon="information" onPress={openMenu} />}
@@ -278,74 +200,77 @@ const Details = () => {
                 <Menu.Item
                   onPress={() => {}}
                   title={
-                    <View style={tw`gap-1`}>
-                      <Text style={tw`font-bold text-black`}>Created At:</Text>
-                      <Text style={tw`text-black`}>
-                        {' '}
-                        {new Date(details.created_at).toUTCString().slice(0, 17)}
-                      </Text>
-                    </View>
+                    <Text style={tw`text-black`}>
+                      <Text style={tw`font-bold text-black`}>Created At: </Text>
+                      {new Date(details.created_at).toUTCString().slice(0, 17)}
+                    </Text>
                   }
                 />
                 <Menu.Item
                   onPress={() => {}}
                   title={
-                    <View style={tw`gap-1`}>
-                      <Text style={tw`font-bold text-black`}>Modified At</Text>
-                      <Text style={tw`text-black`}>
-                        {new Date(details.updated_at).toUTCString().slice(0, 17)}
-                      </Text>
-                    </View>
+                    <Text style={tw`text-black`}>
+                      <Text style={tw`font-bold text-black`}>Modified At: </Text>
+                      {new Date(details.updated_at).toUTCString().slice(0, 17)}
+                    </Text>
                   }
                 />
                 <Menu.Item
                   onPress={() => {}}
                   title={
-                    <View style={tw`gap-1`}>
-                      <Text style={tw`font-bold text-black`}>Owner</Text>
-                      <Text style={tw`text-black`}>{details.individual_details.first_name}</Text>
-                    </View>
+                    <Text style={tw`text-black`}>
+                      <Text style={tw`font-bold text-black`}>User: </Text>
+                      {details.individual_details.first_name}
+                    </Text>
+                  }
+                />
+                <Menu.Item
+                  onPress={() => {}}
+                  title={
+                    <Text style={tw`text-black`}>
+                      <Text style={tw`font-bold text-black`}>Notary: </Text>
+                      {details.notary_details.first_name}
+                    </Text>
                   }
                 />
               </Menu>
             </View>
 
-            <View style={tw`mt-5 gap-1`}>
-              <Text>
+            <View style={tw`gap-2`}>
+              <Text variant="labelLarge">
                 Reason of the request:{' '}
                 <Text style={tw`text-[#6FAC46]`}>
                   {reasons.find((x) => x.value == details.reasonOfRequest.toString())?.label}
                 </Text>
               </Text>
-              <Text>
+              <Text variant="labelLarge">
                 Availability Date: <Text style={tw`text-[#6FAC46]`}> {details.requestDate}</Text>
               </Text>
-              <Text>
+              <Text variant="labelLarge">
                 Availability Time:{' '}
                 <Text style={tw`text-[#6FAC46]`}>
-                  {' '}
                   {time.find((x) => x.value == details.requestTime.toString())?.label}
                 </Text>
               </Text>
-              <Text>
-                Number of User To sign:{' '}
+              <Text variant="labelLarge">
+                Number of User To Sign:{' '}
                 <Text style={tw`text-[#6FAC46]`}>{details.numOfRecipients}</Text>
               </Text>
-              <Text>
+              <Text variant="labelLarge">
                 Number of Pages Uploaded:{' '}
                 <Text style={tw`text-[#6FAC46]`}>{details.reasonOfRequest}</Text>
               </Text>
-              <Text>
+              <Text variant="labelLarge">
                 Create Date:{' '}
                 <Text style={tw`text-[#6FAC46]`}>
                   {new Date(details.created_at).toUTCString().slice(0, 17)}
                 </Text>
               </Text>
-              <Text>
+              <Text variant="labelLarge">
                 Create By:{' '}
                 <Text style={tw`text-[#6FAC46]`}>{details.individual_details.first_name}</Text>
               </Text>
-              <Text>
+              <Text variant="labelLarge">
                 Address:{' '}
                 <Text style={tw`text-[#6FAC46]`}>
                   {details.individual_details.address1 || 'NO ADDRESS AVAILABLE'}
@@ -410,7 +335,7 @@ const Details = () => {
               <View style={tw`flex-row items-center justify-between`}>
                 <Text style={styles.heading}>Recipients</Text>
               </View>
-              {data?.generateSignatureDetails.map((item, index) => (
+              {/* {data?.generateSignatureDetails.map((item, index) => (
                 <View id={String(index)} style={tw` mt-5 py-3 flex-row items-center  `}>
                   <View style={tw`flex-1`}>
                     <View style={tw`flex-row items-center justify-between`}>
@@ -438,7 +363,7 @@ const Details = () => {
                     </View>
                   </View>
                 </View>
-              ))}
+              ))} */}
             </View>
             <View style={tw`py-2`}>
               <Text style={styles.heading}>Message</Text>
@@ -448,28 +373,7 @@ const Details = () => {
             </View>
           </View>
         </ScrollView>
-        {data?.generateSignatureDetails
-          .filter(
-            (item) =>
-              item.recEmail.toLowerCase() == user.email.toLowerCase() &&
-              item.complete_incomplete === 0
-          )
-          .map((item) => (
-            <View style={tw`h-15 bg-gray-200  flex-row justify-between items-center px-10`}>
-              <Text style={tw`text-4 font-semibold`}>
-                {item.sign_type == '1'
-                  ? 'Need to Sign'
-                  : item.sign_type == '2'
-                  ? 'In Person Signer'
-                  : item.sign_type === '3'
-                  ? 'Receives a Copy'
-                  : 'Needs to View'}
-              </Text>
-              <Button mode="outlined">{item.sign_type == '1' ? 'Sign' : 'View'}</Button>
-            </View>
-          ))}
-        <SafeAreaView style={tw`flex-1 bg-gray-200`}></SafeAreaView>
-      </Fragment>
+      </SafeAreaView>
     );
 };
 
