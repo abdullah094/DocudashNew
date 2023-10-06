@@ -9,6 +9,7 @@ import { selectAccessToken } from '@stores/Slices';
 import { AddressList, Addresses } from 'src/types/AddressList';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { SignUpStackScreenProps } from 'src/types/navigation';
+import { NotaryLocation } from '@type/*';
 
 export default function RequestMessage({
   data,
@@ -28,16 +29,22 @@ export default function RequestMessage({
   const isFocused = useIsFocused();
 
   const fetchLocation = () => {
+    const formData = new FormData();
+    formData.append('email', data.notary_id);
     axios
-      .get('https://docudash.net/api/Address', {
+      .post('https://docudash.net/api/create-request-locations', formData, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
-        const { data }: AddressList = response.data;
-        setUserLocation(data);
-      });
+        const { UserAddress }: NotaryLocation = response.data;
+        setUserLocation(UserAddress);
+        if (UserAddress.length > 0) {
+          setLocation(UserAddress[0].address);
+        }
+      })
+      .catch((err) => console.log(err));
   };
   useEffect(() => {
     fetchLocation();
@@ -80,14 +87,6 @@ export default function RequestMessage({
               </>
             );
           })}
-          <Menu.Item
-            style={tw`flex-1`}
-            onPress={() => {
-              navigation.navigate('AddAddress', { From: 'create request' });
-              closeLocationMenu();
-            }}
-            title={'Add Address'}
-          />
         </Menu>
       </View>
       <View style={tw`mx-2`}>

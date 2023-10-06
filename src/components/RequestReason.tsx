@@ -23,76 +23,8 @@ import { useDispatch } from 'react-redux';
 import tw from 'twrnc';
 import CalendarPicker from 'react-native-calendar-picker';
 import { IRequest } from 'src/types/request';
-
-const reasons = [
-  {
-    label: 'Notary Document (legal Document)',
-    value: '1',
-  },
-  {
-    label: 'Lawsuit',
-    value: '2',
-  },
-  {
-    label: 'Agreement',
-    value: '3',
-  },
-  {
-    label: 'Immigration',
-    value: '4',
-  },
-  {
-    label: 'Civil document',
-    value: '5',
-  },
-  {
-    label: 'Latter services',
-    value: '6',
-  },
-  {
-    label: 'Apostle',
-    value: '7',
-  },
-  {
-    label: 'Transcript Notarization',
-    value: '8',
-  },
-  {
-    label: 'Real-estate/mortgage',
-    value: '9',
-  },
-  {
-    label: 'Contestation',
-    value: '10',
-  },
-  {
-    label: 'Other',
-    value: '11',
-  },
-];
-
-const time = [
-  {
-    label: 'Early Morning 6 AM to 9 AM',
-    value: '1',
-  },
-  {
-    label: 'Morning 9 AM to 12 PM',
-    value: '2',
-  },
-  {
-    label: 'Afternoon 12 PM to 3 PM',
-    value: '3',
-  },
-  {
-    label: 'Late Afternoon 3 PM to 6 PM',
-    value: '4',
-  },
-  {
-    label: 'Evening 6 PM to 9 PM',
-    value: '5',
-  },
-];
+import { reasons } from '@utils/requestReason';
+import { time } from '@utils/requestTime';
 
 export default function RequestReason({
   data,
