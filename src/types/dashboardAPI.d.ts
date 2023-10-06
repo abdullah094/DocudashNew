@@ -1,3 +1,6 @@
+
+import User from './user.d.ts'
+
 export interface DashboardAPI {
     message: string;
     signature: Signature;
