@@ -18,6 +18,7 @@ import AddressesList from '@screens/Address/List';
 import Map from '@screens/Notary/List';
 import RequestList from '@screens/Request/List';
 import { colors } from '@utils/Colors';
+import UserRequestList from '@screens/Request/UserList';
 
 const Drawer = createDrawerNavigator();
 
@@ -135,6 +136,20 @@ const DrawerNavigator = () => {
           {(props) => (
             <DrawerScreenContainer {...props}>
               <RequestList />
+            </DrawerScreenContainer>
+          )}
+        </Drawer.Screen>
+        <Drawer.Screen
+          name="REQUEST SENT"
+          options={{
+            drawerIcon: ({ color }) => (
+              <Icon name="briefcase" size={25} style={{ marginRight: -20, color }} />
+            ),
+          }}
+        >
+          {(props) => (
+            <DrawerScreenContainer {...props}>
+              <UserRequestList />
             </DrawerScreenContainer>
           )}
         </Drawer.Screen>
