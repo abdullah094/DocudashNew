@@ -27,6 +27,7 @@ import {
 import { colors } from '@utils/Colors';
 import { reasons } from '@utils/requestReason';
 import { time } from '@utils/requestTime';
+import { requestType } from '@utils/requestType';
 
 interface IButton {
   text: string;
@@ -63,6 +64,7 @@ const Details = () => {
   const [acceptLoading, setAcceptLoading] = useState(false);
   const [denyLoading, setDenyLoading] = useState(false);
   const [doneLoading, setDoneLoading] = useState(false);
+  const [recipients, setRecipients] = useState<NotaryRequestsDetail[]>([]);
 
   const Accept = () => {
     setAcceptLoading(true);
@@ -152,6 +154,7 @@ const Details = () => {
           NotaryRequestsDetailsDocuments,
         }: RequestDetailsPage = response.data;
         setDetails(NotaryRequests);
+        setRecipients(NotaryRequestsDetails);
         setDocumentDetails(NotaryRequestsDetailsDocuments);
       })
       .catch((error) => {
@@ -169,25 +172,27 @@ const Details = () => {
           <Text style={{ color: COLORS.primary, fontWeight: 'bold', fontSize: 16 }}>
             {'Request Detail'}
           </Text>
-          <Menu
-            anchorPosition="bottom"
-            visible={visibleMoreHeader}
-            onDismiss={closeMenuMoreHeader}
-            anchor={
-              <IconButton icon="dots-vertical" onPress={(_) => openMenuMoreHeader()}></IconButton>
-            }
-          >
-            <Menu.Item onPress={Accept} title="Accept" />
-            {/* <VoidEnvelopeModel inbox={inbox} navigation={navigation} /> */}
-            <Divider />
-            <Menu.Item onPress={Deny} title="Deny" />
-            {/* <Menu.Item onPress={DeleteEnvelope} title="Delete" /> */}
-            <Divider />
-            <Menu.Item onPress={Done} title="Done" />
-            <Divider />
+          {user.user_type === 7 ? (
+            <Menu
+              anchorPosition="bottom"
+              visible={visibleMoreHeader}
+              onDismiss={closeMenuMoreHeader}
+              anchor={
+                <IconButton icon="dots-vertical" onPress={(_) => openMenuMoreHeader()}></IconButton>
+              }
+            >
+              <Menu.Item onPress={Accept} title="Accept" />
+              {/* <VoidEnvelopeModel inbox={inbox} navigation={navigation} /> */}
+              <Divider />
+              <Menu.Item onPress={Deny} title="Deny" />
+              {/* <Menu.Item onPress={DeleteEnvelope} title="Delete" /> */}
+              <Divider />
+              <Menu.Item onPress={Done} title="Done" />
+              <Divider />
 
-            {/* <Menu.Item onPress={ResendEmail} title="Resend Email" /> */}
-          </Menu>
+              {/* <Menu.Item onPress={ResendEmail} title="Resend Email" /> */}
+            </Menu>
+          ) : null}
         </View>
         <ScrollView>
           <View style={tw`p-4 gap-3 py-10 pt-3`}>
@@ -326,7 +331,17 @@ const Details = () => {
                   </>
                 )}
               </View>
-            ) : null}
+            ) : (
+              <Text variant="labelLarge">
+                Request Status:{' '}
+                <Text style={tw`text-[#6FAC46]`}>
+                  {
+                    requestType.find((x) => x.value == details.notary_request_status.toString())
+                      ?.label
+                  }
+                </Text>
+              </Text>
+            )}
             <View style={tw`py-10 gap-4`}>
               <Text style={styles.heading}>Uploaded Documents</Text>
               <View>
@@ -342,7 +357,7 @@ const Details = () => {
               <View style={tw`flex-row items-center justify-between`}>
                 <Text style={styles.heading}>Recipients</Text>
               </View>
-              {/* {data?.generateSignatureDetails.map((item, index) => (
+              {recipients.map((item, index) => (
                 <View id={String(index)} style={tw` mt-5 py-3 flex-row items-center  `}>
                   <View style={tw`flex-1`}>
                     <View style={tw`flex-row items-center justify-between`}>
@@ -359,18 +374,18 @@ const Details = () => {
                     <Image style={tw`w-5 h-5 mx-2`} source={require('@assets/NeedToSign.png')} />
                     <View>
                       <Text style={tw`text-3 font-bold overflow-hidden w-full`}>
-                        {item.sign_type == '1'
+                        {item.sign_type == 1
                           ? 'Need to Sign'
-                          : item.sign_type == '2'
+                          : item.sign_type == 2
                           ? 'In Person Signer'
-                          : item.sign_type === '3'
+                          : item.sign_type === 3
                           ? 'Receives a Copy'
                           : 'Needs to View'}
                       </Text>
                     </View>
                   </View>
                 </View>
-              ))} */}
+              ))}
             </View>
             <View style={tw`py-2`}>
               <Text style={styles.heading}>Message</Text>

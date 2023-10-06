@@ -24,7 +24,7 @@ export default function RequestMessage({
   const openLocationMenu = () => setLocationVisible(true);
   const closeLocationMenu = () => setLocationVisible(false);
   const [text, setText] = React.useState('');
-  const [location, setLocation] = React.useState('Home');
+  const [location, setLocation] = React.useState<number>();
   const [userLocation, setUserLocation] = React.useState<Addresses[]>([]);
   const isFocused = useIsFocused();
 
@@ -41,7 +41,7 @@ export default function RequestMessage({
         const { UserAddress }: NotaryLocation = response.data;
         setUserLocation(UserAddress);
         if (UserAddress.length > 0) {
-          setLocation(UserAddress[0].address);
+          setLocation(UserAddress[0].id);
         }
       })
       .catch((err) => console.log(err));
@@ -65,7 +65,7 @@ export default function RequestMessage({
               style={tw`flex-row items-center border rounded-xl border-gray-300`}
             >
               <Text variant="bodyMedium" style={tw`flex-1 px-2`}>
-                {location}
+                {userLocation.find((x) => x.id == location)?.address}
               </Text>
               <IconButton icon="chevron-down" onPress={openLocationMenu} />
             </TouchableOpacity>
@@ -78,7 +78,7 @@ export default function RequestMessage({
                   key={e.uuid}
                   style={tw`flex-1`}
                   onPress={() => {
-                    setLocation(e.address);
+                    setLocation(e.id);
                     closeLocationMenu();
                   }}
                   title={e.name}
