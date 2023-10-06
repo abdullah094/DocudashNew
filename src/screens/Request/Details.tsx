@@ -192,7 +192,9 @@ const Details = () => {
 
               {/* <Menu.Item onPress={ResendEmail} title="Resend Email" /> */}
             </Menu>
-          ) : null}
+          ) : (
+            <View></View>
+          )}
         </View>
         <ScrollView>
           <View style={tw`p-4 gap-3 py-10 pt-3`}>
