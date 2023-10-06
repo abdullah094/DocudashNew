@@ -1,24 +1,29 @@
+import BioEditModal from '@components/BioEditModal';
 import HomeHeader from '@components/HomeHeader';
 import InfoEditModal from '@components/InfoEditModel';
 import NameEditModal from '@components/NameEditModel';
+import ShortDescriptionModal from '@components/ShortDescriptionModal';
 import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
 import { DashboardAPI } from '@type/index';
 import { colors } from '@utils/Colors';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
-import React, { useState } from 'react';
-import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { RefreshControl, SafeAreaView, ScrollView, View, Image } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Avatar, Button, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
 
 const Profile = () => {
   const user = useSelector(selectProfileData);
+
   const accessToken = useSelector(selectAccessToken);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [shortDescriptionModalVisible, setShortDescriptionModalVisible] = useState(false);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -28,8 +33,6 @@ const Profile = () => {
   }, []);
 
   const pickImage = async () => {
-    if (loading) return;
-
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       selectionLimit: 1,
@@ -39,7 +42,6 @@ const Profile = () => {
       quality: 1,
     });
 
-    console.log(result);
     setLoading(true);
     if (!result.canceled) {
       const image = result.assets[0];
@@ -83,7 +85,40 @@ const Profile = () => {
       // setImage(result.assets[0].uri);
     }
   };
-  const fetchDashData = () => {
+  const bannerImageUpload = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      selectionLimit: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const image = result.assets[0];
+      let data = new FormData();
+      const imageToUpload = {
+        uri: image.uri,
+        name: image.fileName || image.uri,
+        type: image.type,
+      };
+
+      data.append('BannerImage', imageToUpload);
+      data.append('action_type', 'BannerImage');
+
+      axios
+        .post('https://docudash.net/api/profiles', data, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          fetchDashData();
+        });
+    }
+  };
+  useEffect(() => {});
+  let fetchDashData = () => {
     axios
       .get('https://docudash.net/api/dashboard', {
         headers: {
@@ -97,10 +132,14 @@ const Profile = () => {
         onRefresh();
       });
   };
+
   return (
     <SafeAreaView style={tw`flex-1`}>
       <HomeHeader heading={'PROFILE'} />
-      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      <ScrollView
+        contentContainerStyle={tw`pb-20`}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
         <View style={tw`m-4 gap-1 `}>
           <Text style={tw`text-black text-5 font-bold `}>Profile</Text>
           <Text style={tw`text-[${colors.gray}] text-3`}>
@@ -160,6 +199,77 @@ const Profile = () => {
               <Text>Address:</Text>
               <Text>{user.address1}</Text>
             </View>
+          </View>
+        </View>
+        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+          <View style={tw`flex-row justify-between`}>
+            <Text variant="titleMedium">Date Created:</Text>
+            <Button
+              mode="contained"
+              style={tw`rounded-lg`}
+              onPress={() => {
+                alert('You Cannot Change Your Email');
+              }}
+            >
+              Update
+            </Button>
+          </View>
+
+          <Text>{new Date(user.created_at).toUTCString().slice(0, 17)}</Text>
+        </View>
+        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+          <View style={tw`flex-row justify-between`}>
+            <Text variant="titleMedium">Banner</Text>
+            <Button mode="contained" style={tw`rounded-lg`} onPress={bannerImageUpload}>
+              Update
+            </Button>
+          </View>
+          <Image
+            source={{
+              uri: 'https://docudash.net/public/uploads/NotaryRequestBanner/' + user.BannerImage,
+            }}
+            style={tw`w-full h-14`}
+            resizeMode={'contain'}
+          ></Image>
+        </View>
+        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+          <View style={tw`flex-row justify-between`}>
+            <Text variant="titleMedium">Bio description:</Text>
+            <BioEditModal />
+          </View>
+          <Text>{user.BioDescription}</Text>
+        </View>
+        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+          <View style={tw`flex-row justify-between`}>
+            <Text variant="titleMedium">Short Description:</Text>
+            <ShortDescriptionModal />
+          </View>
+          <Text>{user.ShortDescription}</Text>
+        </View>
+        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg gap-4 `}>
+          <View style={tw`flex-row justify-between`}>
+            <Text variant="titleMedium">Verification Status:</Text>
+          </View>
+          <Text>{user?.verification_status === 1 ? 'Verified' : 'Not Verified'}</Text>
+        </View>
+        <View style={tw`border border-gray-300 m-4 p-4 rounded-lg `}>
+          <View style={tw`flex-row justify-between`}>
+            <Text variant="titleMedium">Upload Proof of Employees:</Text>
+            <Button
+              mode="contained"
+              style={tw`rounded-lg`}
+              onPress={() => {
+                alert('You Cannot Change Your Email');
+              }}
+            >
+              Update
+            </Button>
+          </View>
+          <View style={tw`gap-2`}>
+            <Text>Proof of Employees: {'0'}</Text>
+            <TouchableOpacity>
+              <Text style={tw`text-green-500 text-4`}>Click to View</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
