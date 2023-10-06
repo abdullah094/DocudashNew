@@ -11,7 +11,7 @@ import Inbox from '@screens/Manage/Inbox';
 import Profile from '@screens/Profile';
 import SignatureList from '@screens/Signatures/List';
 import StampList from '@screens/Stamp/List';
-import { selectRouteName } from '@stores/Slices';
+import { selectProfileData, selectRouteName } from '@stores/Slices';
 import { useSelector } from 'react-redux';
 import ContactList from '@screens/Contact/List';
 import AddressesList from '@screens/Address/List';
@@ -23,6 +23,9 @@ import UserRequestList from '@screens/Request/UserList';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
+  const user = useSelector(selectProfileData);
+  const type = user?.user_type;
+
   const route = useRoute();
   const routeName = useSelector(selectRouteName);
   console.log('name', routeName);
@@ -97,20 +100,22 @@ const DrawerNavigator = () => {
           )}
         </Drawer.Screen>
 
-        <Drawer.Screen
-          name="STAMPS"
-          options={{
-            drawerIcon: ({ color }) => (
-              <Icon name="stamper" size={25} style={{ marginRight: -20, color }} />
-            ),
-          }}
-        >
-          {(props) => (
-            <DrawerScreenContainer {...props}>
-              <StampList />
-            </DrawerScreenContainer>
-          )}
-        </Drawer.Screen>
+        {type === 7 && (
+          <Drawer.Screen
+            name="STAMPS"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="stamper" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer {...props}>
+                <StampList />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+        )}
         <Drawer.Screen
           name="CONTACTS"
           options={{
@@ -125,34 +130,37 @@ const DrawerNavigator = () => {
             </DrawerScreenContainer>
           )}
         </Drawer.Screen>
-        <Drawer.Screen
-          name="REQUEST"
-          options={{
-            drawerIcon: ({ color }) => (
-              <Icon name="briefcase" size={25} style={{ marginRight: -20, color }} />
-            ),
-          }}
-        >
-          {(props) => (
-            <DrawerScreenContainer {...props}>
-              <RequestList />
-            </DrawerScreenContainer>
-          )}
-        </Drawer.Screen>
-        <Drawer.Screen
-          name="REQUEST SENT"
-          options={{
-            drawerIcon: ({ color }) => (
-              <Icon name="briefcase" size={25} style={{ marginRight: -20, color }} />
-            ),
-          }}
-        >
-          {(props) => (
-            <DrawerScreenContainer {...props}>
-              <UserRequestList />
-            </DrawerScreenContainer>
-          )}
-        </Drawer.Screen>
+        {type === 7 ? (
+          <Drawer.Screen
+            name="REQUEST"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="briefcase" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer {...props}>
+                <RequestList />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+        ) : (
+          <Drawer.Screen
+            name="REQUEST SENT"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="briefcase" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer {...props}>
+                <UserRequestList />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+        )}
         <Drawer.Screen
           name="ADDRESSES"
           options={{
@@ -182,20 +190,22 @@ const DrawerNavigator = () => {
             </DrawerScreenContainer>
           )}
         </Drawer.Screen>
-        <Drawer.Screen
-          name="FIND NOTARY"
-          options={{
-            drawerIcon: ({ color }) => (
-              <Icon name="map" size={25} style={{ marginRight: -20, color }} />
-            ),
-          }}
-        >
-          {(props) => (
-            <DrawerScreenContainer>
-              <Map />
-            </DrawerScreenContainer>
-          )}
-        </Drawer.Screen>
+        {type === 7 || (
+          <Drawer.Screen
+            name="FIND NOTARY"
+            options={{
+              drawerIcon: ({ color }) => (
+                <Icon name="map" size={25} style={{ marginRight: -20, color }} />
+              ),
+            }}
+          >
+            {(props) => (
+              <DrawerScreenContainer>
+                <Map />
+              </DrawerScreenContainer>
+            )}
+          </Drawer.Screen>
+        )}
       </>
     </Drawer.Navigator>
   );
