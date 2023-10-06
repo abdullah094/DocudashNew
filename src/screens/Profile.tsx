@@ -1,7 +1,9 @@
 import BioEditModal from '@components/BioEditModal';
 import HomeHeader from '@components/HomeHeader';
 import InfoEditModal from '@components/InfoEditModel';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import NameEditModal from '@components/NameEditModel';
+import ProofEmployees from '@components/ProofEmpoyees';
 import ShortDescriptionModal from '@components/ShortDescriptionModal';
 import { selectAccessToken, selectProfileData, setProfileData } from '@stores/Slices';
 import { DashboardAPI } from '@type/index';
@@ -10,11 +12,12 @@ import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import FormData from 'form-data';
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, SafeAreaView, ScrollView, View, Image } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, View, Image, Alert } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Avatar, Button, Text } from 'react-native-paper';
+import { Avatar, Button, Divider, Text, TextInput } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'twrnc';
+import UploadView from '@components/UploadView';
 
 const Profile = () => {
   const user = useSelector(selectProfileData);
@@ -24,7 +27,46 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const [shortDescriptionModalVisible, setShortDescriptionModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [firstName, setFirstName] = useState<null | string>(user.ProofOfEmployes.toString());
+  const [documents, setDocuments] = useState(new Array());
+  console.log(documents);
 
+  const onSave = () => {
+    const formData = new FormData();
+    formData.append('action_type', 'ProofOfEmployes');
+    formData.append('ProofOfEmployes', firstName);
+    [...documents].forEach((element, i) => {
+      formData.append('ProofOfEmployesDoc', element, element.name);
+    });
+
+    axios
+      .post('https://docudash.net/api/profiles', formData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        const { status, message }: { status: boolean; message: string } = response.data;
+        console.log('status', status);
+
+        if (status) {
+          dispatch(
+            setProfileData({
+              ...user,
+              ProofEmployees: firstName,
+            })
+          );
+          setModalVisible(false);
+          setDocuments([]);
+          fetchDashData();
+        }
+        Alert.alert(message);
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -259,17 +301,51 @@ const Profile = () => {
               mode="contained"
               style={tw`rounded-lg`}
               onPress={() => {
-                alert('You Cannot Change Your Email');
+                setModalVisible(true);
               }}
             >
               Update
             </Button>
           </View>
           <View style={tw`gap-2`}>
-            <Text>Proof of Employees: {'0'}</Text>
+            <Text>Proof of Employees: {user.ProofOfEmployes}</Text>
             <TouchableOpacity>
               <Text style={tw`text-green-500 text-4`}>Click to View</Text>
             </TouchableOpacity>
+            {modalVisible ? (
+              <View style={tw`flex-1 justify-center items-center  `}>
+                <View style={tw`bg-white m-2 p-2 gap-2 w-72 rounded-lg`}>
+                  <View style={tw`flex-row items-center justify-between`}>
+                    <Text style={tw`text-xl`}>Update Number of Employees</Text>
+                  </View>
+                  <Divider></Divider>
+                  <View style={tw`gap-2`}>
+                    <TextInput
+                      label="Enter Number of Employees"
+                      value={firstName}
+                      keyboardType="number-pad"
+                      onChangeText={(text) => setFirstName(text)}
+                      style={tw`h-20`}
+                    />
+                    <UploadView documents={documents} setDocuments={setDocuments} />
+                  </View>
+
+                  <Divider></Divider>
+                  <View style={tw`flex-row items-center gap-4 justify-between`}>
+                    <Button style={tw`rounded-lg`} mode="contained" onPress={onSave}>
+                      Update
+                    </Button>
+                    <Button
+                      style={tw`rounded-lg`}
+                      mode="outlined"
+                      onPress={() => setModalVisible(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </View>
+                </View>
+              </View>
+            ) : null}
           </View>
         </View>
       </ScrollView>
