@@ -26,7 +26,7 @@ const List = () => {
 
   return (
     <SafeAreaView style={tw`flex-1`}>
-      <HomeHeader heading={heading} />
+      <HomeHeader heading={'Requests'} />
       <View style={tw`px-2`}>
         <SegmentedButtons
           value={value}

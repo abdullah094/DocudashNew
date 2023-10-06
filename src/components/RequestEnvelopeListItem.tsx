@@ -1,13 +1,14 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { Envelope, RootStackScreenProps } from '@type/index';
-import { colors } from '@utils/Colors';
+import { IRequestItem, RootStackScreenProps } from '@type/index';
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Image, TouchableOpacity, View } from 'react-native';
 import tw from 'twrnc';
-
+import { Text } from 'react-native-paper';
+import { requestType } from '@utils/requestType';
+import { reasons } from '@utils/requestReason';
+import { time } from '@utils/requestTime';
 interface IEnvelopeListItem {
-  item: Envelope;
+  item: IRequestItem;
   heading: string;
 }
 
@@ -15,22 +16,34 @@ export default function RequestEnvelopeListItem({ item, heading }: IEnvelopeList
   const navigation = useNavigation<RootStackScreenProps<'Inbox'>['navigation']>();
   const route = useRoute<RootStackScreenProps<'Inbox'>['route']>();
   return (
-    <View style={tw`flex-row flex-1 p-2 px-5 items-center justify-between h-33`}>
-      <View style={tw`gap-2 w-[70%]`}>
-        <Text style={tw`font-bold text-4 w-full`} numberOfLines={2}>
-          {'Notary Document(Legal Documnet)'}
+    <TouchableOpacity onPress={() => navigation.navigate('RequestDetails', { id: item.id })}>
+      <View style={tw`flex-1 mx-2 gap-2 rounded-lg p-4 justify-between bg-white my-2 shadow-lg`}>
+        <Text variant="bodyMedium" numberOfLines={2}>
+          Request: {''}
+          {reasons.find((x) => x.value == item.reasonOfRequest.toString()).label}
         </Text>
-        <Text style={tw`text-gray-500`}>United States</Text>
-        <Text style={tw`font-semibold`}>
-          Status: <Text style={tw`font-thin`}>Request</Text>
+        <Text variant="labelLarge" numberOfLines={2}>
+          Message: {''}
+          <Text style={tw`font-thin`}>{item.requestMessage}</Text>
+        </Text>
+        <Text variant="labelLarge">
+          Request Location: {''}
+          <Text style={tw`font-thin`}>{item.request_location_list.name}</Text>
+        </Text>
+        <Text variant="labelLarge">
+          Request Time: {''}
+          <Text style={tw`font-thin`}>
+            {' '}
+            {time.find((x) => x.value == item.requestTime.toString()).label}
+          </Text>
+        </Text>
+        <Text variant="labelLarge">
+          From User:{' '}
+          <Text style={tw`font-thin`}>
+            {item.individual_details.name + ' ' + item.individual_details.last_name}
+          </Text>
         </Text>
       </View>
-      <Button
-        onPress={() => navigation.navigate('RequestDetails', { id: item.id })}
-        mode="outlined"
-      >
-        View
-      </Button>
-    </View>
+    </TouchableOpacity>
   );
 }

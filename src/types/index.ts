@@ -20,3 +20,5 @@ export * from './signaturePreview.d.ts';
 export * from './header.d.ts';
 export * from './signatureList.d.ts';
 export * from './contact.d.ts';
+export * from './notarylocaiton.d.ts';
+export * from './request.d.ts';
