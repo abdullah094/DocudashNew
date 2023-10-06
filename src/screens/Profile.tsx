@@ -29,7 +29,7 @@ const Profile = () => {
   const [shortDescriptionModalVisible, setShortDescriptionModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [firstName, setFirstName] = useState<null | string>(user.ProofOfEmployes.toString());
-  const [documents, setDocuments] = useState(new Array());
+  const [documents, setDocuments] = useState([]);
   console.log(documents);
 
   const onSave = () => {
@@ -60,8 +60,7 @@ const Profile = () => {
           setModalVisible(false);
           setDocuments([]);
           fetchDashData();
-        }
-        Alert.alert(message);
+        } else Alert.alert(Object.values(message).toString());
       })
       .catch((err) => {
         console.log('err', err);
