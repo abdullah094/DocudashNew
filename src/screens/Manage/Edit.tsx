@@ -275,6 +275,9 @@ const Edit = () => {
     let formData = new FormData();
     formData.append('uniqid', generateSignature.uniqid);
     formData.append('signature_id', generateSignature.signature_id);
+    formData.append('expirationDays', 10);
+    formData.append('number_of_expire_day_alert', 2);
+
     data.forEach((item, index) => {
       {
         formData.append('recipients_update_id[' + index + ']', item.recipients_update_id);
