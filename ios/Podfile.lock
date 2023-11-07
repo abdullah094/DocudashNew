@@ -471,6 +471,42 @@ PODS:
     - React-RCTImage
   - RNSVG (13.4.0):
     - React-Core
+  - Stripe (23.3.4):
+    - StripeApplePay (= 23.3.4)
+    - StripeCore (= 23.3.4)
+    - StripePayments (= 23.3.4)
+    - StripePaymentsUI (= 23.3.4)
+    - StripeUICore (= 23.3.4)
+  - stripe-react-native (0.23.3):
+    - React-Core
+    - Stripe (~> 23.3.0)
+    - StripeApplePay (~> 23.3.0)
+    - StripeFinancialConnections (~> 23.3.0)
+    - StripePayments (~> 23.3.0)
+    - StripePaymentSheet (~> 23.3.0)
+    - StripePaymentsUI (~> 23.3.0)
+  - StripeApplePay (23.3.4):
+    - StripeCore (= 23.3.4)
+  - StripeCore (23.3.4)
+  - StripeFinancialConnections (23.3.4):
+    - StripeCore (= 23.3.4)
+    - StripeUICore (= 23.3.4)
+  - StripePayments (23.3.4):
+    - StripeCore (= 23.3.4)
+    - StripePayments/Stripe3DS2 (= 23.3.4)
+  - StripePayments/Stripe3DS2 (23.3.4):
+    - StripeCore (= 23.3.4)
+  - StripePaymentSheet (23.3.4):
+    - StripeApplePay (= 23.3.4)
+    - StripeCore (= 23.3.4)
+    - StripePayments (= 23.3.4)
+    - StripePaymentsUI (= 23.3.4)
+  - StripePaymentsUI (23.3.4):
+    - StripeCore (= 23.3.4)
+    - StripePayments (= 23.3.4)
+    - StripeUICore (= 23.3.4)
+  - StripeUICore (23.3.4):
+    - StripeCore (= 23.3.4)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -512,7 +548,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-google-maps (from `/Users/macbookpro/DocudashNew/node_modules/react-native-maps`)
+  - react-native-google-maps (from `/Users/waqarmac/DocudashNew/node_modules/react-native-maps`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-view-shot (from `../node_modules/react-native-view-shot`)
@@ -539,6 +575,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
+  - "stripe-react-native (from `../node_modules/@stripe/stripe-react-native`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -547,6 +584,14 @@ SPEC REPOS:
     - Google-Maps-iOS-Utils
     - GoogleMaps
     - libevent
+    - Stripe
+    - StripeApplePay
+    - StripeCore
+    - StripeFinancialConnections
+    - StripePayments
+    - StripePaymentSheet
+    - StripePaymentsUI
+    - StripeUICore
 
 EXTERNAL SOURCES:
   boost:
@@ -622,7 +667,7 @@ EXTERNAL SOURCES:
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-google-maps:
-    :path: "/Users/macbookpro/DocudashNew/node_modules/react-native-maps"
+    :path: "/Users/waqarmac/DocudashNew/node_modules/react-native-maps"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-safe-area-context:
@@ -675,6 +720,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  stripe-react-native:
+    :path: "../node_modules/@stripe/stripe-react-native"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -746,6 +793,15 @@ SPEC CHECKSUMS:
   RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
+  Stripe: 7393b16fe555d4a68e6555044e7b57eff11ae547
+  stripe-react-native: 333a6c66a256412fcb353b7e8585564fe2407095
+  StripeApplePay: 174b09c0211134417e340c68af199a3dd34f3cd6
+  StripeCore: babb08ec2b961f7cde8663dad3b4cbb77e0ae63b
+  StripeFinancialConnections: 484096f2dc5d3c20cc24a5ad4d261953ba806ef0
+  StripePayments: 71bf62ccdacefc4b68b46a02a7f2492aeba252b3
+  StripePaymentSheet: 722ea7bea092c243d771122fe3572a9c84512704
+  StripePaymentsUI: fd08081c4be73c16322dc76a1878140520a9df2e
+  StripeUICore: ed68cbd5ad0626e0760e772f8c82d96cae9b829b
   Yoga: 065f0b74dba4832d6e328238de46eb72c5de9556
 
 PODFILE CHECKSUM: 6280927da5cee68bfd920cb99547a0391552b0ba

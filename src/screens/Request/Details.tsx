@@ -285,7 +285,7 @@ const Details = () => {
               <Text variant="labelLarge">
                 Address:{' '}
                 <Text style={tw`text-[#6FAC46]`}>
-                  {details.individual_details.address1 || 'NO ADDRESS AVAILABLE'}
+                  {details.requestLocation || 'NO ADDRESS AVAILABLE'}
                 </Text>
               </Text>
             </View>

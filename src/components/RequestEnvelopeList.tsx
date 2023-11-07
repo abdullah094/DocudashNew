@@ -18,7 +18,7 @@ export default function RequestEnvelopeList({ heading }: { heading: string }) {
   const accessToken = useSelector(selectAccessToken);
   const [data, setData] = useState<Array<RequestEnvelopeListT>>();
   const [loading, setLoading] = useState(false);
-  console.log(accessToken);
+  // console.log(accessToken);
 
   function filter(name: string | undefined) {
     if (name) {
@@ -41,7 +41,7 @@ export default function RequestEnvelopeList({ heading }: { heading: string }) {
       .then((response) => {
         setLoading(false);
         const data: InboxApiResponse = response.data;
-        console.log(data);
+        // console.log(data);
 
         setData(data.data);
       })
@@ -94,18 +94,12 @@ const Skeleton = () => {
   return (
     <SkeletonLoader boneColor={'#D3D3D3'}>
       <SkeletonLoader.Container style={tw`my-2`}>
-        <SkeletonLoader.Container style={tw`flex-row overflow-hidden gap-2 items-center px-5 `}>
-          {/*  @ts-ignore */}
-          <SkeletonLoader.Item style={tw`w-10 h-10 rounded-full`} />
-          <SkeletonLoader.Container style={tw`overflow-hidden w-70`}>
-            {/*  @ts-ignore */}
-            <SkeletonLoader.Item style={tw`flex-1 h-5 my-1`} />
-            {/*  @ts-ignore */}
-            <SkeletonLoader.Item style={tw`w-100 h-2`} />
-          </SkeletonLoader.Container>
-        </SkeletonLoader.Container>
         {/*  @ts-ignore */}
-        <SkeletonLoader.Item style={tw`w-80 h-5 self-center mt-5`} />
+        <SkeletonLoader.Item style={tw`w-80 h-2 self-center mt-5`} />
+        <SkeletonLoader.Item style={tw`w-80 h-2 self-center mt-5`} />
+        <SkeletonLoader.Item style={tw`w-80 h-2 self-center mt-5`} />
+        <SkeletonLoader.Item style={tw`w-80 h-2 self-center mt-5`} />
+        <SkeletonLoader.Item style={tw`w-80 h-2 self-center mt-5`} />
       </SkeletonLoader.Container>
     </SkeletonLoader>
   );
